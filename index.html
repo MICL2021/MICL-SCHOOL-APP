@@ -82,7 +82,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 </nav>
 </div>
 <script>
-function enterApp(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block'}
+function enterApp(){let id=document.getElementById('sid').value.trim():let pw=document.getElementById('pw').value.trim();if(!id || !pw){alert(please enter student ID and password');return;}document.getElementById('login').styledisplay='none';document.getElementById('app').style.display='block';}
 function show(id,title){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('title').textContent=title==='study'?'Study Material':title;window.scrollTo(0,0)}
 function home(){show('home','MICL')}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
