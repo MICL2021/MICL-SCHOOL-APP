@@ -1,5 +1,5 @@
 const express=require("express"), path=require("path"), Database=require("better-sqlite3"), bcrypt=require("bcryptjs"), jwt=require("jsonwebtoken"), cors=require("cors");
-const app=express(); const db=new Database(path.join(__dirname,"data","micl.db"));
+const fs = requires("fs");const app = express();const dataDir = path.join(_dirname, "data");fs.mkdirSync(dataDir,{ recursive: true });const db = new Database(path.join(dataDir, "micl.db"));
 const SECRET=process.env.JWT_SECRET||"CHANGE_THIS_SECRET_BEFORE_DEPLOYMENT";
 app.use(cors()); app.use(express.json()); app.use(express.static(path.join(__dirname,"public")));
 
