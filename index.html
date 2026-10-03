@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#063b82">
+<title>MICL School App</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef5fb;color:#123}
+.app{max-width:480px;margin:auto;min-height:100vh;background:#fff;box-shadow:0 0 30px #0002;position:relative;padding-bottom:74px}
+header{background:linear-gradient(135deg,#063b82,#1264bd);color:#fff;padding:18px 18px 14px;position:sticky;top:0;z-index:5}
+header .top{display:flex;align-items:center;justify-content:space-between}.brand{font-weight:800;font-size:22px}.menu{font-size:25px}
+.hero{margin:14px;border-radius:16px;padding:20px;background:linear-gradient(135deg,#eaf5ff,#fff);border:1px solid #d7e7f6}
+.hero h1{font-size:22px;margin:0 0 8px;color:#073e84}.hero p{margin:4px 0;color:#49657c}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px}.tile{border:0;border-radius:14px;padding:14px 6px;background:#fff;box-shadow:0 3px 12px #1231;min-height:92px;cursor:pointer;font-weight:700}.ico{font-size:25px;display:block;margin-bottom:7px}.tile small{font-size:12px}
+.notice{margin:15px 14px;padding:15px;border-radius:15px;background:#f5f9fd;border:1px solid #d9e7f2}.notice h3{margin:0 0 10px;color:#073e84}.notice p{margin:5px 0}
+.screen{display:none;padding:16px}.screen.active{display:block}.screen h2{color:#073e84;margin-top:5px}
+.card{background:#fff;border:1px solid #dbe7f0;border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 2px 8px #1231}.row{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #edf2f6}.row:last-child{border-bottom:0}
+.btn{border:0;border-radius:10px;background:#063b82;color:#fff;padding:11px 15px;font-weight:700;cursor:pointer}.back{background:none;border:0;color:#fff;font-size:20px;margin-right:10px}
+.login{min-height:100vh;padding:35px 22px;background:linear-gradient(160deg,#063b82,#eef6ff)}.loginbox{background:#fff;border-radius:22px;padding:25px;max-width:420px;margin:35px auto}.logo{text-align:center;color:#063b82}.logo .mark{font-size:55px}.loginbox input{width:100%;padding:13px;margin:8px 0;border:1px solid #cbd9e5;border-radius:10px}.loginbox .btn{width:100%;margin-top:10px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);background:#fff;border-top:1px solid #d9e5ee;display:flex;justify-content:space-around;padding:9px 4px;z-index:10}nav button{background:none;border:0;color:#557085;font-size:11px;font-weight:700}nav b{display:block;font-size:20px;margin-bottom:2px}nav button.active{color:#063b82}
+.badge{display:inline-block;background:#e9f5ff;color:#063b82;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:bold}.ok{color:#149447;font-weight:bold}.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.photo{height:120px;border-radius:12px;background:linear-gradient(135deg,#c9e3f7,#eaf5ff);display:flex;align-items:center;justify-content:center;font-size:38px}
+</style>
+</head>
+<body>
+<div id="login" class="login">
+  <div class="loginbox">
+    <div class="logo"><div class="mark">📚</div><h1>MICL</h1><p>Modern Institute of Creative Learning</p></div>
+    <h2>Student Login</h2>
+    <input id="sid" placeholder="Student ID / Admission No.">
+    <input id="pw" type="password" placeholder="Password">
+    <button class="btn" onclick="enterApp()">Login</button>
+    <p style="text-align:center;font-size:12px;color:#60798c">Demo app — any login details will work.</p>
+  </div>
+</div>
+
+<div id="app" class="app" style="display:none">
+<header><div class="top"><div><button class="back" onclick="home()">☰</button><span class="brand" id="title">MICL</span></div><span>🔔</span></div></header>
+
+<section id="home" class="screen active">
+<div class="hero"><h1>Welcome to Modern Institute of Creative Learning</h1><p>Education Today • Leaders Tomorrow</p><p><b>Learn • Create • Grow</b></p></div>
+<div class="grid">
+<button class="tile" onclick="show('notices','Notice Board')"><span class="ico">📢</span><small>Notices</small></button>
+<button class="tile" onclick="show('timetable','School Timetable')"><span class="ico">📅</span><small>Time Table</small></button>
+<button class="tile" onclick="show('attendance','Attendance')"><span class="ico">👥</span><small>Attendance</small></button>
+<button class="tile" onclick="show('homework','Homework')"><span class="ico">📖</span><small>Homework</small></button>
+<button class="tile" onclick="show('results','Exams & Results')"><span class="ico">📝</span><small>Exams & Results</small></button>
+<button class="tile" onclick="show('study','study')"><span class="ico">📁</span><small>Study Material</small></button>
+<button class="tile" onclick="show('gallery','Gallery')"><span class="ico">🖼️</span><small>Gallery</small></button>
+<button class="tile" onclick="show('events','Events & Calendar')"><span class="ico">🗓️</span><small>Events</small></button>
+<button class="tile" onclick="show('contact','Contact Us')"><span class="ico">📞</span><small>Contact Us</small></button>
+</div>
+<div class="notice"><h3>Latest Notice</h3><p>📌 Parent-Teacher Meeting will be held soon.</p><p>📚 New study material has been uploaded.</p></div>
+</section>
+
+<section id="notices" class="screen"><h2>Notice Board</h2><div class="card"><b>📢 Parent-Teacher Meeting</b><p>Important meeting for parents and teachers.</p><span class="badge">Academic</span></div><div class="card"><b>☀️ Summer Vacation</b><p>School holiday schedule will be announced here.</p></div><div class="card"><b>🏆 Inter-House Sports Competition</b><p>Students can register through their class teacher.</p></div></section>
+
+<section id="timetable" class="screen"><h2>School Timetable</h2><div class="card"><span class="badge">Monday</span><div class="row"><b>1</b> English <span>Teacher</span></div><div class="row"><b>2</b> Mathematics <span>Teacher</span></div><div class="row"><b>3</b> Science <span>Teacher</span></div><div class="row"><b>4</b> Social Science <span>Teacher</span></div><div class="row"><b>5</b> Computer <span>Teacher</span></div></div></section>
+
+<section id="attendance" class="screen"><h2>Attendance</h2><div class="card"><h3>June 2026</h3><div class="row">English <span class="ok">✓ Present</span></div><div class="row">Mathematics <span class="ok">✓ Present</span></div><div class="row">Science <span class="ok">✓ Present</span></div><div class="row">Social Science <span class="ok">✓ Present</span></div><p><b>Total Attendance: 96%</b></p></div></section>
+
+<section id="homework" class="screen"><h2>Homework</h2><div class="card"><b>Mathematics Homework</b><p>Chapter 5 — Exercise 5.2</p><span class="badge">Due: Friday</span></div><div class="card"><b>Science Assignment</b><p>Make a chart on “Our Environment”.</p></div><div class="card"><b>English Homework</b><p>Write a letter to your friend.</p></div></section>
+
+<section id="results" class="screen"><h2>Exams & Results</h2><div class="card"><b>Unit Test 1</b><p>Result available</p><button class="btn">View Result</button></div><div class="card"><b>Mid Term Exam</b><p>Result will appear here.</p></div><div class="card"><b>Final Examination</b><p>Academic session result.</p></div></section>
+
+<section id="study" class="screen"><h2>Study Material</h2><div class="card">📘 English Notes <button class="btn" style="float:right">Open</button></div><div class="card">📗 Mathematics Notes <button class="btn" style="float:right">Open</button></div><div class="card">📙 Science Notes <button class="btn" style="float:right">Open</button></div></section>
+
+<section id="gallery" class="screen"><h2>School Gallery</h2><div class="gallery"><div class="photo">🏫</div><div class="photo">👨‍🎓</div><div class="photo">🏆</div><div class="photo">🎨</div><div class="photo">🌳</div><div class="photo">🎉</div></div></section>
+
+<section id="events" class="screen"><h2>Events & Calendar</h2><div class="card"><b>📅 Parent-Teacher Meeting</b><p>Date will be announced.</p></div><div class="card"><b>🏃 Sports Day</b><p>Annual sports activities.</p></div><div class="card"><b>🎓 Annual Function</b><p>Cultural and academic programme.</p></div></section>
+
+<section id="contact" class="screen"><h2>Contact Us</h2><div class="card"><h3>Modern Institute of Creative Learning (MICL)</h3><p>📍 School Address</p><p>📞 School Phone Number</p><p>✉️ School Email</p><p>🌐 School Website</p><button class="btn">Call School</button></div></section>
+
+<section id="profile" class="screen"><h2>Student Profile</h2><div class="card"><h3>Student Name</h3><p>Class: 8th • Section: A</p><div class="row">Admission No. <b>MICL-0001</b></div><div class="row">Attendance <b>96%</b></div><div class="row">Notifications <b>3</b></div></div></section>
+
+<nav>
+<button class="active" onclick="show('home','MICL')"><b>⌂</b>Home</button>
+<button onclick="show('notices','Notice Board')"><b>🔔</b>Notices</button>
+<button onclick="show('attendance','Attendance')"><b>✓</b>Attendance</button>
+<button onclick="show('profile','Profile')"><b>◯</b>Profile</button>
+</nav>
+</div>
+<script>
+function enterApp(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block'}
+function show(id,title){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('title').textContent=title==='study'?'Study Material':title;window.scrollTo(0,0)}
+function home(){show('home','MICL')}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
