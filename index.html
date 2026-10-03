@@ -84,10 +84,49 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 </nav>
 </div>
 <script>
-function enterApp(){let id=document.getElementById('sid').value.trim():let pw=document.getElementById('pw').value.trim();if(!id || !pw){alert(please enter student ID and password');return;}document.getElementById('login').styledisplay='none';document.getElementById('app').style.display='block';}
-function show(id,title){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('title').textContent=title==='study'?'Study Material':title;window.scrollTo(0,0)}
-function home(){show('home','MICL')}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+let role = 'student';
+
+function setRole(selectedRole) {
+  role = selectedRole;
+
+  document.getElementById('loginTitle').innerText =
+    role === 'admin' ? 'Admin Login' : 'Student Login';
+
+  document.getElementById('sid').placeholder =
+    role === 'admin' ? 'Admin Username' : 'Student ID / Admission No.';
+}
+
+function enterApp() {
+  let id = document.getElementById('sid').value.trim();
+  let pw = document.getElementById('pw').value;
+
+  if (!id || !pw) {
+    alert('Please enter username and password');
+    return;
+  }
+
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  if (role === 'admin') {
+    alert('Welcome Admin');
+    show('home', 'Admin Dashboard');
+  } else {
+    alert('Welcome Student');
+    show('home', 'MICL');
+  }
+}
+
+function show(id, title) {
+  document.querySelectorAll('.screen').forEach(x =>
+    x.classList.remove('active')
+  );
+  document.getElementById(id).classList.add('active');
+}
+
+function home() {
+  show('home', 'MICL');
+  }
 </script>
 </body>
 </html>
