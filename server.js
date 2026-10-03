@@ -1,8 +1,18 @@
-const express=require("express"),path=require("path"),fs=require("fs"),Database=require("better-sqlite3"),bcrypt=require("bcryptjs"),jwt=require("jsonwebtoken"),cors=require("cors");
-const app=express(); const dataDir=path.john(_dirname,"data");fs.mkidSync(dataDir,{recursive:true});const db=new Database(path.join(dataDir,"micl.db"));
-const SECRET=process.env.JWT_SECRET||"CHANGE_THIS_SECRET_BEFORE_DEPLOYMENT";
-app.use(cors()); app.use(express.json()); app.use(express.static(path.join(__dirname,"public")));
-
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
+const Database = require("better-sqlite3");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
+const app = express();
+const dataDir = path.join(__dirname, "data");
+fs.mkdirSync(dataDir, { recursive: true });
+const db = new Database(path.join(dataDir, "micl.db"));
+const SECRET = process.env.JWT_SECRET || "CHANGE_THIS_SECRET_BEFORE_DEPLOYMENT";
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 db.exec(`
 CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,email TEXT UNIQUE NOT NULL,password TEXT NOT NULL,role TEXT NOT NULL DEFAULT 'student',class_name TEXT,section TEXT,admission_no TEXT UNIQUE);
 CREATE TABLE IF NOT EXISTS notices(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,body TEXT NOT NULL,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
