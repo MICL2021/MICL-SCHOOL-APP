@@ -72,21 +72,24 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
   <button onclick="document.querySelector('nav button:nth-child(2)').click(); toggleMenu();">📢 Notices</button>
   <button onclick="document.querySelector('nav button:nth-child(3)').click(); toggleMenu();">📅 Attendance</button>
   <button onclick="document.querySelector('nav button:nth-child(4)').click(); toggleMenu();">👤 Profile</button>
-   <button id="teacherMenuButton" style="display:none" onclick="document.getElementById('teacherAdminBox').style.display='block'; toggleMenu();">👨‍🏫 Add Teacher</button><div id="login" class="login">
+  <button id="teacherMenuButton" style="display:none" onclick="document.getElementById('teacherAdminBox').style.display='block'; toggleMenu();">👨‍🏫 Add Teacher</button>
 </div>
+
 <div id="login" class="login">
   <div class="loginbox">
     <div class="logo"><div class="mark">📚</div><h1>MICL</h1><p>Modern Institute of Creative Learning</p></div>
     <h2 id="loginTitle">Student Login</h2>
     <input id="sid" placeholder="Student ID / Admission No.">
     <button class="btn" onclick="setRole('student')">Student Login</button>
-<button class="btn" onclick="setRole('admin')">Admin Login</button>
+    <button class="btn" onclick="setRole('admin')">Admin Login</button>
     <button class="btn" onclick="setRole('teacher')">Teacher Login</button>
     <input id="pw" type="password" placeholder="Password">
     <button class="btn" onclick="enterApp()">Login</button>
     <p style="text-align:center;font-size:12px;color:#60798c">Demo app — any login details will work.</p>
   </div>
 </div>
+
+
 
 <div id="app" class="app" style="display:none">
 <header>
