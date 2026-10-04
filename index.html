@@ -190,9 +190,12 @@ async function enterApp() {
         password: pw
       })
     });
-
+} catch (e) {
+    alert('Server connection error: ' + e.message);
+    return;
+}
     const data = await response.json();
-  }
+ 
     if (!response.ok) {
       alert(data.error || 'Invalid username/email or password');
       return;
