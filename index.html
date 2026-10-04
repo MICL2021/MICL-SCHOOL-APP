@@ -80,6 +80,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
     <input id="sid" placeholder="Student ID / Admission No.">
     <button class="btn" onclick="setRole('student')">Student Login</button>
 <button class="btn" onclick="setRole('admin')">Admin Login</button>
+    <button class="btn" onclick="setRole('teacher')">Teacher Login</button>
     <input id="pw" type="password" placeholder="Password">
     <button class="btn" onclick="enterApp()">Login</button>
     <p style="text-align:center;font-size:12px;color:#60798c">Demo app — any login details will work.</p>
@@ -145,44 +146,61 @@ let role = 'student';
 function setRole(selectedRole) {
   role = selectedRole;
 
-  document.getElementById('loginTitle').innerText =
-    role === 'admin' ? 'Admin Login' : 'Student Login';
+ document.getElementById('loginTitle').innerText =
+  role === 'admin' ? 'Admin Login' : role === 'teacher' ? 'Teacher Login' : 'Student Login';
 
-  document.getElementById('sid').placeholder =
-    role === 'admin' ? 'Admin Username' : 'Student ID / Admission No.';
+document.getElementById('sid').placeholder =
+  role === 'admin' || role === 'teacher' ? 'Username / Email' : 'Student ID / Admission No.';
+
+ 
 }
 
-function enterApp() {
-let id = document.getElementById('sid').value.trim();
-let pw = document.getElementById('pw').value;
+async function enterApp() {
+  const id = document.getElementById('sid').value.trim();
+  const pw = document.getElementById('pw').value;
 
-if (!id || !pw) {
-alert('Please enter username and password');
-return;
-}
+  if (!id || !pw) {
+    alert('Please enter username/email and password');
+    return;
+  }
 
-if (role === 'admin') {
-if (id !== 'admin' || pw !== 'admin123') {
-alert('Invalid Admin Username or Password');
-return;
-}
-} else {
-if (id !== 'student' || pw !== 'student123') {
-alert('Invalid Student ID or Password');
-return;
-}
-}
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: id,
+        email: id,
+        password: pw
+      })
+    });
 
-document.getElementById('login').style.display = 'none';
-document.getElementById('app').style.display = 'block';
+    const data = await response.json();
 
-if (role === 'admin') {
-alert('Welcome Admin');
-show('home', 'Admin Dashboard');
-} else {
-alert('Welcome Student');
-show('home', 'MICL');
-}
+    if (!response.ok) {
+      alert(data.error || 'Invalid username/email or password');
+      return;
+    }
+
+    localStorage.setItem('micl_token', data.token);
+    localStorage.setItem('micl_user', JSON.stringify(data.user));
+
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    if (data.user.role === 'admin') {
+      alert('Welcome Admin');
+      show('home', 'Admin Dashboard');
+    } else if (data.user.role === 'teacher') {
+      alert('Welcome Teacher');
+      show('home', 'Teacher Dashboard');
+    } else {
+      alert('Welcome Student');
+      show('home', 'MICL');
+    }
+  } catch (e) {
+    alert('Server connection error');
+  }
 }
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
