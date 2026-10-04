@@ -72,8 +72,9 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
   <button onclick="document.querySelector('nav button:nth-child(2)').click(); toggleMenu();">📢 Notices</button>
   <button onclick="document.querySelector('nav button:nth-child(3)').click(); toggleMenu();">📅 Attendance</button>
   <button onclick="document.querySelector('nav button:nth-child(4)').click(); toggleMenu();">👤 Profile</button>
+   <button id="teacherMenuButton" style="display:none" onclick="document.getElementById('teacherAdminBox').style.display='block'; toggleMenu();">👨‍🏫 Add Teacher</button><div id="login" class="login">
 </div>
-<div id="login" class="login">
+
   <div class="loginbox">
     <div class="logo"><div class="mark">📚</div><h1>MICL</h1><p>Modern Institute of Creative Learning</p></div>
     <h2 id="loginTitle">Student Login</h2>
@@ -112,6 +113,18 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 </div>
 <div class="notice"><h3>Latest Notice</h3><p>📌 Parent-Teacher Meeting will be held soon.</p><p>📚 New study material has been uploaded.</p></div>
 </section>
+  <div id="teacherAdminBox" style="display:none;margin:15px 14px;padding:15px;border-radius:15px;background:#eef5fb;">
+  <h3 style="color:#063b82;margin-top:0;">Add Teacher</h3>
+
+  <input id="teacherName" placeholder="Teacher Name">
+  <input id="teacherEmail" placeholder="Email">
+  <input id="teacherPhone" placeholder="Phone No.">
+  <input id="teacherQualification" placeholder="Qualification">
+  <input id="teacherUsername" placeholder="Username">
+  <input id="teacherPassword" type="password" placeholder="Password">
+
+  <button class="btn" onclick="addTeacher()">Add Teacher</button>
+</div>
 
 <section id="notices" class="screen"><h2>Notice Board</h2><div class="card"><b>📢 Parent-Teacher Meeting</b><p>Important meeting for parents and teachers.</p><span class="badge">Academic</span></div><div class="card"><b>☀️ Summer Vacation</b><p>School holiday schedule will be announced here.</p></div><div class="card"><b>🏆 Inter-House Sports Competition</b><p>Students can register through their class teacher.</p></div></section>
 
@@ -191,6 +204,7 @@ async function enterApp() {
     if (data.user.role === 'admin') {
       alert('Welcome Admin');
       show('home', 'Admin Dashboard');
+      document.getElementById('teacherMenuButton').style.display = 'block';
     } else if (data.user.role === 'teacher') {
       alert('Welcome Teacher');
       show('home', 'Teacher Dashboard');
@@ -201,6 +215,58 @@ async function enterApp() {
   } catch (e) {
     alert('Server connection error');
   }
+  async function addTeacher() {
+  const name = document.getElementById('teacherName').value.trim();
+  const email = document.getElementById('teacherEmail').value.trim();
+  const phone = document.getElementById('teacherPhone').value.trim();
+  const qualification = document.getElementById('teacherQualification').value.trim();
+  const username = document.getElementById('teacherUsername').value.trim();
+  const password = document.getElementById('teacherPassword').value;
+
+  if (!name || !email || !phone || !qualification || !username || !password) {
+    alert('Please fill all teacher details');
+    return;
+  }
+
+  const token = localStorage.getItem('micl_token');
+
+  try {
+    const response = await fetch('/api/admin/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        qualification,
+        username,
+        password,
+        role: 'teacher'
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.error || 'Could not add teacher');
+      return;
+    }
+
+    alert('Teacher added successfully');
+
+    document.getElementById('teacherName').value = '';
+    document.getElementById('teacherEmail').value = '';
+    document.getElementById('teacherPhone').value = '';
+    document.getElementById('teacherQualification').value = '';
+    document.getElementById('teacherUsername').value = '';
+    document.getElementById('teacherPassword').value = '';
+  } catch (e) {
+    alert('Server connection error');
+  }
+}
 }
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
