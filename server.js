@@ -45,10 +45,10 @@ function seed(){
 }
 seed();
 
-function auth(req,res,next){try{const h=req.headers.authorization||""; req.user=jwt.verify(h.replace("Bearer ",""),SECRET);next()}catch(e){res.status(401).json({error:"Please login again"})}}
+app.post("/api/login",(req,res)=>{const {email,username,password}=req.body;const login=String(email||username||"").trim();const u=db.prepare("SELECT * FROM users WHERE email=? OR username=?").get(login,login);if(!u||!bcrypt.compareSync(password||"",u.password))return res.status(401).json({error:"Invalid username/email or password"});const token=jwt.sign({id:u.id,role:u.role},SECRET,{expiresIn:"7d"});res.json({token,user:{id:u.id,name:u.name,email:u.email,username:u.username,phone:u.phone,qualification:u.qualification,role:u.role,class_name:u.class_name,section:u.section,admission_no:u.admission_no}})});
 function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).json({error:"Admin access required"});next()}
 
-app.post("/api/login",(req,res)=>{const {email,password}=req.body;const u=db.prepare("SELECT * FROM users WHERE email=?").get(email||"");if(!u||!bcrypt.compareSync(password||"",u.password))return res.status(401).json({error:"Invalid email or password"});const token=jwt.sign({id:u.id,role:u.role},SECRET,{expiresIn:"7d"});res.json({token,user:{id:u.id,name:u.name,email:u.email,role:u.role,class_name:u.class_name,section:u.section,admission_no:u.admission_no}})});
+
 app.get("/api/me",auth,(req,res)=>res.json(db.prepare("SELECT id,name,email,role,class_name,section,admission_no FROM users WHERE id=?").get(req.user.id)));
 app.get("/api/notices",auth,(req,res)=>res.json(db.prepare("SELECT * FROM notices ORDER BY id DESC").all()));
 app.get("/api/timetable",auth,(req,res)=>res.json(db.prepare("SELECT * FROM timetable ORDER BY CASE day WHEN 'Monday' THEN 1 WHEN 'Tuesday' THEN 2 WHEN 'Wednesday' THEN 3 WHEN 'Thursday' THEN 4 WHEN 'Friday' THEN 5 WHEN 'Saturday' THEN 6 END,period").all()));
