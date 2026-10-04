@@ -31,7 +31,7 @@ try {
   db.exec("ALTER TABLE users ADD COLUMN qualification TEXT");
 } catch (e) {}
 try {
-  db.exec("ALTER TABLE users ADD COLUMN username TEXT UNIQUE");
+  db.exec("ALTER TABLE users ADD COLUMN username TEXT");
 } catch (e) {}
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
