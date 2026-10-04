@@ -104,26 +104,37 @@ function setRole(selectedRole) {
 }
 
 function enterApp() {
-  let id = document.getElementById('sid').value.trim();
-  let pw = document.getElementById('pw').value;
+let id = document.getElementById('sid').value.trim();
+let pw = document.getElementById('pw').value;
 
-  if (!id || !pw) {
-    alert('Please enter username and password');
-    return;
-  }
-
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-
-  if (role === 'admin') {
-    alert('Welcome Admin');
-    show('home', 'Admin Dashboard');
-  } else {
-    alert('Welcome Student');
-    show('home', 'MICL');
-  }
+if (!id || !pw) {
+alert('Please enter username and password');
+return;
 }
 
+if (role === 'admin') {
+if (id !== 'admin' || pw !== 'admin123') {
+alert('Invalid Admin Username or Password');
+return;
+}
+} else {
+if (id !== 'student' || pw !== 'student123') {
+alert('Invalid Student ID or Password');
+return;
+}
+}
+
+document.getElementById('login').style.display = 'none';
+document.getElementById('app').style.display = 'block';
+
+if (role === 'admin') {
+alert('Welcome Admin');
+show('home', 'Admin Dashboard');
+} else {
+alert('Welcome Student');
+show('home', 'MICL');
+}
+}
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
