@@ -126,6 +126,7 @@ function show(id, title) {
 
     if (screen) {
         screen.classList.add('active');
+        window.scrollTo(0, 0);
     } else {
         alert('Page not found: ' + id);
     }
