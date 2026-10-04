@@ -138,11 +138,10 @@ function show(id, title) {
         alert('Page not found: ' + id);
     }
 }
-  function toggleMenu() {
+function toggleMenu() {
   const menu = document.querySelector('nav');
   if (menu) {
-    menu.style.display =
-      menu.style.display === 'none' ? 'flex' : 'none';
+    menu.classList.toggle('menu-open');
   }
 }
 function home() {
