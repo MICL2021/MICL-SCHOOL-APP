@@ -30,6 +30,9 @@ try {
 try {
   db.exec("ALTER TABLE users ADD COLUMN qualification TEXT");
 } catch (e) {}
+try {
+  db.exec("ALTER TABLE users ADD COLUMN username TEXT UNIQUE");
+} catch (e) {}
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
