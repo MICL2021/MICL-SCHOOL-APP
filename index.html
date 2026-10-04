@@ -152,7 +152,7 @@ function show(id, title) {
 function toggleMenu() {
   const menu = document.querySelector('nav');
   if (menu) {
-    menu.classList.toggle('menu-open');
+    menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
   }
 }
 function home() {
