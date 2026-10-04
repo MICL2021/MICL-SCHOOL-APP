@@ -190,16 +190,15 @@ async function enterApp() {
         password: pw
       })
     });
-} catch (e) {
-    alert('Server connection error: ' + e.message);
-    return;
-}
-    const data = await response.json();
- 
+const data = await response.json();
+
     if (!response.ok) {
       alert(data.error || 'Invalid username/email or password');
       return;
     }
+    
+ 
+   
 
     localStorage.setItem('micl_token', data.token);
     localStorage.setItem('micl_user', JSON.stringify(data.user));
@@ -221,6 +220,7 @@ async function enterApp() {
   } catch (e) {
     alert('Server connection error');
   }
+}
   async function addTeacher() {
   const name = document.getElementById('teacherName').value.trim();
   const email = document.getElementById('teacherEmail').value.trim();
