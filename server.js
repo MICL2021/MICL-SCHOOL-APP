@@ -56,7 +56,7 @@ function seed(){
 }
 seed();
 
-app.post("/api/login",(req,res)=>{const {email,password}=req.body);const login=String(email||"").trim();const u=db.prepare("SELECT * FROM users WHERE email=? OR username=? OR admission_no=?").get(login,login,login);if(!u||!bcrypt.compareSync(password||"",u.password))return res.status(401).json({error:"Invalid username/email or password"});const token=jwt.sign({id:u.id,role:u.role},SECRET,{expiresIn:"7d"});res.json({token,user:{id:u.id,name:u.name,email:u.email,username:u.username,phone:u.phone,qualification:u.qualification,role:u.role,class_name:u.class_name,section:u.section,admission_no:u.admission_no}})});
+app.post("/api/login",(req,res)=>{const {email,password}=req.body;const login=String(email||"").trim();const u=db.prepare("SELECT * FROM users WHERE email=? OR username=? OR admission_no=?").get(login,login,login);if(!u||!bcrypt.compareSync(password||"",u.password))return res.status(401).json({error:"Invalid username/email or password"});const token=jwt.sign({id:u.id,role:u.role},SECRET,{expiresIn:"7d"});res.json({token,user:{id:u.id,name:u.name,email:u.email,username:u.username,phone:u.phone,qualification:u.qualification,role:u.role,class_name:u.class_name,section:u.section,admission_no:u.admission_no}})});
 function auth(req,res,next){try{const h=req.headers.authorization||"";req.user=jwt.verify(h.replace("Bearer ",""),SECRET);next()}catch(e){res.status(401).json({error:"Unauthorized"})}}
 function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).json({error:"Admin access required"});next()}
 
