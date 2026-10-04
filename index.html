@@ -192,7 +192,7 @@ async function enterApp() {
     });
 
     const data = await response.json();
-
+  }
     if (!response.ok) {
       alert(data.error || 'Invalid username/email or password');
       return;
