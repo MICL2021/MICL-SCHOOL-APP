@@ -20,10 +20,46 @@ header .top{display:flex;align-items:center;justify-content:space-between}.brand
 .btn{border:0;border-radius:10px;background:#063b82;color:#fff;padding:11px 15px;font-weight:700;cursor:pointer}.back{background:none;border:0;color:#fff;font-size:20px;margin-right:10px}
 .login{min-height:100vh;padding:35px 22px;background:linear-gradient(160deg,#063b82,#eef6ff)}.loginbox{background:#fff;border-radius:22px;padding:25px;max-width:420px;margin:35px auto}.logo{text-align:center;color:#063b82}.logo .mark{font-size:55px}.loginbox input{width:100%;padding:13px;margin:8px 0;border:1px solid #cbd9e5;border-radius:10px}.loginbox .btn{width:100%;margin-top:10px}
 nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);background:#fff;border-top:1px solid #d9e5ee;display:flex;justify-content:space-around;padding:9px 4px;z-index:10}nav button{background:none;border:0;color:#557085;font-size:11px;font-weight:700}nav b{display:block;font-size:20px;margin-bottom:2px}nav button.active{color:#063b82}
+#sideMenu{
+  position:fixed;
+  top:0;
+  left:-280px;
+  width:260px;
+  height:100vh;
+  background:#fff;
+  z-index:1000;
+  padding:70px 15px 20px;
+  transition:left .3s ease;
+}
+
+#sideMenu.open{
+  left:0;
+}
+
+#menuOverlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  z-index:999;
+}
+
+#menuOverlay.open{
+  display:block;
+} 
+
   .badge{display:inline-block;background:#e9f5ff;color:#063b82;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:bold}.ok{color:#149447;font-weight:bold}.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.photo{height:120px;border-radius:12px;background:linear-gradient(135deg,#c9e3f7,#eaf5ff);display:flex;align-items:center;justify-content:center;font-size:38px}
 </style>
 </head>
 <body>
+  <div id="menuOverlay" onclick="toggleMenu()"></div>
+
+<div id="sideMenu">
+  <button onclick="document.querySelector('nav button:nth-child(1)').click(); toggleMenu();">🏠 Home</button>
+  <button onclick="document.querySelector('nav button:nth-child(2)').click(); toggleMenu();">📢 Notices</button>
+  <button onclick="document.querySelector('nav button:nth-child(3)').click(); toggleMenu();">📅 Attendance</button>
+  <button onclick="document.querySelector('nav button:nth-child(4)').click(); toggleMenu();">👤 Profile</button>
+</div>
 <div id="login" class="login">
   <div class="loginbox">
     <div class="logo"><div class="mark">📚</div><h1>MICL</h1><p>Modern Institute of Creative Learning</p></div>
@@ -150,10 +186,11 @@ function show(id, title) {
     }
 }
 function toggleMenu() {
-  const menu = document.querySelector('nav');
-  if (menu) {
-    menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
-  }
+  const menu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('menuOverlay');
+
+  if (menu) menu.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('open');
 }
 function home() {
   show('home', 'MICL');
