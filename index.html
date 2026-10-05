@@ -316,7 +316,140 @@ const data = await response.json();
     alert('Server connection error');
   }
 }
+async function addStudent() {
+  const name = document.getElementById('studentName').value.trim();
+  const email = document.getElementById('studentEmail').value.trim();
+  const password = document.getElementById('studentPassword').value;
+  const class_name = document.getElementById('studentClass').value.trim();
+  const section = document.getElementById('studentSection').value.trim();
+  const admission_no = document.getElementById('studentAdmission').value.trim();
 
+  if (!name || !email || !password || !class_name || !section || !admission_no) {
+    alert('Please fill all student details');
+    return;
+  }
+
+  const token = localStorage.getItem('micl_token');
+
+  try {
+    const response = await fetch('/api/admin/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        role: 'student',
+        class_name,
+        section,
+        admission_no
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.error || 'Could not add student');
+      return;
+    }
+
+    alert('Student added successfully');
+
+    document.getElementById('studentName').value = '';
+    document.getElementById('studentEmail').value = '';
+    document.getElementById('studentPassword').value = '';
+    document.getElementById('studentClass').value = '';
+    document.getElementById('studentSection').value = '';
+    document.getElementById('studentAdmission').value = '';
+
+    loadStudents();
+
+  } catch (e) {
+    alert('Server connection error');
+  }
+}
+
+async function loadStudents() {
+  const box = document.getElementById('studentsBox');
+  const token = localStorage.getItem('micl_token');
+
+  box.innerHTML = 'Loading...';
+
+  try {
+    const response = await fetch('/api/admin/students', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const students = await response.json();
+
+    if (!response.ok) {
+      box.innerHTML = 'Could not load students';
+      return;
+    }
+
+    if (!students.length) {
+      box.innerHTML = 'No students found';
+      return;
+    }
+
+    box.innerHTML = students.map(s => `
+      <div style="padding:10px;border-bottom:1px solid #ddd;">
+        <b>${s.name}</b><br>
+        Email: ${s.email}<br>
+        Class: ${s.class_name || '-'} |
+        Section: ${s.section || '-'}<br>
+        Admission No: ${s.admission_no || '-'}
+      </div>
+    `).join('');
+
+  } catch (e) {
+    box.innerHTML = 'Server connection error';
+  }
+}
+
+async function loadTeachers() {
+  const box = document.getElementById('teachersBox');
+  const token = localStorage.getItem('micl_token');
+
+  box.innerHTML = 'Loading...';
+
+  try {
+    const response = await fetch('/api/admin/teachers', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const teachers = await response.json();
+
+    if (!response.ok) {
+      box.innerHTML = 'Could not load teachers';
+      return;
+    }
+
+    if (!teachers.length) {
+      box.innerHTML = 'No teachers found';
+      return;
+    }
+
+    box.innerHTML = teachers.map(t => `
+      <div style="padding:10px;border-bottom:1px solid #ddd;">
+        <b>${t.name}</b><br>
+        Email: ${t.email}<br>
+        Phone: ${t.phone || '-'}<br>
+        Qualification: ${t.qualification || '-'}
+      </div>
+    `).join('');
+
+  } catch (e) {
+    box.innerHTML = 'Server connection error';
+  }
+}
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
