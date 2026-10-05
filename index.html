@@ -133,10 +133,35 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 
   <button class="btn" onclick="addTeacher()">Add Teacher</button>
     <button class="btn" onclick="show('feeManagement','Fee Management')">Fee Management</button>
+<button class="btn" onclick="show('addStudent','Add Student')">Add Student</button>
 
+<button class="btn" onclick="show('studentList','Student List');loadStudents()">Student List</button>
+
+<button class="btn" onclick="show('teacherList','Teacher List');loadTeachers()">Teacher List</button>
 <button class="btn" onclick="show('onlineFee','Online Fee')">Online Fee</button>
 </div>
+<section id="addStudent" class="screen">
+<h2>Add Student</h2>
 
+<input id="studentName" placeholder="Student Name">
+<input id="studentEmail" placeholder="Email">
+<input id="studentPassword" type="password" placeholder="Password">
+<input id="studentClass" placeholder="Class">
+<input id="studentSection" placeholder="Section">
+<input id="studentAdmission" placeholder="Admission No.">
+
+<button class="btn" onclick="addStudent()">Add Student</button>
+</section>
+
+<section id="studentList" class="screen">
+<h2>Student List</h2>
+<div id="studentsBox" class="card">Loading...</div>
+</section>
+
+<section id="teacherList" class="screen">
+<h2>Teacher List</h2>
+<div id="teachersBox" class="card">Loading...</div>
+</section>
 <section id="notices" class="screen"><h2>Notice Board</h2><div class="card"><b>📢 Parent-Teacher Meeting</b><p>Important meeting for parents and teachers.</p><span class="badge">Academic</span></div><div class="card"><b>☀️ Summer Vacation</b><p>School holiday schedule will be announced here.</p></div><div class="card"><b>🏆 Inter-House Sports Competition</b><p>Students can register through their class teacher.</p></div></section>
 
 <section id="timetable" class="screen"><h2>School Timetable</h2><div class="card"><span class="badge">Monday</span><div class="row"><b>1</b> English <span>Teacher</span></div><div class="row"><b>2</b> Mathematics <span>Teacher</span></div><div class="row"><b>3</b> Science <span>Teacher</span></div><div class="row"><b>4</b> Social Science <span>Teacher</span></div><div class="row"><b>5</b> Computer <span>Teacher</span></div></div></section>
