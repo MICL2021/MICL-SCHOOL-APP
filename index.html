@@ -239,6 +239,56 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
     <p id="feePaymentStatus"></p>
   </div>
 </section>
+  <section id="onlineFee" class="screen">
+  <h2>💳 Online Fee Payment</h2>
+
+  <div class="card">
+    <h3>👨‍🎓 Student Fee Payment</h3>
+
+    <input
+      id="onlineStudentId"
+      type="text"
+      placeholder="Student ID / Admission No."
+      style="width:100%;padding:12px;margin-top:10px;border:1px solid #ccc;border-radius:8px;"
+    >
+
+    <input
+      id="onlineFeeAmount"
+      type="number"
+      placeholder="Enter Fee Amount"
+      style="width:100%;padding:12px;margin-top:10px;border:1px solid #ccc;border-radius:8px;"
+    >
+
+    <p style="margin-top:15px;">
+      <b>UPI ID:</b> JKBMERCO0613819@jkb
+    </p>
+
+    <p>Scan the QR code using any UPI app.</p>
+
+    <img
+      src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi%3A%2F%2Fpay%3Fpa%3DJKBMERCO0613819%40jkb%26pn%3DMICL%20School"
+      alt="MICL School Fee QR Code"
+      style="width:250px;height:250px;border:1px solid #ddd;padding:10px;border-radius:12px;"
+    >
+
+    <input
+      id="onlineTransactionId"
+      type="text"
+      placeholder="Enter Transaction ID / UTR No."
+      style="width:100%;padding:12px;margin-top:10px;border:1px solid #ccc;border-radius:8px;"
+    >
+
+    <button
+      class="btn"
+      onclick="submitOnlineFee()"
+      style="margin-top:10px;"
+    >
+      ✅ Submit Fee Payment
+    </button>
+
+    <p id="onlineFeeStatus"></p>
+  </div>
+</section>
 <section id="profile" class="screen"><h2>Student Profile</h2><div class="card"><h3>Student Name</h3><p>Class: 8th • Section: A</p><div class="row">Admission No. <b>MICL-0001</b></div><div class="row">Attendance <b>96%</b></div><div class="row">Notifications <b>3</b></div></div></section>
 
 <nav>
@@ -262,6 +312,28 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
   status.innerText = 'Payment details submitted successfully. Transaction ID: ' + transactionId;
   status.style.color = 'green';
 }
+  }
+
+function submitOnlineFee() {
+  const studentId = document.getElementById('onlineStudentId').value.trim();
+  const amount = document.getElementById('onlineFeeAmount').value.trim();
+  const transactionId = document.getElementById('onlineTransactionId').value.trim();
+  const status = document.getElementById('onlineFeeStatus');
+
+  if (!studentId || !amount || !transactionId) {
+    status.innerText = 'Please enter Student ID, Fee Amount and Transaction ID / UTR No.';
+    status.style.color = 'red';
+    return;
+  }
+
+  status.innerText =
+    'Fee payment submitted successfully. Student: ' +
+    studentId + ' | Amount: ₹' + amount + ' | UTR: ' + transactionId;
+
+  status.style.color = 'green';
+}
+
+let role = 'student';
 let role = 'student';
 
 function setRole(selectedRole) {
