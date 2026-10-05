@@ -83,6 +83,24 @@ app.post("/api/admin/events",auth,admin,(req,res)=>{const {title,description,eve
 app.post("/api/admin/users",auth,admin,(req,res)=>{const {name,email,password,role,class_name,section,admission_no,phone,qualification}=req.body;try{const r=db.prepare("INSERT INTO users(name,email,password,role,class_name,section,admission_no,phone,qualification) VALUES(?,?,?,?,?,?,?,?,?)").run(name,email,bcrypt.hashSync(password,10),role||"student",class_name,section,admission_no,phone,qualification);res.json({id:r.lastInsertRowid})}catch(e){res.status(400).json({error:"Email or admission number already exists"})}});
 app.post("/api/admin/attendance",auth,admin,(req,res)=>{const {student_id,date,status,subject}=req.body;const r=db.prepare("INSERT INTO attendance(student_id,date,status,subject) VALUES(?,?,?,?)").run(student_id,date,status,subject);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/results",auth,admin,(req,res)=>{const {student_id,exam,subject,marks,max_marks}=req.body;const r=db.prepare("INSERT INTO results(student_id,exam,subject,marks,max_marks) VALUES(?,?,?,?,?)").run(student_id,exam,subject,marks,max_marks);res.json({id:r.lastInsertRowid})});
+app.get("/api/admin/students", auth, admin, (req,res) => {
+  const students = db.prepare(`
+    SELECT id, name, email, class_name, section, admission_no
+    FROM users
+    WHERE role = 'student'
+    ORDER BY id DESC
+  `).all();
+  res.json(students);
+});
 
+app.get("/api/admin/teachers", auth, admin, (req,res) => {
+  const teachers = db.prepare(`
+    SELECT id, name, email, phone, qualification
+    FROM users
+    WHERE role = 'teacher'
+    ORDER BY id DESC
+  `).all();
+  res.json(teachers);
+});
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"index.html")));
 app.listen(process.env.PORT||3000,()=>console.log("MICL running on http://localhost:"+ (process.env.PORT||3000)));
