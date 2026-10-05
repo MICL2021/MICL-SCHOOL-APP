@@ -63,6 +63,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 
   .badge{display:inline-block;background:#e9f5ff;color:#063b82;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:bold}.ok{color:#149447;font-weight:bold}.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.photo{height:120px;border-radius:12px;background:linear-gradient(135deg,#c9e3f7,#eaf5ff);display:flex;align-items:center;justify-content:center;font-size:38px}
 </style>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
   <div id="menuOverlay" onclick="toggleMenu()"></div>
@@ -254,7 +255,11 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
       placeholder="Student ID / Admission No."
       style="width:100%;padding:12px;margin-top:10px;border:1px solid #ccc;border-radius:8px;"
     >
+<button class="btn" onclick="startQRScanner()" style="margin-top:10px;">
+📷 Scan Student QR
+</button>
 
+<div id="qr-reader" style="width:100%;margin-top:10px;display:none;"></div>
     <input
       id="onlineFeeAmount"
       type="number"
@@ -409,6 +414,33 @@ document.getElementById('menuOverlay').classList.remove('open');
   document.getElementById('app').style.display = 'none';
   document.getElementById('login').style.display = 'block';
   }
+  function startQRScanner() {
+  const reader = document.getElementById('qr-reader');
+
+  reader.style.display = 'block';
+
+  const scanner = new Html5Qrcode("qr-reader");
+
+  scanner.start(
+    { facingMode: "environment" },
+    {
+      fps: 10,
+      qrbox: 250
+    },
+    (decodedText) => {
+      document.getElementById('onlineStudentId').value = decodedText;
+
+      scanner.stop().then(() => {
+        reader.style.display = 'none';
+      });
+    },
+    (errorMessage) => {
+      // Waiting for QR code
+    }
+  ).catch(() => {
+    alert("Camera could not start. Please allow camera permission.");
+  });
+}
   async function addTeacher() {
   const name = document.getElementById('teacherName').value.trim();
   const email = document.getElementById('teacherEmail').value.trim();
