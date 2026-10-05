@@ -144,6 +144,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 
 <button class="btn" onclick="show('teacherList','Teacher List');loadTeachers()">Teacher List</button>
 <button class="btn" onclick="show('onlineFee','Online Fee')">Online Fee</button>
+    <button class="btn" onclick="logout()">🚪 Logout</button>
 </div>
 <section id="addStudent" class="screen">
 <h2>Add Student</h2>
@@ -398,6 +399,13 @@ const data = await response.json();
     alert('Server connection error');
   }
 }
+  function logout() {
+  localStorage.removeItem('micl_token');
+  localStorage.removeItem('micl_user');
+
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'block';
+  }
   async function addTeacher() {
   const name = document.getElementById('teacherName').value.trim();
   const email = document.getElementById('teacherEmail').value.trim();
