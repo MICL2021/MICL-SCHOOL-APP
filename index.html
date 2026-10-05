@@ -195,6 +195,50 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
     <a class="btn" href="mailto:csceservices14@gmail.com">Email School</a>
   </div>
 </section>
+  <section id="feemanagement" class="screen">
+  <h2>💰 Fee Management</h2>
+
+  <div class="card">
+    <h3>🏦 School Fee Account</h3>
+
+    <p><b>Account Name:</b> MICL School</p>
+    <p><b>Bank Name:</b> YOUR BANK NAME</p>
+    <p><b>Account Number:</b> YOUR ACCOUNT NUMBER</p>
+    <p><b>IFSC Code:</b> YOUR IFSC CODE</p>
+    <p><b>UPI ID:</b> YOUR-UPI@BANK</p>
+  </div>
+
+  <div class="card">
+    <h3>📱 Scan & Pay Fee</h3>
+
+    <p>Student/Parent QR code scan karke fee payment karein.</p>
+
+    <img
+      src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=YOUR-UPI@BANK"
+      alt="School Fee QR Code"
+      style="width:220px;height:220px;border:1px solid #ddd;padding:10px;border-radius:12px;"
+    >
+
+    <p><b>UPI ID:</b> YOUR-UPI@BANK</p>
+
+    <input
+      id="feeTransactionId"
+      type="text"
+      placeholder="Enter Transaction ID / UTR No."
+      style="width:100%;padding:12px;margin-top:10px;border:1px solid #ccc;border-radius:8px;"
+    >
+
+    <button
+      class="btn"
+      onclick="submitFeePayment()"
+      style="margin-top:10px;"
+    >
+      ✅ Submit Payment
+    </button>
+
+    <p id="feePaymentStatus"></p>
+  </div>
+</section>
 <section id="profile" class="screen"><h2>Student Profile</h2><div class="card"><h3>Student Name</h3><p>Class: 8th • Section: A</p><div class="row">Admission No. <b>MICL-0001</b></div><div class="row">Attendance <b>96%</b></div><div class="row">Notifications <b>3</b></div></div></section>
 
 <nav>
@@ -205,6 +249,19 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 </nav>
 </div>
 <script>
+  function submitFeePayment() {
+  const transactionId = document.getElementById('feeTransactionId').value.trim();
+  const status = document.getElementById('feePaymentStatus');
+
+  if (!transactionId) {
+    status.innerText = 'Please enter Transaction ID / UTR No.';
+    status.style.color = 'red';
+    return;
+  }
+
+  status.innerText = 'Payment details submitted successfully. Transaction ID: ' + transactionId;
+  status.style.color = 'green';
+}
 let role = 'student';
 
 function setRole(selectedRole) {
