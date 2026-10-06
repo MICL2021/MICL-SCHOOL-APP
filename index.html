@@ -315,7 +315,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
     </div>
   </div>
 </section>
-<section id="profile" class="screen" style="display:none;">
+<section id="profile" class="screen" style="display:none !important;">
 
 
 </div>
@@ -756,14 +756,14 @@ async function loadTeachers() {
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
-        x.style.display = 'none';
+       screen.style.setProperty('display', 'block', 'important'); 
     });
 
     const screen = document.getElementById(id);
 
     if (screen) {
         screen.classList.add('active');
-        screen.style.display = 'block';
+       screen.style.setProperty('display', 'block', 'important'); 
         window.scrollTo(0, 0);
     } else {
         alert('Page not found: ' + id);
