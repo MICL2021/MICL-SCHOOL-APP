@@ -113,5 +113,72 @@ app.get("/api/admin/teachers", auth, admin, (req,res) => {
   `).all();
   res.json(teachers);
 });
+app.post("/api/fee-payment", auth, (req, res) => {
+  const { student_id, amount, transaction_id } = req.body;
+
+  const fee = Number(amount);
+
+  if (!student_id || !fee || fee <= 0 || !transaction_id) {
+    return res.status(400).json({
+      error: "Student ID, amount and transaction ID are required"
+    });
+  }
+
+  const record = db.prepare(`
+    SELECT * FROM fee_records
+    WHERE student_id = ?
+  `).get(student_id);
+
+  if (!record) {
+    return res.status(404).json({
+      error: "Fee record not found for this student"
+    });
+  }
+
+  const newPaid = Number(record.paid_fee) + fee;
+  const newBalance = Math.max(0, Number(record.total_fee) - newPaid);
+
+  const status = newBalance === 0 ? "Paid" : "Partial";
+
+  db.prepare(`
+    UPDATE fee_records
+    SET paid_fee = ?,
+        balance_fee = ?,
+        last_payment_date = datetime('now'),
+        transaction_id = ?,
+        status = ?
+    WHERE student_id = ?
+  `).run(
+    newPaid,
+    newBalance,
+    transaction_id,
+    status,
+    student_id
+  );
+
+  res.json({
+    message: "Fee payment recorded successfully",
+    total_fee: record.total_fee,
+    paid_fee: newPaid,
+    balance_fee: newBalance,
+    status: status
+  });
+});
+
+app.get("/api/admin/fee-records", auth, admin, (req, res) => {
+  const records = db.prepare(`
+    SELECT
+      fee_records.*,
+      users.name,
+      users.admission_no,
+      users.class_name,
+      users.section
+    FROM fee_records
+    LEFT JOIN users ON users.id = fee_records.student_id
+    ORDER BY fee_records.id DESC
+  `).all();
+
+  res.json(records);
+});
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"index.html")));
 app.listen(process.env.PORT||3000,()=>console.log("MICL running on http://localhost:"+ (process.env.PORT||3000)));
