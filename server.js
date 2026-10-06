@@ -113,6 +113,32 @@ app.get("/api/admin/teachers", auth, admin, (req,res) => {
   `).all();
   res.json(teachers);
 });
+app.get("/api/my-fee-record", auth, (req, res) => {
+  const record = db.prepare(`
+    SELECT
+      fee_records.total_fee,
+      fee_records.paid_fee,
+      fee_records.balance_fee,
+      fee_records.last_payment_date,
+      fee_records.transaction_id,
+      fee_records.status,
+      users.name,
+      users.admission_no,
+      users.class_name,
+      users.section
+    FROM fee_records
+    LEFT JOIN users ON users.id = fee_records.student_id
+    WHERE fee_records.student_id = ?
+  `).get(req.user.id);
+
+  if (!record) {
+    return res.status(404).json({
+      error: "Fee record not found"
+    });
+  }
+
+  res.json(record);
+});
 app.post("/api/fee-payment", auth, (req, res) => {
   const { student_id, amount, transaction_id } = req.body;
 
