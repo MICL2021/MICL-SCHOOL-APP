@@ -145,6 +145,26 @@ app.get("/api/admin/classes", auth, admin, (req, res) => {
 
   res.json(classes);
 });
+app.delete("/api/admin/classes/:id", auth, admin, (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!id) {
+    return res.status(400).json({ error: "Invalid class ID" });
+  }
+
+  const result = db.prepare(
+    "DELETE FROM classes WHERE id=?"
+  ).run(id);
+
+  if (result.changes === 0) {
+    return res.status(404).json({ error: "Class not found" });
+  }
+
+  res.json({
+    success: true,
+    message: "Class deleted successfully"
+  });
+});
 app.post("/api/admin/attendance",auth,admin,(req,res)=>{const {student_id,date,status,subject}=req.body;const r=db.prepare("INSERT INTO attendance(student_id,date,status,subject) VALUES(?,?,?,?)").run(student_id,date,status,subject);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/results",auth,admin,(req,res)=>{const {student_id,exam,subject,marks,max_marks}=req.body;const r=db.prepare("INSERT INTO results(student_id,exam,subject,marks,max_marks) VALUES(?,?,?,?,?)").run(student_id,exam,subject,marks,max_marks);res.json({id:r.lastInsertRowid})});
 app.get("/api/admin/students", auth, admin, (req,res) => {
