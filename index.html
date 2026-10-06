@@ -700,7 +700,84 @@ async function addStudent() {
     alert('Server connection error');
   }
 }
+async function addClass() {
+    const name = document.getElementById('className').value.trim();
+    const section = document.getElementById('classSection').value.trim();
+    const token = localStorage.getItem('micl_token');
 
+    if (!name || !section) {
+        alert('Please enter class name and section');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/admin/classes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                name,
+                section
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || 'Could not add class');
+            return;
+        }
+
+        alert('Class added successfully');
+
+        document.getElementById('className').value = '';
+        document.getElementById('classSection').value = '';
+
+        loadClasses();
+
+    } catch (e) {
+        alert('Server connection error');
+    }
+}
+
+async function loadClasses() {
+    const box = document.getElementById('classListBox');
+    const token = localStorage.getItem('micl_token');
+
+    box.innerHTML = 'Loading...';
+
+    try {
+        const response = await fetch('/api/admin/classes', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        const classes = await response.json();
+
+        if (!response.ok) {
+            box.innerHTML = 'Could not load classes';
+            return;
+        }
+
+        if (!classes.length) {
+            box.innerHTML = 'No classes added yet.';
+            return;
+        }
+
+        box.innerHTML = classes.map(c => `
+            <div style="padding:10px;border-bottom:1px solid #ddd;">
+                <b>${c.name}</b><br>
+                Section: ${c.section}
+            </div>
+        `).join('');
+
+    } catch (e) {
+        box.innerHTML = 'Server connection error';
+    }
+}
 async function loadStudents() {
   const box = document.getElementById('studentsBox');
   const token = localStorage.getItem('micl_token');
