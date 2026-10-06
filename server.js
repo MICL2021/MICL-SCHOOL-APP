@@ -78,7 +78,29 @@ res.json({token,user:{id:u.id,name:u.name,email:u.email,role:u.role,class_name:u
 function auth(req,res,next){try{const h=req.headers.authorization||"";req.user=jwt.verify(h.replace("Bearer ",""),SECRET);next()}catch(e){res.status(401).json({error:"Unauthorized"})}}
 function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).json({error:"Admin access required"});next()}
 
+app.post("/api/change-password",auth,(req,res)=>{
+  const {currentPassword,newPassword}=req.body;
 
+  if(!currentPassword || !newPassword){
+    return res.status(400).json({error:"Current and new password are required"});
+  }
+
+  if(newPassword.length < 6){
+    return res.status(400).json({error:"New password must be at least 6 characters"});
+  }
+
+  const user=db.prepare("SELECT * FROM users WHERE id=?").get(req.user.id);
+
+  if(!user || !bcrypt.compareSync(currentPassword,user.password)){
+    return res.status(401).json({error:"Current password is incorrect"});
+  }
+
+  const hashedPassword=bcrypt.hashSync(newPassword,10);
+
+  db.prepare("UPDATE users SET password=? WHERE id=?").run(hashedPassword,req.user.id);
+
+  res.json({message:"Password changed successfully"});
+});
 app.get("/api/me",auth,(req,res)=>res.json(db.prepare("SELECT id,name,email,role,class_name,section,admission_no FROM users WHERE id=?").get(req.user.id)));
 app.get("/api/notices",auth,(req,res)=>res.json(db.prepare("SELECT * FROM notices ORDER BY id DESC").all()));
 app.get("/api/timetable",auth,(req,res)=>res.json(db.prepare("SELECT * FROM timetable ORDER BY CASE day WHEN 'Monday' THEN 1 WHEN 'Tuesday' THEN 2 WHEN 'Wednesday' THEN 3 WHEN 'Thursday' THEN 4 WHEN 'Friday' THEN 5 WHEN 'Saturday' THEN 6 END,period").all()));
