@@ -43,7 +43,18 @@ for (const [column, type] of columns) {
     }
   }
 }
-
+db.exec(`
+CREATE TABLE IF NOT EXISTS fee_records (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL,
+  total_fee REAL NOT NULL DEFAULT 0,
+  paid_fee REAL NOT NULL DEFAULT 0,
+  balance_fee REAL NOT NULL DEFAULT 0,
+  last_payment_date TEXT,
+  transaction_id TEXT,
+  status TEXT NOT NULL DEFAULT 'Pending'
+);
+`);
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
