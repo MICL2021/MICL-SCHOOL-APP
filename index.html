@@ -756,14 +756,14 @@ async function loadTeachers() {
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
-       screen.style.setProperty('display', 'block', 'important'); 
+        x.style.setProperty('display', 'none', 'important');
     });
 
-    const screen = document.getElementById(id);
+    const targetScreen = document.getElementById(id);
 
-    if (screen) {
-        screen.classList.add('active');
-       screen.style.setProperty('display', 'block', 'important'); 
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+        targetScreen.style.setProperty('display', 'block', 'important');
         window.scrollTo(0, 0);
     } else {
         alert('Page not found: ' + id);
