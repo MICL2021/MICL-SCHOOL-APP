@@ -73,7 +73,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 <button onclick="show('notices','Notice Board');toggleMenu()">📢 Notices</button>
 <button onclick="show('attendance','Attendance');toggleMenu()">📅 Attendance</button>
 <button onclick="show('profile','Profile');toggleMenu()">👤 Profile</button>
-  <button id="teacherMenuButton" style="display:none" onclick="show('home','MICL');document.getElementById('teacherAdminBox').style.display='block';toggleMenu()">👨‍🏫 Add Teacher</button>
+  <button id="teacherMenuButton" style="display:none" onclick="show('addTeacher','Add Teacher');toggleMenu()">👨‍🏫 Add Teacher</button>
   <button onclick="show('feemanagement','Fee Management')">💰 Fee Management</button>
 <button onclick="show('addStudent','Add Student')">👨‍🎓 Add Student</button>
 <button onclick="show('studentList','Student List')">📋 Student List</button>
@@ -127,19 +127,32 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 <button class="tile" onclick="show('contact','Contact Us')"><span class="ico">📞</span><small>Contact Us</small></button>
 </div>
 <div class="notice"><h3>Latest Notice</h3><p>📌 Parent-Teacher Meeting will be held soon.</p><p>📚 New study material has been uploaded.</p></div>
+<div class="notice">
+...
+</div>
 
-  <div id="teacherAdminBox" style="display:none;margin:15px 14px;padding:15px;border-radius:15px;background:#eef5fb;">
-  <h3 style="color:#063b82;margin-top:0;">Add Teacher</h3>
+</section>
 
-  <input id="teacherName" placeholder="Teacher Name">
-  <input id="teacherEmail" placeholder="Email">
-  <input id="teacherPhone" placeholder="Phone No.">
-  <input id="teacherQualification" placeholder="Qualification">
-  <input id="teacherUsername" placeholder="Username">
-  <input id="teacherPassword" type="password" placeholder="Password">
+<section id="addTeacher" class="screen">
+  
 
-  <button class="btn" onclick="addTeacher()">Add Teacher</button>
-    </div>
+<h2>Add Teacher</h2>
+
+<input id="teacherName" placeholder="Teacher Name">
+
+<input id="teacherEmail" placeholder="Email">
+
+<input id="teacherPhone" placeholder="Phone No.">
+
+<input id="teacherQualification" placeholder="Qualification">
+
+<input id="teacherUsername" placeholder="Username">
+
+<input id="teacherPassword" type="password" placeholder="Password">
+
+<button class="btn" onclick="addTeacher()">Add Teacher</button>
+
+  </section>
     <button class="btn" onclick="show('feeManagement','Fee Management')">Fee Management</button>
 <button class="btn" onclick="show('addStudent','Add Student')">Add Student</button>
 
