@@ -77,6 +77,7 @@ box-sizing:border-box;
 <button onclick="show('profile','Profile');toggleMenu()">👤 Profile</button>
   <button id="teacherMenuButton" style="display:none" onclick="show('addTeacher','Add Teacher');toggleMenu()">👨‍🏫 Add Teacher</button>
   <button onclick="show('feemanagement','Fee Management')">💰 Fee Management</button>
+  <button onclick="show('classManagement','Class Management');toggleMenu()">🏫 Class Management</button>
 <button onclick="show('addStudent','Add Student')">👨‍🎓 Add Student</button>
 <button onclick="show('studentList','Student List')">📋 Student List</button>
 <button onclick="show('teacherList','Teacher List')">👨‍🏫 Teacher List</button>
@@ -168,7 +169,19 @@ box-sizing:border-box;
   </section>
     
 
+<section id="classManagement" class="screen">
+    <h2>Class Management</h2>
 
+    <input id="className" placeholder="Class Name (e.g. 1st, 2nd, 10th)">
+
+    <input id="classSection" placeholder="Section (e.g. A, B, C)">
+
+    <button class="btn" onclick="addClass()">Add Class</button>
+
+    <div id="classListBox" class="card">
+        No classes added yet.
+    </div>
+</section>
 <section id="addStudent" class="screen">
 <h2>Add Student</h2>
 
