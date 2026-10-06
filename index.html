@@ -756,12 +756,14 @@ async function loadTeachers() {
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
+        x.style.display = 'none';
     });
 
     const screen = document.getElementById(id);
 
     if (screen) {
         screen.classList.add('active');
+        screen.style.display = 'block';
         window.scrollTo(0, 0);
     } else {
         alert('Page not found: ' + id);
