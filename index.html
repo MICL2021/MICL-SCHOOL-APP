@@ -69,10 +69,10 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
   <div id="menuOverlay" onclick="toggleMenu()"></div>
 
 <div id="sideMenu">
-  <button onclick="document.querySelector('nav button:nth-child(1)').click(); toggleMenu();">🏠 Home</button>
-  <button onclick="document.querySelector('nav button:nth-child(2)').click(); toggleMenu();">📢 Notices</button>
-  <button onclick="document.querySelector('nav button:nth-child(3)').click(); toggleMenu();">📅 Attendance</button>
-  <button onclick="document.querySelector('nav button:nth-child(4)').click(); toggleMenu();">👤 Profile</button>
+<button onclick="show('home','MICL');toggleMenu()">🏠 Home</button>
+<button onclick="show('notices','Notice Board');toggleMenu()">📢 Notices</button>
+<button onclick="show('attendance','Attendance');toggleMenu()">📅 Attendance</button>
+<button onclick="show('profile','Profile');toggleMenu()">👤 Profile</button>
   <button id="teacherMenuButton" style="display:none" onclick="document.getElementById('teacherAdminBox').style.display='block'; toggleMenu();">👨‍🏫 Add Teacher</button>
   <button onclick="show('feemanagement','Fee Management')">💰 Fee Management</button>
 <button onclick="show('addStudent','Add Student')">👨‍🎓 Add Student</button>
