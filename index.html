@@ -311,15 +311,16 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 </section>
 <section id="profile" class="screen"><h2>Student Profile</h2><div class="card"><h3>Student Name</h3><p>Class: 8th • Section: A</p><div class="row">Admission No. <b>MICL-0001</b></div><div class="row">Attendance <b>96%</b></div><div class="row">Notifications <b>3</b></div></div></section>
 
-<nav>
-  
-<button class="active" onclick="show('home','MICL')"><b>⌂</b>Home</button>
-  <button onclick="show('feeRecords','Student Fee Records');loadFeeRecords()">💰 Fee Records</button>
-<button onclick="show('notices','Notice Board')"><b>🔔</b>Notices</button>
-<button onclick="show('attendance','Attendance')"><b>✓</b>Attendance</button>
-<button onclick="show('profile','Profile')"><b>◯</b>Profile</button>
-</nav>
+
 </div>
+  </section>
+  <nav>
+  <button class="active" onclick="show('home','MICL')">🏠 Home</button>
+  <button onclick="show('feeRecords','Student Fee Records');loadFeeRecords()">💰 Fee Records</button>
+  <button onclick="show('notices','Notice Board')">🔔 Notices</button>
+  <button onclick="show('attendance','Attendance')">✔ Attendance</button>
+  <button onclick="show('profile','Profile')">👤 Profile</button>
+</nav>
 <script>
   async function loadFeeRecords() {
   const box = document.getElementById('feeRecordsTable');
