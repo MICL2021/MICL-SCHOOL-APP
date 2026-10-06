@@ -768,14 +768,48 @@ async function loadClasses() {
         }
 
         box.innerHTML = classes.map(c => `
-            <div style="padding:10px;border-bottom:1px solid #ddd;">
-                <b>${c.name}</b><br>
-                Section: ${c.section}
-            </div>
-        `).join('');
+    <div style="padding:10px; border-bottom:1px solid #ddd;">
+        <b>${c.name}</b><br>
+        Section: ${c.section}
+        <br>
+        <button onclick="deleteClass(${c.id})"
+                style="margin-top:8px; background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:5px;">
+            Delete
+        </button>
+    </div>
+`).join('');
 
     } catch (e) {
         box.innerHTML = 'Server connection error';
+    }
+}
+  async function deleteClass(id) {
+    if (!confirm('Are you sure you want to delete this class?')) {
+        return;
+    }
+
+    const token = localStorage.getItem('micl_token');
+
+    try {
+        const response = await fetch('/api/admin/classes/' + id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.error || 'Could not delete class');
+            return;
+        }
+
+        alert('Class deleted successfully');
+        loadClasses();
+
+    } catch (e) {
+        alert('Server connection error');
     }
 }
 async function loadStudents() {
