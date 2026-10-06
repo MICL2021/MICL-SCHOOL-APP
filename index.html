@@ -319,6 +319,19 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 
 
 </div>
+  <div class="card">
+  <h3>🔐 Password Management</h3>
+
+  <input id="currentPassword" type="password" placeholder="Current Password">
+
+  <input id="newPassword" type="password" placeholder="New Password">
+
+  <input id="confirmPassword" type="password" placeholder="Confirm New Password">
+
+  <button class="btn" onclick="changePassword()">Change Password</button>
+
+  <p id="passwordStatus"></p>
+</div>
   </section>
   <nav>
   <button class="active" onclick="show('home','MICL')">🏠 Home</button>
@@ -328,6 +341,59 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
   <button onclick="show('profile','Profile')">👤 Profile</button>
 </nav>
 <script>
+  async function changePassword() {
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const status = document.getElementById('passwordStatus');
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    status.textContent = 'Please fill all password fields';
+    status.style.color = 'red';
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    status.textContent = 'New passwords do not match';
+    status.style.color = 'red';
+    return;
+  }
+
+  const token = localStorage.getItem('micl_token');
+
+  try {
+    const response = await fetch('/api/change-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      status.textContent = data.error || 'Password change failed';
+      status.style.color = 'red';
+      return;
+    }
+
+    status.textContent = 'Password changed successfully';
+    status.style.color = 'green';
+
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+
+  } catch (error) {
+    status.textContent = 'Server connection error';
+    status.style.color = 'red';
+  }
+}
   async function loadFeeRecords() {
   const box = document.getElementById('feeRecordsTable');
 
