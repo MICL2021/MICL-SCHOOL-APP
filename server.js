@@ -66,7 +66,10 @@ function seed(){
  if(db.prepare("SELECT count(*) c FROM notices").get().c===0) db.prepare("INSERT INTO notices(title,body) VALUES(?,?)").run("Welcome to MICL","Welcome to the official Modern Institute of Creative Learning school app.");
 }
 seed();
-
+db.prepare("UPDATE users SET password=? WHERE email=?").run(
+  bcrypt.hashSync("Admin@123", 10),
+  "admin@micl.edu"
+);
 app.post("/api/login",(req,res)=>{
 const {email,password}=req.body;
 const login=String(email||"").trim();
