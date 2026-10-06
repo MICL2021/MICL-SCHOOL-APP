@@ -320,6 +320,45 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,
 </nav>
 </div>
 <script>
+  async function loadFeeRecords() {
+  const box = document.getElementById('feeRecordsTable');
+
+  try {
+    const token = localStorage.getItem('micl_token');
+
+    const response = await fetch('/api/my-fee-record', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      box.innerHTML = '<p style="color:red;">' + (data.error || 'Fee record not found') + '</p>';
+      return;
+    }
+
+    box.innerHTML = `
+      <p><b>Student Name:</b> ${data.name || ''}</p>
+      <p><b>Admission No:</b> ${data.admission_no || ''}</p>
+      <p><b>Class:</b> ${data.class_name || ''}</p>
+      <p><b>Section:</b> ${data.section || ''}</p>
+
+      <hr>
+
+      <p><b>Total Fee:</b> ₹${Number(data.total_fee || 0).toLocaleString('en-IN')}</p>
+      <p><b>Paid Fee:</b> ₹${Number(data.paid_fee || 0).toLocaleString('en-IN')}</p>
+      <p><b>Balance Fee:</b> ₹${Number(data.balance_fee || 0).toLocaleString('en-IN')}</p>
+      <p><b>Status:</b> ${data.status || 'Pending'}</p>
+      <p><b>Last Payment:</b> ${data.last_payment_date || 'No payment yet'}</p>
+      <p><b>Transaction ID:</b> ${data.transaction_id || 'N/A'}</p>
+    `;
+
+  } catch (error) {
+    box.innerHTML = '<p style="color:red;">Unable to load fee record.</p>';
+  }
+}
   function submitFeePayment() {
   const transactionId = document.getElementById('feeTransactionId').value.trim();
   const status = document.getElementById('feePaymentStatus');
