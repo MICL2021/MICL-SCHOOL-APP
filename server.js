@@ -162,6 +162,69 @@ app.post("/api/admin/users",auth,admin,(req,res)=>{
     });
   }
 });
+app.put("/api/admin/teachers/:id", auth, admin, (req, res) => {
+  const { name, email, phone, qualification, username, password } = req.body;
+  const id = Number(req.params.id);
+
+  if (!id || !name || !email || !username) {
+    return res.status(400).json({
+      error: "Name, email and username are required"
+    });
+  }
+
+  try {
+    const teacher = db.prepare(
+      "SELECT id FROM users WHERE id = ? AND role = 'teacher'"
+    ).get(id);
+
+    if (!teacher) {
+      return res.status(404).json({
+        error: "Teacher not found"
+      });
+    }
+
+    if (password) {
+      db.prepare(`
+        UPDATE users
+        SET name = ?, email = ?, phone = ?, qualification = ?,
+            username = ?, password = ?
+        WHERE id = ? AND role = 'teacher'
+      `).run(
+        name,
+        email,
+        phone,
+        qualification,
+        username,
+        bcrypt.hashSync(password, 10),
+        id
+      );
+    } else {
+      db.prepare(`
+        UPDATE users
+        SET name = ?, email = ?, phone = ?, qualification = ?,
+            username = ?
+        WHERE id = ? AND role = 'teacher'
+      `).run(
+        name,
+        email,
+        phone,
+        qualification,
+        username,
+        id
+      );
+    }
+
+    res.json({
+      success: true,
+      message: "Teacher updated successfully"
+    });
+
+  } catch (e) {
+    res.status(400).json({
+      error: e.message
+    });
+  }
+});
 app.post("/api/admin/classes", auth, admin, (req, res) => {
   const { name, section } = req.body;
 
