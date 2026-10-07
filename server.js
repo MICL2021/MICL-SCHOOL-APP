@@ -32,6 +32,7 @@ const columns = [
   ["aadhaar_no", "TEXT"],
   ["apaar_no", "TEXT"],
   ["udise_pen", "TEXT"]
+  ["username","TEXT"]
 ];
 
 for (const [column, type] of columns) {
