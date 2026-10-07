@@ -44,14 +44,7 @@ for (const [column, type] of columns) {
     }
   }
 }
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN ${column} ${type}`);
-  } catch (err) {
-    if (!err.message.includes("duplicate column name")) {
-      throw err;
-    }
-  }
-
+  
 db.exec(`
 CREATE TABLE IF NOT EXISTS fee_records (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
