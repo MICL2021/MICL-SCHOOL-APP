@@ -767,20 +767,81 @@ async function loadClasses() {
             return;
         }
 
-        box.innerHTML = classes.map(c => `
+       box.innerHTML = classes.map(c => `
     <div style="padding:10px; border-bottom:1px solid #ddd;">
         <b>${c.name}</b><br>
         Section: ${c.section}
-        <br>
+        <br><br>
+
+        <button onclick='viewClass(${JSON.stringify(c.name)}, ${JSON.stringify(c.section)})'
+                style="margin-right:6px; padding:6px 12px;">
+            View
+        </button>
+
+        <button onclick='editClass(${c.id}, ${JSON.stringify(c.name)}, ${JSON.stringify(c.section)})'
+                style="margin-right:6px; background:#063b82; color:white; border:none; padding:6px 12px; border-radius:5px;">
+            Edit
+        </button>
+
         <button onclick="deleteClass(${c.id})"
-                style="margin-top:8px; background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:5px;">
+                style="background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:5px;">
             Delete
         </button>
     </div>
-`).join('');
+`).join(''); 
 
     } catch (e) {
         box.innerHTML = 'Server connection error';
+    }
+}
+  function viewClass(name, section) {
+    alert(
+        "Class Name: " + name +
+        "\nSection: " + section
+    );
+}
+
+async function editClass(id, oldName, oldSection) {
+    const name = prompt("Enter class name:", oldName);
+
+    if (name === null) return;
+
+    const section = prompt("Enter section:", oldSection);
+
+    if (section === null) return;
+
+    if (!name.trim() || !section.trim()) {
+        alert("Class name and section are required");
+        return;
+    }
+
+    const token = localStorage.getItem('micl_token');
+
+    try {
+        const response = await fetch('/api/admin/classes/' + id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                name: name.trim(),
+                section: section.trim()
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.error || 'Could not update class');
+            return;
+        }
+
+        alert('Class updated successfully');
+        loadClasses();
+
+    } catch (e) {
+        alert('Server connection error');
     }
 }
   async function deleteClass(id) {
