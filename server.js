@@ -31,11 +31,19 @@ const columns = [
   ["caste", "TEXT"],
   ["aadhaar_no", "TEXT"],
   ["apaar_no", "TEXT"],
-  ["udise_pen", "TEXT"]
-  ["username","TEXT"]
+  ["udise_pen", "TEXT"],
+  ["username", "TEXT"]
 ];
 
 for (const [column, type] of columns) {
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN ${column} ${type}`);
+  } catch (err) {
+    if (!err.message.includes("duplicate column name")) {
+      throw err;
+    }
+  }
+}
   try {
     db.exec(`ALTER TABLE users ADD COLUMN ${column} ${type}`);
   } catch (err) {
