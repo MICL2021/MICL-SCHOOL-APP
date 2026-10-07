@@ -947,18 +947,123 @@ async function loadTeachers() {
       return;
     }
 
-    box.innerHTML = teachers.map(t => `
-      <div style="padding:10px;border-bottom:1px solid #ddd;">
-        <b>${t.name}</b><br>
-        Email: ${t.email}<br>
-        Phone: ${t.phone || '-'}<br>
-        Qualification: ${t.qualification || '-'}
-      </div>
-    `).join('');
+    window.teacherData = teachers;
+
+box.innerHTML = teachers.map(t => `
+  <div style="padding:10px;border-bottom:1px solid #ddd;">
+    <b>${t.name}</b><br>
+    Email: ${t.email}<br>
+    Phone: ${t.phone || '-'}<br>
+    Qualification: ${t.qualification || '-'}<br>
+
+    <button class="btn" onclick="viewTeacher(${t.id})">👁 View</button>
+    <button class="btn" onclick="editTeacher(${t.id})">✏️ Edit</button>
+    <button class="btn" onclick="deleteTeacher(${t.id})">🗑 Delete</button>
+  </div>
+`).join('');
 
   } catch (e) {
     box.innerHTML = 'Server connection error';
   }
+}
+  function viewTeacher(id) {
+  const t = window.teacherData.find(x => x.id === id);
+
+  if (!t) return alert("Teacher not found");
+
+  alert(
+    "Teacher Details\n\n" +
+    "Name: " + t.name + "\n" +
+    "Email: " + t.email + "\n" +
+    "Phone: " + (t.phone || "-") + "\n" +
+    "Qualification: " + (t.qualification || "-") + "\n" +
+    "Username: " + (t.username || "-")
+  );
+}
+
+async function deleteTeacher(id) {
+  if (!confirm("Are you sure you want to delete this teacher?")) {
+    return;
+  }
+
+  const token = localStorage.getItem("micl_token");
+
+  const response = await fetch(
+    "/api/admin/teachers/" + id,
+    {
+      method: "DELETE",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.error || "Failed to delete teacher");
+    return;
+  }
+
+  alert("Teacher deleted successfully");
+  loadTeachers();
+}
+
+async function editTeacher(id) {
+  const t = window.teacherData.find(x => x.id === id);
+
+  if (!t) return alert("Teacher not found");
+
+  const name = prompt("Teacher Name:", t.name);
+  if (name === null) return;
+
+  const email = prompt("Email:", t.email);
+  if (email === null) return;
+
+  const phone = prompt("Phone:", t.phone || "");
+  if (phone === null) return;
+
+  const qualification = prompt(
+    "Qualification:",
+    t.qualification || ""
+  );
+  if (qualification === null) return;
+
+  const username = prompt(
+    "Username:",
+    t.username || ""
+  );
+  if (username === null) return;
+
+  const token = localStorage.getItem("micl_token");
+
+  const response = await fetch(
+    "/api/admin/teachers/" + id,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        qualification,
+        username
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.error || "Failed to update teacher");
+    return;
+  }
+
+  alert("Teacher updated successfully");
+  loadTeachers();
 }
 function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
