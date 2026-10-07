@@ -158,7 +158,7 @@ app.post("/api/admin/users",auth,admin,(req,res)=>{
     res.json({id:r.lastInsertRowid});
   }catch(e){
     res.status(400).json({
-      error:"Email or username already exists"
+      error:e.message
     });
   }
 });
