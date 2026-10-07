@@ -75,6 +75,7 @@ box-sizing:border-box;
 <button onclick="show('notices','Notice Board');toggleMenu()">📢 Notices</button>
 <button onclick="show('attendance','Attendance');toggleMenu()">📅 Attendance</button>
 <button onclick="show('profile','Profile');toggleMenu()">👤 Profile</button>
+  <button onclick="show('settings','Settings');toggleMenu()">⚙️ Settings</button>
   <button id="teacherMenuButton" style="display:none" onclick="show('addTeacher','Add Teacher');toggleMenu()">👨‍🏫 Add Teacher</button>
   <button onclick="show('feemanagement','Fee Management')">💰 Fee Management</button>
   <button onclick="show('classManagement','Class Management');toggleMenu()">🏫 Class Management</button>
@@ -368,6 +369,83 @@ box-sizing:border-box;
   <p id="passwordStatus"></p>
 </div>
   </section>
+  
+<section id="settings" class="screen">
+
+<h2>⚙️ Settings</h2>
+
+<div class="card">
+<h3>🔐 Change Admin Password</h3>
+<p>Admin password change karein.</p>
+<button class="btn" onclick="show('profile','Change Password')">
+Change Password
+</button>
+</div>
+
+<div class="card">
+<h3>👤 Admin Profile</h3>
+<p>Admin account ki information yahan manage hogi.</p>
+<button class="btn" onclick="show('profile','Admin Profile')">
+Admin Profile
+</button>
+</div>
+
+<div class="card">
+<h3>🏫 School Information</h3>
+<p>School Name, Address, Phone aur Email</p>
+<button class="btn" onclick="alert('School Information Settings coming next')">
+School Information
+</button>
+</div>
+
+<div class="card">
+<h3>📚 Classes & Sections</h3>
+<p>Classes aur Sections manage karein.</p>
+<button class="btn" onclick="show('classManagement','Class Management')">
+Manage Classes
+</button>
+</div>
+
+<div class="card">
+<h3>🔔 Notification Settings</h3>
+<p>School notifications manage karein.</p>
+<button class="btn" onclick="alert('Notification Settings coming next')">
+Notifications
+</button>
+</div>
+
+<div class="card">
+<h3>💰 Fee Settings</h3>
+<p>School fee settings manage karein.</p>
+<button class="btn" onclick="show('feemanagement','Fee Management')">
+Fee Settings
+</button>
+</div>
+
+<div class="card">
+<h3>🔑 User / Role Permissions</h3>
+<p>Admin, Teacher aur Student permissions.</p>
+<button class="btn" onclick="alert('Role Permissions coming next')">
+Permissions
+</button>
+</div>
+
+<div class="card">
+<h3>🛡️ Security Settings</h3>
+<p>School app security settings.</p>
+<button class="btn" onclick="alert('Security Settings coming next')">
+Security
+</button>
+</div>
+
+<div class="card">
+<h3>🚪 Logout</h3>
+<button class="btn" onclick="logout()">
+Logout
+</button>
+</div>
+
+</section>
   <nav>
   <button class="active" onclick="show('home','MICL')">🏠 Home</button>
   <button onclick="show('feeRecords','Student Fee Records');loadFeeRecords()">💰 Fee Records</button>
