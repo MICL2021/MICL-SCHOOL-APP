@@ -393,7 +393,7 @@ Admin Profile
 <div class="card">
 <h3>🏫 School Information</h3>
 <p>School Name, Address, Phone aur Email</p>
-<button class="btn" onclick="alert('School Information Settings coming next')">
+<button class="btn" onclick="show('schoolInformation','School Information')">
 School Information
 </button>
 </div>
@@ -443,6 +443,33 @@ Security
 <button class="btn" onclick="logout()">
 Logout
 </button>
+</div>
+
+</section>
+  <section id="schoolInformation" class="screen">
+
+<h2>🏫 School Information</h2>
+
+<div class="card">
+
+<input id="schoolName" placeholder="School Name">
+
+<input id="schoolAddress" placeholder="School Address">
+
+<input id="schoolPhone" placeholder="School Phone">
+
+<input id="schoolEmail" placeholder="School Email">
+
+<input id="schoolWebsite" placeholder="School Website">
+
+<input id="schoolAffiliation" placeholder="Recognition / Affiliation">
+
+<button class="btn" onclick="saveSchoolInformation()">
+💾 Save School Information
+</button>
+
+<p id="schoolInfoStatus"></p>
+
 </div>
 
 </section>
