@@ -481,6 +481,23 @@ Logout
   <button onclick="show('profile','Profile')">👤 Profile</button>
 </nav>
 <script>
+  function saveSchoolInformation() {
+  const data = {
+    name: document.getElementById('schoolName').value,
+    address: document.getElementById('schoolAddress').value,
+    phone: document.getElementById('schoolPhone').value,
+    email: document.getElementById('schoolEmail').value,
+    website: document.getElementById('schoolWebsite').value,
+    affiliation: document.getElementById('schoolAffiliation').value
+  };
+
+  localStorage.setItem('micl_school_info', JSON.stringify(data));
+
+  document.getElementById('schoolInfoStatus').textContent =
+    '✅ School information saved successfully';
+
+  document.getElementById('schoolInfoStatus').style.color = 'green';
+}
   async function changePassword() {
   const currentPassword = document.getElementById('currentPassword').value;
   const newPassword = document.getElementById('newPassword').value;
