@@ -51,7 +51,7 @@ for (const [column, type] of columns) {
       throw err;
     }
   }
-}
+
 db.exec(`
 CREATE TABLE IF NOT EXISTS fee_records (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
