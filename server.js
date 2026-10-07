@@ -27,6 +27,7 @@ const columns = [
   ["father_name", "TEXT"],
   ["mother_name", "TEXT"],
   ["phone", "TEXT"],
+  ["qualification", "TEXT"],
   ["address", "TEXT"],
   ["caste", "TEXT"],
   ["aadhaar_no", "TEXT"],
