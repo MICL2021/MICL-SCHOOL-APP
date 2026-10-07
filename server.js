@@ -314,19 +314,73 @@ app.get("/api/admin/teachers", auth, admin, (req,res) => {
   res.json(teachers);
 });
 app.delete("/api/admin/teachers/:id", auth, admin, (req, res) => {
-  try {
-    const result = db.prepare(
-      "DELETE FROM users WHERE id = ? AND role = 'teacher'"
-    ).run(req.params.id);
+    try {
+        const result = db.prepare(
+            "DELETE FROM users WHERE id = ? AND role = 'teacher'"
+        ).run(req.params.id);
 
-    if (result.changes === 0) {
-      return res.status(404).json({ error: "Teacher not found" });
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: "Teacher not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Teacher deleted successfully"
+        });
+    } catch (e) {
+        res.status(500).json({
+            error: "Failed to delete teacher"
+        });
     }
+});
 
-    res.json({ success: true, message: "Teacher deleted successfully" });
-  } catch (e) {
-    res.status(500).json({ error: "Failed to delete teacher" });
-  }
+app.put("/api/admin/teachers/:id", auth, admin, (req, res) => {
+    const id = Number(req.params.id);
+
+    const {
+        name,
+        email,
+        phone,
+        qualification,
+        username
+    } = req.body;
+
+    try {
+        const result = db.prepare(`
+            UPDATE users
+            SET
+                name = ?,
+                email = ?,
+                phone = ?,
+                qualification = ?,
+                username = ?
+            WHERE id = ? AND role = 'teacher'
+        `).run(
+            name,
+            email,
+            phone,
+            qualification,
+            username,
+            id
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: "Teacher not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Teacher updated successfully"
+        });
+    } catch (e) {
+        res.status(400).json({
+            error: e.message
+        });
+    }
 });
 app.get("/api/my-fee-record", auth, (req, res) => {
   const record = db.prepare(`
