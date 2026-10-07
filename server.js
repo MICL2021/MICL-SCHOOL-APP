@@ -124,7 +124,43 @@ app.get("/api/results",auth,(req,res)=>res.json(db.prepare("SELECT exam,subject,
 app.post("/api/admin/notices",auth,admin,(req,res)=>{const {title,body}=req.body;const r=db.prepare("INSERT INTO notices(title,body) VALUES(?,?)").run(title,body);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/homework",auth,admin,(req,res)=>{const {title,description,due_date}=req.body;const r=db.prepare("INSERT INTO homework(title,description,due_date) VALUES(?,?,?)").run(title,description,due_date);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/events",auth,admin,(req,res)=>{const {title,description,event_date}=req.body;const r=db.prepare("INSERT INTO events(title,description,event_date) VALUES(?,?,?)").run(title,description,event_date);res.json({id:r.lastInsertRowid})});
-app.post("/api/admin/users",auth,admin,(req,res)=>{const {name,email,password,role,class_name,section,admission_no,phone,qualification}=req.body;try{const r=db.prepare("INSERT INTO users(name,email,password,role,class_name,section,admission_no,phone,qualification) VALUES(?,?,?,?,?,?,?,?,?)").run(name,email,bcrypt.hashSync(password,10),role||"student",class_name,section,admission_no,phone,qualification);res.json({id:r.lastInsertRowid})}catch(e){res.status(400).json({error:"Email or admission number already exists"})}});
+app.post("/api/admin/users",auth,admin,(req,res)=>{
+  const {
+    name,
+    email,
+    password,
+    role,
+    class_name,
+    section,
+    admission_no,
+    phone,
+    qualification,
+    username
+  }=req.body;
+
+  try{
+    const r=db.prepare(
+      "INSERT INTO users(name,email,password,role,class_name,section,admission_no,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?)"
+    ).run(
+      name,
+      email,
+      bcrypt.hashSync(password,10),
+      role||"student",
+      class_name,
+      section,
+      admission_no,
+      phone,
+      qualification,
+      username
+    );
+
+    res.json({id:r.lastInsertRowid});
+  }catch(e){
+    res.status(400).json({
+      error:"Email or username already exists"
+    });
+  }
+});
 app.post("/api/admin/classes", auth, admin, (req, res) => {
   const { name, section } = req.body;
 
