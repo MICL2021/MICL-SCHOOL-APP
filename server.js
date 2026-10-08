@@ -90,7 +90,41 @@ res.json({token,user:{id:u.id,name:u.name,email:u.email,role:u.role,class_name:u
 });
 function auth(req,res,next){try{const h=req.headers.authorization||"";req.user=jwt.verify(h.replace("Bearer ",""),SECRET);next()}catch(e){res.status(401).json({error:"Unauthorized"})}}
 function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).json({error:"Admin access required"});next()}
+// ADMIN PROFILE
 
+app.get("/api/admin/profile",auth,admin,(req,res)=>{
+  const user=db.prepare(
+    "SELECT id,name,email,username,phone,role FROM users WHERE id=? AND role='admin'"
+  ).get(req.user.id);
+
+  if(!user){
+    return res.status(404).json({error:"Admin profile not found"});
+  }
+
+  res.json(user);
+});
+
+app.put("/api/admin/profile",auth,admin,(req,res)=>{
+  const {name,phone}=req.body;
+
+  if(!name || !name.trim()){
+    return res.status(400).json({error:"Admin name is required"});
+  }
+
+  db.prepare(
+    "UPDATE users SET name=?, phone=? WHERE id=? AND role='admin'"
+  ).run(name.trim(),phone||"",req.user.id);
+
+  res.json({message:"Admin profile saved successfully"});
+});
+
+app.delete("/api/admin/profile",auth,admin,(req,res)=>{
+  db.prepare(
+    "UPDATE users SET name=?, phone=? WHERE id=? AND role='admin'"
+  ).run("MICL Admin","",req.user.id);
+
+  res.json({message:"Admin profile deleted/reset successfully"});
+});
 app.post("/api/change-password",auth,(req,res)=>{
   const {currentPassword,newPassword}=req.body;
 
