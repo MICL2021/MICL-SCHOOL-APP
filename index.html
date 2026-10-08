@@ -402,7 +402,9 @@ box-sizing:border-box;
 <button class="btn" onclick="saveAdminProfile()">
 💾 Save Profile
 </button>
-
+<button class="btn" onclick="deleteAdminProfile()">
+🗑️ Delete Profile
+</button>
 <p id="profileStatus"></p>
 
 </div>
@@ -572,7 +574,7 @@ Logout
 
   document.getElementById('schoolInfoStatus').style.color = 'green';
 }
-  function saveAdminProfile() {
+  async function saveAdminProfile() {
   const name = document.getElementById('editProfileName').value.trim();
   const phone = document.getElementById('editProfilePhone').value.trim();
   const status = document.getElementById('profileStatus');
@@ -583,18 +585,75 @@ Logout
     return;
   }
 
-  const profile = {
-    name: name,
-    phone: phone
-  };
+  try {
+    const token = localStorage.getItem('micl_token');
 
-  localStorage.setItem('micl_admin_profile', JSON.stringify(profile));
+    const response = await fetch('/api/admin/profile', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        name: name,
+        phone: phone
+      })
+    });
 
-  document.getElementById('profileName').textContent = name;
-  document.getElementById('profilePhone').textContent = phone || '-';
+    const data = await response.json();
 
-  status.textContent = '✅ Admin profile saved successfully';
-  status.style.color = 'green';
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to save profile');
+    }
+
+    document.getElementById('profileName').textContent = name;
+    document.getElementById('profilePhone').textContent = phone || '-';
+
+    status.textContent = '✅ Admin profile saved successfully';
+    status.style.color = 'green';
+
+  } catch (error) {
+    status.textContent = '❌ ' + error.message;
+    status.style.color = 'red';
+  }
+}
+
+
+async function deleteAdminProfile() {
+  const status = document.getElementById('profileStatus');
+
+  if (!confirm('Are you sure you want to delete/reset the admin profile?')) {
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('micl_token');
+
+    const response = await fetch('/api/admin/profile', {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to delete profile');
+    }
+
+    document.getElementById('profileName').textContent = 'MICL Admin';
+    document.getElementById('profilePhone').textContent = '-';
+    document.getElementById('editProfileName').value = 'MICL Admin';
+    document.getElementById('editProfilePhone').value = '';
+
+    status.textContent = '✅ Admin profile deleted/reset successfully';
+    status.style.color = 'green';
+
+  } catch (error) {
+    status.textContent = '❌ ' + error.message;
+    status.style.color = 'red';
+  }
 }
   async function changePassword() {
   const currentPassword = document.getElementById('currentPassword').value;
