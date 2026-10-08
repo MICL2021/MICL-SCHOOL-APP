@@ -90,6 +90,21 @@ res.json({token,user:{id:u.id,name:u.name,email:u.email,role:u.role,class_name:u
 });
 function auth(req,res,next){try{const h=req.headers.authorization||"";req.user=jwt.verify(h.replace("Bearer ",""),SECRET);next()}catch(e){res.status(401).json({error:"Unauthorized"})}}
 function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).json({error:"Admin access required"});next()}
+app.get("/api/admin/students",auth,admin,(req,res)=>{
+  try{
+    const students=db.prepare(`
+      SELECT id,name,admission_no,class_name,section
+      FROM users
+      WHERE role='student'
+      ORDER BY name ASC
+    `).all();
+
+    res.json(students);
+  }catch(e){
+    console.error(e);
+    res.status(500).json({error:"Could not load students"});
+  }
+});
 // ADMIN PROFILE
 
 app.get("/api/admin/profile",auth,admin,(req,res)=>{
