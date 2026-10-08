@@ -482,7 +482,12 @@ app.post("/api/fee-payment", auth, (req, res) => {
   const newPaid = Number(record.paid_fee) + fee;
   const newBalance = Math.max(0, Number(record.total_fee) - newPaid);
 
-  const status = newBalance === 0 ? "Paid" : "Partial";
+  const status =
+  newPaid === 0
+    ? "Pending"
+    : newBalance === 0
+    ? "Paid"
+    : "Partial";
 
   db.prepare(`
     UPDATE fee_records
@@ -535,7 +540,12 @@ app.put("/api/admin/fee-records/:student_id", auth, admin, (req, res) => {
   if (record) {
     const paid_fee = Number(record.paid_fee || 0);
     const balance_fee = Math.max(0, total_fee - paid_fee);
-    const status = balance_fee === 0 ? "Paid" : "Partial";
+    const status =
+  paid_fee === 0
+    ? "Pending"
+    : balance_fee === 0
+    ? "Paid"
+    : "Partial";
 
     db.prepare(`
       UPDATE fee_records
