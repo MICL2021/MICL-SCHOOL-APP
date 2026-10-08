@@ -324,11 +324,9 @@ box-sizing:border-box;
 <div class="card">
   <h3>👨‍🎓 Student Fee Management</h3>
 
-  <input
-    id="feeStudentId"
-    type="number"
-    placeholder="Enter Student ID"
-  >
+  <select id="feeStudentId">
+  <option value="">Select Student</option>
+</select>
 
   <input
     id="feeTotalAmount"
@@ -1463,6 +1461,10 @@ function show(id, title) {
         targetScreen.classList.add('active');
         targetScreen.style.setProperty('display', 'block', 'important');
         window.scrollTo(0, 0);
+      if (id === 'feemanagement') {
+  loadFeeStudents();
+  loadAdminFeeRecords();
+}
     } else {
         alert('Page not found: ' + id);
     }
@@ -1577,6 +1579,48 @@ function home() {
   } catch (error) {
     console.error(error);
     status.textContent = "❌ " + error.message;
+  }
+}
+  async function loadFeeStudents() {
+  try {
+    const token = localStorage.getItem("micl_token");
+
+    const response = await fetch("/api/admin/students", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const students = await response.json();
+
+    if (!response.ok) {
+      throw new Error(students.error || "Failed to load students");
+    }
+
+    const select = document.getElementById("feeStudentId");
+
+    select.innerHTML = '<option value="">Select Student</option>';
+
+    students.forEach(student => {
+      const option = document.createElement("option");
+
+      option.value = student.id;
+
+      option.textContent =
+        student.name +
+        " - Admission No: " +
+        (student.admission_no || "") +
+        " - Class: " +
+        (student.class_name || "") +
+        " " +
+        (student.section || "");
+
+      select.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error(error);
+    alert("Unable to load students");
   }
 }
 </script>
