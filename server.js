@@ -576,6 +576,30 @@ app.put("/api/admin/fee-records/:student_id", auth, admin, (req, res) => {
     total_fee: total_fee
   });
 });
+app.delete("/api/admin/fee-records/:student_id", auth, admin, (req, res) => {
+  const student_id = Number(req.params.student_id);
+
+  if (!student_id) {
+    return res.status(400).json({
+      error: "Valid student ID is required"
+    });
+  }
+
+  const result = db.prepare(
+    "DELETE FROM fee_records WHERE student_id=?"
+  ).run(student_id);
+
+  if (result.changes === 0) {
+    return res.status(404).json({
+      error: "Fee record not found"
+    });
+  }
+
+  res.json({
+    success: true,
+    message: "Fee record deleted successfully"
+  });
+});
 app.get("/api/admin/fee-records", auth, admin, (req, res) => {
   const records = db.prepare(`
     SELECT
