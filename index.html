@@ -1537,6 +1537,48 @@ function home() {
       "<p style='color:red;'>Unable to load fee records.</p>";
   }
 }
+  async function updateStudentTotalFee() {
+  const studentId = document.getElementById("feeStudentId").value;
+  const totalFee = document.getElementById("feeTotalAmount").value;
+  const status = document.getElementById("adminFeeStatus");
+
+  if (!studentId || !totalFee) {
+    status.textContent = "Please enter Student ID and Total Fee.";
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("micl_token");
+
+    const response = await fetch(
+      "/api/admin/fee-records/" + studentId,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+          total_fee: Number(totalFee)
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to save total fee");
+    }
+
+    status.textContent = "✅ Total Fee saved successfully.";
+
+    await loadAdminFeeRecords();
+
+  } catch (error) {
+    console.error(error);
+    status.textContent = "❌ " + error.message;
+  }
+}
 </script>
 </body>
 </html>
