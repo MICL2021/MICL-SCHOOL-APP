@@ -1271,7 +1271,12 @@ async function loadStudents() {
         Class: ${s.class_name || '-'} |
         Section: ${s.section || '-'}<br>
         Admission No: ${s.admission_no || '-'}<br>
-
+<button
+  class="btn"
+  style="margin-top:8px;"
+  onclick="viewStudent(${s.id})">
+  👁️ View
+</button>
         <button
           class="btn"
           style="margin-top:8px;"
@@ -1289,9 +1294,41 @@ async function loadStudents() {
     `).join('');
 
   } catch (e) {
-    box.innerHTML = 'Server connection error';
+    async function viewStudent(studentId) {
+  const token = localStorage.getItem('micl_token');
+
+  try {
+    const response = await fetch('/api/admin/students', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const students = await response.json();
+
+    const student = students.find(
+      s => Number(s.id) === Number(studentId)
+    );
+
+    if (!student) {
+      alert('Student not found');
+      return;
+    }
+
+    alert(
+      '👤 Student Details\n\n' +
+      'Name: ' + (student.name || '-') + '\n' +
+      'Email: ' + (student.email || '-') + '\n' +
+      'Class: ' + (student.class_name || '-') + '\n' +
+      'Section: ' + (student.section || '-') + '\n' +
+      'Admission No: ' + (student.admission_no || '-')
+    );
+
+  } catch (error) {
+    alert('❌ Server connection error');
   }
 }
+    
 
 
 async function editStudent(studentId) {
