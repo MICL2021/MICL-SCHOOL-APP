@@ -493,7 +493,64 @@ app.post("/api/fee-payment", auth, (req, res) => {
     status: status
   });
 });
+app.put("/api/admin/fee-records/:student_id", auth, admin, (req, res) => {
+  const student_id = Number(req.params.student_id);
+  const total_fee = Number(req.body.total_fee);
 
+  if (!student_id || !Number.isFinite(total_fee) || total_fee < 0) {
+    return res.status(400).json({
+      error: "Valid student ID and total fee are required"
+    });
+  }
+
+  const student = db.prepare(
+    "SELECT id FROM users WHERE id=? AND role='student'"
+  ).get(student_id);
+
+  if (!student) {
+    return res.status(404).json({
+      error: "Student not found"
+    });
+  }
+
+  const record = db.prepare(
+    "SELECT paid_fee FROM fee_records WHERE student_id=?"
+  ).get(student_id);
+
+  if (record) {
+    const paid_fee = Number(record.paid_fee || 0);
+    const balance_fee = Math.max(0, total_fee - paid_fee);
+    const status = balance_fee === 0 ? "Paid" : "Partial";
+
+    db.prepare(`
+      UPDATE fee_records
+      SET total_fee=?,
+          balance_fee=?,
+          status=?
+      WHERE student_id=?
+    `).run(
+      total_fee,
+      balance_fee,
+      status,
+      student_id
+    );
+  } else {
+    db.prepare(`
+      INSERT INTO fee_records
+      (student_id, total_fee, paid_fee, balance_fee, status)
+      VALUES (?, ?, 0, ?, 'Pending')
+    `).run(
+      student_id,
+      total_fee,
+      total_fee
+    );
+  }
+
+  res.json({
+    message: "Total fee updated successfully",
+    total_fee: total_fee
+  });
+});
 app.get("/api/admin/fee-records", auth, admin, (req, res) => {
   const records = db.prepare(`
     SELECT
