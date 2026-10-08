@@ -105,6 +105,75 @@ app.get("/api/admin/students",auth,admin,(req,res)=>{
     res.status(500).json({error:"Could not load students"});
   }
 });
+app.put("/api/admin/students/:id",auth,admin,(req,res)=>{
+  const {name,email,class_name,section,admission_no}=req.body;
+
+  if(!name || !email || !class_name || !section || !admission_no){
+    return res.status(400).json({
+      error:"All student details are required"
+    });
+  }
+
+  try{
+    const result=db.prepare(`
+      UPDATE users
+      SET name=?,
+          email=?,
+          class_name=?,
+          section=?,
+          admission_no=?
+      WHERE id=? AND role='student'
+    `).run(
+      name,
+      email,
+      class_name,
+      section,
+      admission_no,
+      req.params.id
+    );
+
+    if(result.changes===0){
+      return res.status(404).json({
+        error:"Student not found"
+      });
+    }
+
+    res.json({
+      success:true,
+      message:"Student updated successfully"
+    });
+
+  }catch(e){
+    res.status(400).json({
+      error:"Email or admission number already exists"
+    });
+  }
+});
+
+
+app.delete("/api/admin/students/:id",auth,admin,(req,res)=>{
+  try{
+    const result=db.prepare(
+      "DELETE FROM users WHERE id=? AND role='student'"
+    ).run(req.params.id);
+
+    if(result.changes===0){
+      return res.status(404).json({
+        error:"Student not found"
+      });
+    }
+
+    res.json({
+      success:true,
+      message:"Student deleted successfully"
+    });
+
+  }catch(e){
+    res.status(500).json({
+      error:"Failed to delete student"
+    });
+  }
+});
 // ADMIN PROFILE
 
 app.get("/api/admin/profile",auth,admin,(req,res)=>{
