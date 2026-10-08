@@ -1522,21 +1522,122 @@ function home() {
     }
 
     box.innerHTML = records.map(r => `
-      <div class="card" style="margin-top:10px;">
-        <p><b>Student:</b> ${r.name || ""}</p>
-        <p><b>Admission No:</b> ${r.admission_no || ""}</p>
-        <p><b>Class:</b> ${r.class_name || ""} ${r.section || ""}</p>
-        <p><b>Total Fee:</b> ₹${Number(r.total_fee || 0).toLocaleString("en-IN")}</p>
-        <p><b>Paid Fee:</b> ₹${Number(r.paid_fee || 0).toLocaleString("en-IN")}</p>
-        <p><b>Balance Fee:</b> ₹${Number(r.balance_fee || 0).toLocaleString("en-IN")}</p>
-        <p><b>Status:</b> ${r.status || "Pending"}</p>
-      </div>
-    `).join("");
+  <div class="card" style="margin-top:10px;">
+    <p><b>Student:</b> ${r.name || ""}</p>
+    <p><b>Admission No:</b> ${r.admission_no || ""}</p>
+    <p><b>Class:</b> ${r.class_name || ""} ${r.section || ""}</p>
+    <p><b>Total Fee:</b> ₹${Number(r.total_fee || 0).toLocaleString("en-IN")}</p>
+    <p><b>Paid Fee:</b> ₹${Number(r.paid_fee || 0).toLocaleString("en-IN")}</p>
+    <p><b>Balance Fee:</b> ₹${Number(r.balance_fee || 0).toLocaleString("en-IN")}</p>
+    <p><b>Status:</b> ${r.status || "Pending"}</p>
+
+    <button
+      class="btn"
+      onclick="editFeeRecord(${r.student_id}, ${Number(r.total_fee || 0)})"
+      style="margin-top:8px;"
+    >
+      ✏️ Edit Fee
+    </button>
+
+    <button
+      class="btn"
+      onclick="deleteFeeRecord(${r.student_id})"
+      style="margin-top:8px;"
+    >
+      🗑️ Delete Fee
+    </button>
+  </div>
+`).join("");
 
   } catch (error) {
     console.error(error);
     document.getElementById("adminFeeRecords").innerHTML =
       "<p style='color:red;'>Unable to load fee records.</p>";
+  }
+}
+  async function editFeeRecord(studentId, currentFee) {
+  const newFee = prompt("Enter new Total Fee:", currentFee);
+
+  if (newFee === null) {
+    return;
+  }
+
+  const totalFee = Number(newFee);
+
+  if (!Number.isFinite(totalFee) || totalFee < 0) {
+    alert("Please enter a valid fee amount.");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("micl_token");
+
+    const response = await fetch(
+      "/api/admin/fee-records/" + studentId,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+          total_fee: totalFee
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update fee");
+    }
+
+    alert("✅ Fee updated successfully.");
+
+    await loadAdminFeeRecords();
+
+  } catch (error) {
+    console.error(error);
+    alert("❌ " + error.message);
+  }
+}
+
+
+async function deleteFeeRecord(studentId) {
+  const confirmDelete = confirm(
+    "⚠️ Are you sure you want to delete this fee record?"
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("micl_token");
+
+    const response = await fetch(
+      "/api/admin/fee-records/" + studentId,
+      {
+        method: "DELETE",
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to delete fee record");
+    }
+
+    alert("✅ Fee record deleted successfully.");
+
+    await loadAdminFeeRecords();
+
+  } catch (error) {
+    console.error(error);
+    alert("❌ " + error.message);
   }
 }
   async function updateStudentTotalFee() {
