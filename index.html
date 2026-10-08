@@ -353,22 +353,96 @@ box-sizing:border-box;
 </section>
 <section id="profile" class="screen" style="display:none !important;">
 
+<h2>👤 Admin Profile</h2>
 
+<div class="card">
 
-  <div class="card">
-  <h3>🔐 Password Management</h3>
+<h3>👤 Account Information</h3>
 
-  <input id="currentPassword" type="password" placeholder="Current Password">
+<p>
+<b>Name:</b>
+<span id="profileName">Loading...</span>
+</p>
 
-  <input id="newPassword" type="password" placeholder="New Password">
+<p>
+<b>Username / Login ID:</b>
+<span id="profileUsername">Loading...</span>
+</p>
 
-  <input id="confirmPassword" type="password" placeholder="Confirm New Password">
+<p>
+<b>Email:</b>
+<span id="profileEmail">Loading...</span>
+</p>
 
-  <button class="btn" onclick="changePassword()">Change Password</button>
+<p>
+<b>Phone:</b>
+<span id="profilePhone">-</span>
+</p>
 
-  <p id="passwordStatus"></p>
+<p>
+<b>Role:</b>
+<span id="profileRole">Admin</span>
+</p>
+
+<p>
+<b>Account Status:</b>
+<span style="color:green;font-weight:bold;">Active</span>
+</p>
+
 </div>
-  </section>
+
+<div class="card">
+
+<h3>✏️ Edit Admin Profile</h3>
+
+<input id="editProfileName" placeholder="Admin Name">
+
+<input id="editProfilePhone" placeholder="Phone Number">
+
+<button class="btn" onclick="saveAdminProfile()">
+💾 Save Profile
+</button>
+
+<p id="profileStatus"></p>
+
+</div>
+
+<div class="card">
+
+<h3>🔐 Password Management</h3>
+
+<input id="currentPassword" type="password" placeholder="Current Password">
+
+<input id="newPassword" type="password" placeholder="New Password">
+
+<input id="confirmPassword" type="password" placeholder="Confirm New Password">
+
+<button class="btn" onclick="changePassword()">
+🔑 Change Password
+</button>
+
+<p id="passwordStatus"></p>
+
+</div>
+
+<div class="card">
+
+<h3>🛡️ Security</h3>
+
+<p><b>Account:</b> Admin</p>
+
+<p>
+<b>Status:</b>
+<span style="color:green;">Secure / Active</span>
+</p>
+
+<button class="btn" onclick="logout()">
+🚪 Logout
+</button>
+
+</div>
+
+</section>
   
 <section id="settings" class="screen">
 
@@ -497,6 +571,30 @@ Logout
     '✅ School information saved successfully';
 
   document.getElementById('schoolInfoStatus').style.color = 'green';
+}
+  function saveAdminProfile() {
+  const name = document.getElementById('editProfileName').value.trim();
+  const phone = document.getElementById('editProfilePhone').value.trim();
+  const status = document.getElementById('profileStatus');
+
+  if (!name) {
+    status.textContent = 'Please enter admin name';
+    status.style.color = 'red';
+    return;
+  }
+
+  const profile = {
+    name: name,
+    phone: phone
+  };
+
+  localStorage.setItem('micl_admin_profile', JSON.stringify(profile));
+
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profilePhone').textContent = phone || '-';
+
+  status.textContent = '✅ Admin profile saved successfully';
+  status.style.color = 'green';
 }
   async function changePassword() {
   const currentPassword = document.getElementById('currentPassword').value;
