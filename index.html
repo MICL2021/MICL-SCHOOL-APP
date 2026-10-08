@@ -302,7 +302,63 @@ box-sizing:border-box;
 </section>
   <section id="feemanagement" class="screen">
   <h2>💰 Fee Management</h2>
+<div class="card">
+  <h3>📊 Fee Summary</h3>
 
+  <p>
+    <b>💰 Total Fee:</b>
+    ₹ <span id="adminTotalFee">0</span>
+  </p>
+
+  <p>
+    <b>✅ Paid Fee:</b>
+    ₹ <span id="adminPaidFee">0</span>
+  </p>
+
+  <p>
+    <b>⚠️ Balance Fee:</b>
+    ₹ <span id="adminBalanceFee">0</span>
+  </p>
+</div>
+
+<div class="card">
+  <h3>👨‍🎓 Student Fee Management</h3>
+
+  <input
+    id="feeStudentId"
+    type="number"
+    placeholder="Enter Student ID"
+  >
+
+  <input
+    id="feeTotalAmount"
+    type="number"
+    placeholder="Enter Total Fee"
+    min="0"
+  >
+
+  <button
+    class="btn"
+    onclick="updateStudentTotalFee()"
+  >
+    💾 Save Total Fee
+  </button>
+
+  <p id="adminFeeStatus"></p>
+</div>
+
+<div class="card">
+  <h3>📋 Student Fee Records</h3>
+
+  <button
+    class="btn"
+    onclick="loadAdminFeeRecords()"
+  >
+    🔄 Load Fee Records
+  </button>
+
+  <div id="adminFeeRecords"></div>
+</div>
   <div class="card">
     <h3>🏦 School Fee Account</h3>
 
@@ -1421,6 +1477,66 @@ function toggleMenu() {
 function home() {
   show('home', 'MICL');
   }
+  async function loadAdminFeeRecords() {
+  try {
+    const token = localStorage.getItem("micl_token");
+
+    const response = await fetch("/api/admin/fee-records", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const records = await response.json();
+
+    if (!response.ok) {
+      throw new Error(records.error || "Failed to load fee records");
+    }
+
+    let totalFee = 0;
+    let paidFee = 0;
+    let balanceFee = 0;
+
+    records.forEach(r => {
+      totalFee += Number(r.total_fee || 0);
+      paidFee += Number(r.paid_fee || 0);
+      balanceFee += Number(r.balance_fee || 0);
+    });
+
+    document.getElementById("adminTotalFee").textContent =
+      totalFee.toLocaleString("en-IN");
+
+    document.getElementById("adminPaidFee").textContent =
+      paidFee.toLocaleString("en-IN");
+
+    document.getElementById("adminBalanceFee").textContent =
+      balanceFee.toLocaleString("en-IN");
+
+    const box = document.getElementById("adminFeeRecords");
+
+    if (!records.length) {
+      box.innerHTML = "<p>No fee records found.</p>";
+      return;
+    }
+
+    box.innerHTML = records.map(r => `
+      <div class="card" style="margin-top:10px;">
+        <p><b>Student:</b> ${r.name || ""}</p>
+        <p><b>Admission No:</b> ${r.admission_no || ""}</p>
+        <p><b>Class:</b> ${r.class_name || ""} ${r.section || ""}</p>
+        <p><b>Total Fee:</b> ₹${Number(r.total_fee || 0).toLocaleString("en-IN")}</p>
+        <p><b>Paid Fee:</b> ₹${Number(r.paid_fee || 0).toLocaleString("en-IN")}</p>
+        <p><b>Balance Fee:</b> ₹${Number(r.balance_fee || 0).toLocaleString("en-IN")}</p>
+        <p><b>Status:</b> ${r.status || "Pending"}</p>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    console.error(error);
+    document.getElementById("adminFeeRecords").innerHTML =
+      "<p style='color:red;'>Unable to load fee records.</p>";
+  }
+}
 </script>
 </body>
 </html>
