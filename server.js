@@ -93,7 +93,7 @@ function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).j
 app.get("/api/admin/students",auth,admin,(req,res)=>{
   try{
     const students=db.prepare(`
-      SELECT id,name,admission_no,class_name,section
+      SELECT id,name,email,admission_no,class_name,section
       FROM users
       WHERE role='student'
       ORDER BY name ASC
