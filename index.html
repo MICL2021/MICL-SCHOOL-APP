@@ -1438,6 +1438,13 @@ function show(id, title) {
   loadFeeStudents();
   loadAdminFeeRecords();
 }
+      if (id === 'studentList') {
+  loadStudents();
+}
+
+if (id === 'teacherList') {
+  loadTeachers();
+}
     } else {
         alert('Page not found: ' + id);
     }
