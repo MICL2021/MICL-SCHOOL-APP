@@ -273,6 +273,33 @@ box-sizing:border-box;
 <h2>Teacher List</h2>
 <div id="teachersBox" class="card">Loading...</div>
 </section>
+  <section id="teacherDashboard" class="screen">
+  <h2>👨‍🏫 Teacher Dashboard</h2>
+
+  <div class="card">
+    <h3>My Assigned Class — Students</h3>
+    <button class="btn" onclick="loadTeacherStudents()">
+      View My Students
+    </button>
+    <div id="teacherStudentsBox">Students yahan dikhenge.</div>
+  </div>
+
+  <div class="card">
+    <h3>Class Attendance</h3>
+    <button class="btn" onclick="loadTeacherAttendance()">
+      View Attendance
+    </button>
+    <div id="teacherAttendanceBox">Attendance yahan dikhegi.</div>
+  </div>
+
+  <div class="card">
+    <h3>Class Results</h3>
+    <button class="btn" onclick="loadTeacherResults()">
+      View Marks
+    </button>
+    <div id="teacherResultsBox">Marks yahan dikhenge.</div>
+  </div>
+</section>
 <section id="notices" class="screen"><h2>Notice Board</h2><div class="card"><b>📢 Parent-Teacher Meeting</b><p>Important meeting for parents and teachers.</p><span class="badge">Academic</span></div><div class="card"><b>☀️ Summer Vacation</b><p>School holiday schedule will be announced here.</p></div><div class="card"><b>🏆 Inter-House Sports Competition</b><p>Students can register through their class teacher.</p></div></section>
 
 <section id="timetable" class="screen"><h2>School Timetable</h2><div class="card"><span class="badge">Monday</span><div class="row"><b>1</b> English <span>Teacher</span></div><div class="row"><b>2</b> Mathematics <span>Teacher</span></div><div class="row"><b>3</b> Science <span>Teacher</span></div><div class="row"><b>4</b> Social Science <span>Teacher</span></div><div class="row"><b>5</b> Computer <span>Teacher</span></div></div></section>
@@ -916,7 +943,7 @@ const data = await response.json();
       document.getElementById('teacherMenuButton').style.display = 'block';
     } else if (data.user.role === 'teacher') {
       alert('Welcome Teacher');
-      show('home', 'Teacher Dashboard');
+      show('teacherDashboard', 'Teacher Dashboard');
     } else {
       alert('Welcome Student');
       show('home', 'MICL');
@@ -1612,7 +1639,125 @@ async function editTeacher(id) {
   alert("Teacher updated successfully");
   loadTeachers();
 }
-function show(id, title) {
+function teacherEscape(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+}
+
+async function loadTeacherStudents() {
+  const box = document.getElementById('teacherStudentsBox');
+  box.textContent = 'Loading students...';
+
+  try {
+    const response = await fetch('/api/teacher/students', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      box.textContent = data.error || 'Could not load students';
+      return;
+    }
+
+    if (!data.length) {
+      box.textContent = 'No students assigned to your class.';
+      return;
+    }
+
+    box.innerHTML = data.map(s => `
+      <div class="card">
+        <b>${teacherEscape(s.name)}</b>
+        <p>Admission No: ${teacherEscape(s.admission_no || '-')}</p>
+        <p>Class: ${teacherEscape(s.class_name || '-')}
+        ${teacherEscape(s.section || '')}</p>
+      </div>
+    `).join('');
+  } catch (error) {
+    box.textContent = 'Server connection error';
+  }
+}
+
+async function loadTeacherAttendance() {
+  const box = document.getElementById('teacherAttendanceBox');
+  box.textContent = 'Loading attendance...';
+
+  try {
+    const response = await fetch('/api/teacher/attendance', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      box.textContent = data.error || 'Could not load attendance';
+      return;
+    }
+
+    if (!data.length) {
+      box.textContent = 'No attendance records found.';
+      return;
+    }
+
+    box.innerHTML = data.map(r => `
+      <div class="card">
+        <b>${teacherEscape(r.name)}</b>
+        <p>Date: ${teacherEscape(r.date || '-')}</p>
+        <p>Status: ${teacherEscape(r.status || '-')}</p>
+        <p>Subject: ${teacherEscape(r.subject || '-')}</p>
+      </div>
+    `).join('');
+  } catch (error) {
+    box.textContent = 'Server connection error';
+  }
+}
+
+async function loadTeacherResults() {
+  const box = document.getElementById('teacherResultsBox');
+  box.textContent = 'Loading results...';
+
+  try {
+    const response = await fetch('/api/teacher/results', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      box.textContent = data.error || 'Could not load results';
+      return;
+    }
+
+    if (!data.length) {
+      box.textContent = 'No results found.';
+      return;
+    }
+
+    box.innerHTML = data.map(r => `
+      <div class="card">
+        <b>${teacherEscape(r.name)}</b>
+        <p>Exam: ${teacherEscape(r.exam || '-')}</p>
+        <p>Subject: ${teacherEscape(r.subject || '-')}</p>
+        <p>Marks: ${teacherEscape(r.marks ?? '-')}
+        / ${teacherEscape(r.max_marks ?? '-')}</p>
+      </div>
+    `).join('');
+  } catch (error) {
+    box.textContent = 'Server connection error';
+  }
+}
+  function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
         x.style.setProperty('display', 'none', 'important');
