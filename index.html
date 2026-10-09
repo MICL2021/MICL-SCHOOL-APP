@@ -218,7 +218,8 @@ box-sizing:border-box;
 <input id="teacherPhone" placeholder="Phone No.">
 
 <input id="teacherQualification" placeholder="Qualification">
-
+<input id="teacherClass" placeholder="Assigned Class (e.g. 8th)">
+<input id="teacherSection" placeholder="Assigned Section (e.g. A)">
 <input id="teacherUsername" placeholder="Username">
 
 <input id="teacherPassword" type="password" placeholder="Password">
@@ -965,9 +966,11 @@ document.getElementById('menuOverlay').classList.remove('open');
   const phone = document.getElementById('teacherPhone').value.trim();
   const qualification = document.getElementById('teacherQualification').value.trim();
   const username = document.getElementById('teacherUsername').value.trim();
+    const class_name = document.getElementById('teacherClass').value.trim();
+const section = document.getElementById('teacherSection').value.trim();
   const password = document.getElementById('teacherPassword').value;
 
-  if (!name || !email || !phone || !qualification || !username || !password) {
+  if (!name || !email || !phone || !qualification || !class_name || !section || !username || !password) {
     alert('Please fill all teacher details');
     return;
   }
@@ -986,6 +989,8 @@ document.getElementById('menuOverlay').classList.remove('open');
         email,
         phone,
         qualification,
+        class_name,
+section,
         username,
         password,
         role: 'teacher'
