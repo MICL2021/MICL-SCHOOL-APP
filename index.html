@@ -304,7 +304,12 @@ box-sizing:border-box;
 
 <section id="timetable" class="screen"><h2>School Timetable</h2><div class="card"><span class="badge">Monday</span><div class="row"><b>1</b> English <span>Teacher</span></div><div class="row"><b>2</b> Mathematics <span>Teacher</span></div><div class="row"><b>3</b> Science <span>Teacher</span></div><div class="row"><b>4</b> Social Science <span>Teacher</span></div><div class="row"><b>5</b> Computer <span>Teacher</span></div></div></section>
 
-<section id="attendance" class="screen"><h2>Attendance</h2><div class="card"><h3>June 2026</h3><div class="row">English <span class="ok">✓ Present</span></div><div class="row">Mathematics <span class="ok">✓ Present</span></div><div class="row">Science <span class="ok">✓ Present</span></div><div class="row">Social Science <span class="ok">✓ Present</span></div><p><b>Total Attendance: 96%</b></p></div></section>
+<section id="attendance" class="screen">
+  <h2>Attendance</h2>
+  <div id="studentAttendanceBox" class="card">
+    Loading your attendance...
+  </div>
+</section>
 
 <section id="homework" class="screen"><h2>Homework</h2><div class="card"><b>Mathematics Homework</b><p>Chapter 5 — Exercise 5.2</p><span class="badge">Due: Friday</span></div><div class="card"><b>Science Assignment</b><p>Make a chart on “Our Environment”.</p></div><div class="card"><b>English Homework</b><p>Write a letter to your friend.</p></div></section>
 
@@ -1757,6 +1762,40 @@ async function loadTeacherResults() {
     box.textContent = 'Server connection error';
   }
 }
+  async function loadStudentAttendance() {
+  const box = document.getElementById('studentAttendanceBox');
+  box.textContent = 'Loading your attendance...';
+
+  try {
+    const response = await fetch('/api/attendance', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      box.textContent = data.error || 'Could not load attendance';
+      return;
+    }
+
+    if (!data.length) {
+      box.textContent = 'No attendance records found.';
+      return;
+    }
+
+    box.innerHTML = data.map(a => `
+      <div class="card">
+        <b>${teacherEscape(a.subject || '-')}</b>
+        <p>Date: ${teacherEscape(a.date || '-')}</p>
+        <p>Status: ${teacherEscape(a.status || '-')}</p>
+      </div>
+    `).join('');
+  } catch (error) {
+    box.textContent = 'Server connection error';
+  }
+}
   function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
@@ -1779,6 +1818,9 @@ async function loadTeacherResults() {
 
 if (id === 'teacherList') {
   loadTeachers();
+}
+      if (id === 'attendance') {
+  loadStudentAttendance();
 }
     } else {
         alert('Page not found: ' + id);
