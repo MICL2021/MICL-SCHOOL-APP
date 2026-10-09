@@ -309,6 +309,28 @@ box-sizing:border-box;
   <div id="studentAttendanceBox" class="card">
     Loading your attendance...
   </div>
+  <div id="adminAttendanceControls" class="card" style="display:none;">
+  <h3>Mark Student Attendance</h3>
+
+  <select id="attendanceStudentId">
+    <option value="">Select Student</option>
+  </select>
+
+  <input id="attendanceDate" type="date">
+
+  <select id="attendanceStatus">
+    <option value="Present">Present</option>
+    <option value="Absent">Absent</option>
+  </select>
+
+  <input id="attendanceSubject" placeholder="Subject">
+
+  <button class="btn" onclick="submitAttendance()">
+    Save Attendance
+  </button>
+
+  <p id="attendanceSaveStatus"></p>
+</div>
 </section>
 
 <section id="homework" class="screen"><h2>Homework</h2><div class="card"><b>Mathematics Homework</b><p>Chapter 5 — Exercise 5.2</p><span class="badge">Due: Friday</span></div><div class="card"><b>Science Assignment</b><p>Make a chart on “Our Environment”.</p></div><div class="card"><b>English Homework</b><p>Write a letter to your friend.</p></div></section>
@@ -1796,6 +1818,73 @@ async function loadTeacherResults() {
     box.textContent = 'Server connection error';
   }
 }
+  async function loadAttendanceStudents() {
+  const select = document.getElementById('attendanceStudentId');
+  select.innerHTML = '<option value="">Loading students...</option>';
+
+  try {
+    const response = await fetch('/api/admin/students', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+      }
+    });
+
+    const students = await response.json();
+
+    if (!response.ok) {
+      select.innerHTML = '<option value="">Could not load students</option>';
+      return;
+    }
+
+    select.innerHTML = '<option value="">Select Student</option>';
+
+    students.forEach(s => {
+      const option = document.createElement('option');
+      option.value = s.id;
+      option.textContent = s.name + ' — ' + (s.admission_no || s.id);
+      select.appendChild(option);
+    });
+  } catch (error) {
+    select.innerHTML = '<option value="">Server connection error</option>';
+  }
+}
+
+async function submitAttendance() {
+  const student_id = document.getElementById('attendanceStudentId').value;
+  const date = document.getElementById('attendanceDate').value;
+  const status = document.getElementById('attendanceStatus').value;
+  const subject = document.getElementById('attendanceSubject').value.trim();
+  const message = document.getElementById('attendanceSaveStatus');
+
+  if (!student_id || !date || !subject) {
+    message.textContent = 'Student, date aur subject bharein.';
+    return;
+  }
+
+  message.textContent = 'Saving attendance...';
+
+  try {
+    const response = await fetch('/api/admin/attendance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+      },
+      body: JSON.stringify({ student_id, date, status, subject })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      message.textContent = data.error || 'Attendance save nahi hui.';
+      return;
+    }
+
+    message.textContent = 'Attendance saved successfully.';
+  } catch (error) {
+    message.textContent = 'Server connection error.';
+  }
+}
   function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
@@ -1820,7 +1909,32 @@ if (id === 'teacherList') {
   loadTeachers();
 }
       if (id === 'attendance') {
+const currentUser = JSON.parse(
+  localStorage.getItem('micl_user') || '{}'
+);
+
+const adminControls =
+  document.getElementById('adminAttendanceControls');
+
+const studentBox =
+  document.getElementById('studentAttendanceBox');
+
+if (currentUser.role === 'admin') {
+  if (adminControls) adminControls.style.display = 'block';
+  if (studentBox) studentBox.style.display = 'none';
+  loadAttendanceStudents();
+} else if (currentUser.role === 'student') {
+  if (adminControls) adminControls.style.display = 'none';
+  if (studentBox) studentBox.style.display = 'block';
   loadStudentAttendance();
+} else {
+  if (adminControls) adminControls.style.display = 'none';
+  if (studentBox) {
+    studentBox.style.display = 'block';
+    studentBox.textContent = 'Teacher: use Teacher Dashboard to view assigned class attendance.';
+  }
+}
+  
 }
     } else {
         alert('Page not found: ' + id);
