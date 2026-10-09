@@ -90,6 +90,108 @@ res.json({token,user:{id:u.id,name:u.name,email:u.email,role:u.role,class_name:u
 });
 function auth(req,res,next){try{const h=req.headers.authorization||"";req.user=jwt.verify(h.replace("Bearer ",""),SECRET);next()}catch(e){res.status(401).json({error:"Unauthorized"})}}
 function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).json({error:"Admin access required"});next()}
+function teacherOnly(req, res, next) {
+  if (req.user.role !== "teacher") {
+    return res.status(403).json({
+      error: "Teacher access required"
+    });
+  }
+  next();
+}
+
+app.get("/api/teacher/students", auth, teacherOnly, (req, res) => {
+  try {
+    const teacher = db.prepare(
+      "SELECT class_name, section FROM users WHERE id=? AND role='teacher'"
+    ).get(req.user.id);
+
+    if (!teacher || !teacher.class_name || !teacher.section) {
+      return res.status(400).json({
+        error: "No class assigned to this teacher"
+      });
+    }
+
+    const students = db.prepare(`
+      SELECT id, name, email, admission_no, class_name, section
+      FROM users
+      WHERE role='student'
+        AND class_name=?
+        AND section=?
+      ORDER BY name ASC
+    `).all(teacher.class_name, teacher.section);
+
+    res.json(students);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Could not load assigned students"
+    });
+  }
+});
+
+app.get("/api/teacher/attendance", auth, teacherOnly, (req, res) => {
+  try {
+    const teacher = db.prepare(
+      "SELECT class_name, section FROM users WHERE id=? AND role='teacher'"
+    ).get(req.user.id);
+
+    if (!teacher || !teacher.class_name || !teacher.section) {
+      return res.status(400).json({
+        error: "No class assigned to this teacher"
+      });
+    }
+
+    const records = db.prepare(`
+      SELECT u.id AS student_id, u.name, u.admission_no,
+             a.date, a.status, a.subject
+      FROM attendance a
+      JOIN users u ON u.id = a.student_id
+      WHERE u.role='student'
+        AND u.class_name=?
+        AND u.section=?
+      ORDER BY a.date DESC
+    `).all(teacher.class_name, teacher.section);
+
+    res.json(records);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Could not load class attendance"
+    });
+  }
+});
+
+app.get("/api/teacher/results", auth, teacherOnly, (req, res) => {
+  try {
+    const teacher = db.prepare(
+      "SELECT class_name, section FROM users WHERE id=? AND role='teacher'"
+    ).get(req.user.id);
+
+    if (!teacher || !teacher.class_name || !teacher.section) {
+      return res.status(400).json({
+        error: "No class assigned to this teacher"
+      });
+    }
+
+    const records = db.prepare(`
+      SELECT u.id AS student_id, u.name, u.admission_no,
+             r.exam, r.subject, r.marks, r.max_marks
+      FROM results r
+      JOIN users u ON u.id = r.student_id
+      WHERE u.role='student'
+        AND u.class_name=?
+        AND u.section=?
+      ORDER BY u.name ASC
+    `).all(teacher.class_name, teacher.section);
+
+    res.json(records);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Could not load class results"
+    });
+  }
+});
 app.get("/api/admin/students",auth,admin,(req,res)=>{
   try{
     const students=db.prepare(`
