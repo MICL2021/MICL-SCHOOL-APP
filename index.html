@@ -995,6 +995,14 @@ const data = await response.json();
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';
 applyRoleMenu(data.user.role);
+    document.getElementById('profileName').textContent =
+  data.user.name || '-';
+document.getElementById('profileUsername').textContent =
+  data.user.username || data.user.email || '-';
+document.getElementById('profileEmail').textContent =
+  data.user.email || '-';
+document.getElementById('profilePhone').textContent =
+  data.user.phone || '-';
     if (data.user.role === 'admin') {
       alert('Welcome Admin');
       show('home', 'Admin Dashboard');
