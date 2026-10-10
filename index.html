@@ -309,7 +309,14 @@ box-sizing:border-box;
       View My Attendance
     </button>
   </div>
-
+<div class="card">
+  <h3>👤 My Details</h3>
+  <p>Name: <span id="studentProfileName">-</span></p>
+  <p>Email: <span id="studentProfileEmail">-</span></p>
+  <p>Class: <span id="studentProfileClass">-</span></p>
+  <p>Section: <span id="studentProfileSection">-</span></p>
+  <p>Admission No: <span id="studentProfileAdmission">-</span></p>
+</div>
   <div class="card">
     <h3>My Homework</h3>
     <button class="btn" onclick="show('homework','Homework')">
@@ -998,6 +1005,11 @@ const data = await response.json();
     } else {
       alert('Welcome Student');
       show('studentDashboard', 'Student Dashboard');
+      document.getElementById('studentProfileName').textContent = data.user.name || '-';
+document.getElementById('studentProfileEmail').textContent = data.user.email || '-';
+document.getElementById('studentProfileClass').textContent = data.user.class_name || '-';
+document.getElementById('studentProfileSection').textContent = data.user.section || '-';
+document.getElementById('studentProfileAdmission').textContent = data.user.admission_no || '-';
     }
   } catch (e) {
     alert('Server connection error');
