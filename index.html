@@ -1996,6 +1996,37 @@ function home() {
     show('home', 'Admin Dashboard');
   }
 }
+  function applyRoleMenu(role) {
+  const buttons = document.querySelectorAll('#sideMenu button');
+
+  const allowed = [
+    'home',
+    'notices',
+    'attendance',
+    'profile',
+    'settings',
+    'logout',
+    'about school'
+  ];
+
+  buttons.forEach(button => {
+    const label = button.textContent
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (role === 'admin') {
+      button.style.display = '';
+    } else if (
+      role === 'student' || role === 'teacher'
+    ) {
+      button.style.display = allowed.some(
+        item => label.includes(item)
+      ) ? '' : 'none';
+    }
+  });
+}
   async function loadAdminFeeRecords() {
   try {
     const token = localStorage.getItem("micl_token");
