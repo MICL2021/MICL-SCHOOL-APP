@@ -952,6 +952,10 @@ function setRole(selectedRole) {
   document.getElementById('adminPasswordCard').style.display =
   role === 'admin' ? '' : 'none';
 document.body.dataset.role = role;
+  const passwordCard = document.getElementById('adminPasswordCard');
+if (passwordCard) {
+  passwordCard.style.display = role === 'admin' ? 'block' : 'none';
+}
  document.getElementById('loginTitle').innerText =
   role === 'admin' ? 'Admin Login' : role === 'teacher' ? 'Teacher Login' : 'Student Login';
 
