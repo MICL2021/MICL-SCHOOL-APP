@@ -552,7 +552,7 @@ box-sizing:border-box;
 <div class="card">
 <p>
 <b>Role:</b>
-<span id="profileRole">Admin</span>
+<span id="profileRole">-</span>
 </p>
 
 <p>
@@ -601,7 +601,7 @@ box-sizing:border-box;
 
 <h3>🛡️ Security</h3>
 
-<p><b>Account:</b> Admin</p>
+<p><b>Account:</b> <span id="securityAccount">-</span></p>
 
 <p>
 <b>Status:</b>
@@ -1019,6 +1019,10 @@ document.getElementById('profileEmail').textContent =
   data.user.email || '-';
 document.getElementById('profilePhone').textContent =
   data.user.phone || '-';
+    document.getElementById('profileRole').textContent =
+    data.user.role || 'student';
+
+
     if (data.user.role === 'admin') {
       alert('Welcome Admin');
       show('home', 'Admin Dashboard');
