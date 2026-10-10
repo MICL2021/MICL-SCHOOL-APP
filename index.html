@@ -549,7 +549,7 @@ box-sizing:border-box;
 <b>Phone:</b>
 <span id="profilePhone">-</span>
 </p>
-
+<div class="card">
 <p>
 <b>Role:</b>
 <span id="profileRole">Admin</span>
@@ -579,7 +579,7 @@ box-sizing:border-box;
 
 </div>
 
-<div class="card">
+<div class="card" id="adminPasswordCard">
 
 <h3>🔐 Password Management</h3>
 
@@ -855,7 +855,7 @@ async function deleteAdminProfile() {
 
     if (!response.ok) {
       status.textContent = data.error || 'Password change failed';
-      status.style.color = 'red';
+      status.style.color = 'red'; 
       return;
     }
 
@@ -949,7 +949,9 @@ let role = 'student';
 
 function setRole(selectedRole) {
   role = selectedRole;
-
+  document.getElementById('adminPasswordCard').style.display =
+  role === 'admin' ? '' : 'none';
+document.body.dataset.role = role;
  document.getElementById('loginTitle').innerText =
   role === 'admin' ? 'Admin Login' : role === 'teacher' ? 'Teacher Login' : 'Student Login';
 
