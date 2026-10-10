@@ -2034,6 +2034,14 @@ function home() {
     }
   });
 }
+  
+const adminProfileCard = document.getElementById('adminProfileCard');
+
+if (adminProfileCard) {
+  adminProfileCard.style.display =
+    role === 'admin' ? 'block' : 'none';
+}
+
   async function loadAdminFeeRecords() {
   try {
     const token = localStorage.getItem("micl_token");
