@@ -945,12 +945,23 @@ function submitOnlineFee() {
 }
 
 let role = 'student';
+function applyRoleMenu(userRole) {
+    const role = String(userRole || 'student').toLowerCase();
 
+    const passwordCard = document.getElementById('adminPasswordCard');
+    if (passwordCard) {
+        passwordCard.style.display = role === 'admin' ? 'block' : 'none';
+    }
+
+    const teacherButton = document.getElementById('teacherMenuButton');
+    if (teacherButton) {
+        teacherButton.style.display = role === 'admin' ? 'block' : 'none';
+    }
+}
 
 function setRole(selectedRole) {
   role = selectedRole;
-  document.getElementById('adminPasswordCard').style.display =
-  role === 'admin' ? '' : 'none';
+  
 document.body.dataset.role = role;
   const passwordCard = document.getElementById('adminPasswordCard');
 if (passwordCard) {
