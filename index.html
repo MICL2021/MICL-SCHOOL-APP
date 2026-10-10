@@ -1984,8 +1984,18 @@ function toggleMenu() {
   if (overlay) overlay.classList.toggle('open');
 }
 function home() {
-  show('home', 'MICL');
+  const user = JSON.parse(
+    localStorage.getItem('micl_user') || '{}'
+  );
+
+  if (user.role === 'student') {
+    show('studentDashboard', 'Student Dashboard');
+  } else if (user.role === 'teacher') {
+    show('teacherDashboard', 'Teacher Dashboard');
+  } else {
+    show('home', 'Admin Dashboard');
   }
+}
   async function loadAdminFeeRecords() {
   try {
     const token = localStorage.getItem("micl_token");
