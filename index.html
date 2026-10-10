@@ -300,7 +300,31 @@ box-sizing:border-box;
     <div id="teacherResultsBox">Marks yahan dikhenge.</div>
   </div>
 </section>
-<section id="notices" class="screen"><h2>Notice Board</h2><div class="card"><b>📢 Parent-Teacher Meeting</b><p>Important meeting for parents and teachers.</p><span class="badge">Academic</span></div><div class="card"><b>☀️ Summer Vacation</b><p>School holiday schedule will be announced here.</p></div><div class="card"><b>🏆 Inter-House Sports Competition</b><p>Students can register through their class teacher.</p></div></section>
+<section id="studentDashboard" class="screen">
+  <h2>🎓 Student Dashboard</h2>
+
+  <div class="card">
+    <h3>My Attendance</h3>
+    <button class="btn" onclick="show('attendance','Attendance')">
+      View My Attendance
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>My Homework</h3>
+    <button class="btn" onclick="show('homework','Homework')">
+      View Homework
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>My Results</h3>
+    <button class="btn" onclick="show('results','Exams & Results')">
+      View My Results
+    </button>
+  </div>
+</section>
+  <section id="notices" class="screen"><h2>Notice Board</h2><div class="card"><b>📢 Parent-Teacher Meeting</b><p>Important meeting for parents and teachers.</p><span class="badge">Academic</span></div><div class="card"><b>☀️ Summer Vacation</b><p>School holiday schedule will be announced here.</p></div><div class="card"><b>🏆 Inter-House Sports Competition</b><p>Students can register through their class teacher.</p></div></section>
 
 <section id="timetable" class="screen"><h2>School Timetable</h2><div class="card"><span class="badge">Monday</span><div class="row"><b>1</b> English <span>Teacher</span></div><div class="row"><b>2</b> Mathematics <span>Teacher</span></div><div class="row"><b>3</b> Science <span>Teacher</span></div><div class="row"><b>4</b> Social Science <span>Teacher</span></div><div class="row"><b>5</b> Computer <span>Teacher</span></div></div></section>
 
@@ -973,7 +997,7 @@ const data = await response.json();
       show('teacherDashboard', 'Teacher Dashboard');
     } else {
       alert('Welcome Student');
-      show('home', 'MICL');
+      show('studentDashboard', 'Student Dashboard');
     }
   } catch (e) {
     alert('Server connection error');
