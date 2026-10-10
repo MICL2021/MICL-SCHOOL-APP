@@ -994,7 +994,7 @@ const data = await response.json();
 
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-
+applyRoleMenu(data.user.role);
     if (data.user.role === 'admin') {
       alert('Welcome Admin');
       show('home', 'Admin Dashboard');
