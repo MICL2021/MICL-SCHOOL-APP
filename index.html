@@ -549,6 +549,11 @@ box-sizing:border-box;
 <b>Phone:</b>
 <span id="profilePhone">-</span>
 </p>
+  <p><b>Father Name:</b> <span id="profileFatherName">-</span></p>
+<p><b>Mother Name:</b> <span id="profileMotherName">-</span></p>
+<p><b>Date of Birth:</b> <span id="profileDob">-</span></p>
+<p><b>Address:</b> <span id="profileAddress">-</span></p>
+<p><b>Caste:</b> <span id="profileCaste">-</span></p>
 <div class="card">
 <p>
 <b>Role:</b>
@@ -1019,6 +1024,16 @@ document.getElementById('profileEmail').textContent =
   data.user.email || '-';
 document.getElementById('profilePhone').textContent =
   data.user.phone || '-';
+    document.getElementById('profileFatherName').textContent =
+    data.user.father_name || '-';
+document.getElementById('profileMotherName').textContent =
+    data.user.mother_name || '-';
+document.getElementById('profileDob').textContent =
+    data.user.dob || '-';
+document.getElementById('profileAddress').textContent =
+    data.user.address || '-';
+document.getElementById('profileCaste').textContent =
+    data.user.caste || '-';
     document.getElementById('profileRole').textContent =
     data.user.role || 'student';
 
