@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS gallery(id INTEGER PRIMARY KEY AUTOINCREMENT,title TE
 const columns = [
   ["father_name", "TEXT"],
   ["mother_name", "TEXT"],
+  ["dob", "TEXT"],
   ["phone", "TEXT"],
   ["qualification", "TEXT"],
   ["address", "TEXT"],
@@ -372,6 +373,11 @@ app.post("/api/admin/users",auth,admin,(req,res)=>{
     class_name,
     section,
     admission_no,
+    father_name,
+mother_name,
+dob,
+address,
+caste,
     phone,
     qualification,
     username
@@ -379,7 +385,7 @@ app.post("/api/admin/users",auth,admin,(req,res)=>{
 
   try{
     const r=db.prepare(
-      "INSERT INTO users(name,email,password,role,class_name,section,admission_no,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?)"
+      "INSERT INTO users(name,email,password,role,class_name,section,admission_no,father_name,mother_name,dob,address,caste,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
     ).run(
       name,
       email,
@@ -388,6 +394,11 @@ app.post("/api/admin/users",auth,admin,(req,res)=>{
       class_name,
       section,
       admission_no,
+      father_name,
+mother_name,
+dob,
+address,
+caste,
       phone,
       qualification,
       username
