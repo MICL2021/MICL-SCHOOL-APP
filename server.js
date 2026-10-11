@@ -351,7 +351,7 @@ app.post("/api/change-password",auth,(req,res)=>{
 
   res.json({message:"Password changed successfully"});
 });
-app.get("/api/me",auth,(req,res)=>res.json(db.prepare("SELECT id,name,email,role,class_name,section,admission_no FROM users WHERE id=?").get(req.user.id)));
+app.get("/api/me",auth,(req,res)=>res.json(db.prepare("SELECT id,name,email,phone,role,class_name,section,admission_no FROM users WHERE id=?").get(req.user.id)));
 app.get("/api/notices",auth,(req,res)=>res.json(db.prepare("SELECT * FROM notices ORDER BY id DESC").all()));
 app.get("/api/timetable",auth,(req,res)=>res.json(db.prepare("SELECT * FROM timetable ORDER BY CASE day WHEN 'Monday' THEN 1 WHEN 'Tuesday' THEN 2 WHEN 'Wednesday' THEN 3 WHEN 'Thursday' THEN 4 WHEN 'Friday' THEN 5 WHEN 'Saturday' THEN 6 END,period").all()));
 app.get("/api/homework",auth,(req,res)=>res.json(db.prepare("SELECT * FROM homework ORDER BY due_date").all()));
