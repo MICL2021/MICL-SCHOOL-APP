@@ -99,7 +99,12 @@ res.json({
     role: u.role,
     class_name: u.class_name,
     section: u.section,
-    admission_no: u.admission_no
+    admission_no: u.admission_no,
+father_name: u.father_name || "",
+mother_name: u.mother_name || "",
+dob: u.dob || "",
+address: u.address || "",
+caste: u.caste || ""
   }
 });
 
