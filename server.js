@@ -86,7 +86,22 @@ const login=String(email||"").trim();
 const u=db.prepare("SELECT * FROM users WHERE email=? OR admission_no=? OR username=?").get(login,login,login);
 if(!u||!bcrypt.compareSync(password||"",u.password))return res.status(401).json({error:"Invalid username/email or password"});
 const token=jwt.sign({id:u.id,role:u.role},SECRET,{expiresIn:"7d"});
-res.json({token,user:{id:u.id,name:u.name,email:u.email,role:u.role,class_name:u.class_name,section:u.section,admission_no:u.admission_no}});
+
+res.json({
+  token,
+  user: {
+    id: u.id,
+    name: u.name,
+    username: u.username,
+    email: u.email,
+    phone: u.phone || "",
+    role: u.role,
+    class_name: u.class_name,
+    section: u.section,
+    admission_no: u.admission_no
+  }
+});
+
 });
 function auth(req,res,next){try{const h=req.headers.authorization||"";req.user=jwt.verify(h.replace("Bearer ",""),SECRET);next()}catch(e){res.status(401).json({error:"Unauthorized"})}}
 function admin(req,res,next){if(req.user.role!=="admin")return res.status(403).json({error:"Admin access required"});next()}
@@ -208,7 +223,7 @@ app.get("/api/admin/students",auth,admin,(req,res)=>{
   }
 });
 app.put("/api/admin/students/:id",auth,admin,(req,res)=>{
-  const {name,email,class_name,section,admission_no}=req.body;
+  const {name,email,class_name,section,admission_no,phone}=req.body;
 
   if(!name || !email || !class_name || !section || !admission_no){
     return res.status(400).json({
@@ -223,7 +238,8 @@ app.put("/api/admin/students/:id",auth,admin,(req,res)=>{
           email=?,
           class_name=?,
           section=?,
-          admission_no=?
+          admission_no=?,
+phone=?
       WHERE id=? AND role='student'
     `).run(
       name,
@@ -231,7 +247,8 @@ app.put("/api/admin/students/:id",auth,admin,(req,res)=>{
       class_name,
       section,
       admission_no,
-      req.params.id
+phone,
+req.params.id
     );
 
     if(result.changes===0){
