@@ -34,6 +34,8 @@ const columns = [
   ["aadhaar_no", "TEXT"],
   ["apaar_no", "TEXT"],
   ["udise_pen", "TEXT"],
+  ["roll_no", "TEXT"],
+["exam_roll_no", "TEXT"],
   ["username", "TEXT"]
 ];
 
