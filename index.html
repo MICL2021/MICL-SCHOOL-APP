@@ -260,7 +260,11 @@ box-sizing:border-box;
 <input id="studentClass" placeholder="Class">
 <input id="studentSection" placeholder="Section">
 <input id="studentAdmission" placeholder="Admission No.">
-
+<input id="studentFatherName" placeholder="Father Name">
+<input id="studentMotherName" placeholder="Mother Name">
+<input id="studentDob" type="date" placeholder="Date of Birth">
+<input id="studentAddress" placeholder="Address">
+<input id="studentCaste" placeholder="Caste">
 <button class="btn" onclick="addStudent()">Add Student</button>
 </section>
 
@@ -1157,6 +1161,12 @@ async function addStudent() {
   const section = document.getElementById('studentSection').value.trim();
   const admission_no = document.getElementById('studentAdmission').value.trim();
 
+const father_name = document.getElementById('studentFatherName').value.trim();
+const mother_name = document.getElementById('studentMotherName').value.trim();
+const dob = document.getElementById('studentDob').value;
+const address = document.getElementById('studentAddress').value.trim();
+const caste = document.getElementById('studentCaste').value.trim();
+
   if (!name || !email || !password || !class_name || !section || !admission_no) {
     alert('Please fill all student details');
     return;
@@ -1170,16 +1180,21 @@ async function addStudent() {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-        role: 'student',
-        class_name,
-        section,
-        admission_no
-      })
+      },   
+body: JSON.stringify({
+    name,
+    email,
+    password,
+    role: 'student',
+    class_name,
+    section,
+    admission_no,
+    father_name,
+    mother_name,
+    dob,
+    address,
+    caste
+})
     });
 
     const data = await response.json();
@@ -1197,7 +1212,11 @@ async function addStudent() {
     document.getElementById('studentClass').value = '';
     document.getElementById('studentSection').value = '';
     document.getElementById('studentAdmission').value = '';
-
+document.getElementById('studentFatherName').value = '';
+document.getElementById('studentMotherName').value = '';
+document.getElementById('studentDob').value = '';
+document.getElementById('studentAddress').value = '';
+document.getElementById('studentCaste').value = '';
     loadStudents();
 
   } catch (e) {
