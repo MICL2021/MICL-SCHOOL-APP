@@ -975,6 +975,7 @@ function applyRoleMenu(userRole) {
 
 function setRole(selectedRole) {
   role = selectedRole;
+  alert("Selected role: " + selectedRole);
   console.log("Selected login role:", selectedRole);
 document.body.dataset.role = role;
   const passwordCard = document.getElementById('adminPasswordCard');
