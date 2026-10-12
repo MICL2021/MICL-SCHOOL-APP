@@ -260,6 +260,8 @@ box-sizing:border-box;
 <input id="studentClass" placeholder="Class">
 <input id="studentSection" placeholder="Section">
 <input id="studentAdmission" placeholder="Admission No.">
+  <input id="studentRollNo" placeholder="Class Roll No.">
+<input id="studentExamRollNo" placeholder="Exam Roll No.">
 <input id="studentFatherName" placeholder="Father Name">
 <input id="studentMotherName" placeholder="Mother Name">
 <input id="studentDob" type="date" placeholder="Date of Birth">
@@ -1160,7 +1162,8 @@ async function addStudent() {
   const class_name = document.getElementById('studentClass').value.trim();
   const section = document.getElementById('studentSection').value.trim();
   const admission_no = document.getElementById('studentAdmission').value.trim();
-
+const roll_no = document.getElementById('studentRollNo').value.trim();
+const exam_roll_no = document.getElementById('studentExamRollNo').value.trim();
 const father_name = document.getElementById('studentFatherName').value.trim();
 const mother_name = document.getElementById('studentMotherName').value.trim();
 const dob = document.getElementById('studentDob').value;
@@ -1189,6 +1192,8 @@ body: JSON.stringify({
     class_name,
     section,
     admission_no,
+  roll_no,
+exam_roll_no,
     father_name,
     mother_name,
     dob,
@@ -1212,6 +1217,8 @@ body: JSON.stringify({
     document.getElementById('studentClass').value = '';
     document.getElementById('studentSection').value = '';
     document.getElementById('studentAdmission').value = '';
+    document.getElementById('studentRollNo').value = '';
+document.getElementById('studentExamRollNo').value = '';
 document.getElementById('studentFatherName').value = '';
 document.getElementById('studentMotherName').value = '';
 document.getElementById('studentDob').value = '';
