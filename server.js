@@ -397,7 +397,7 @@ apaar_no,
   try{
     
     const r=db.prepare(
-"INSERT INTO users(name,email,password,role,class_name,section,admission_no,roll_no,exam_roll_no,father_name,mother_name,dob,address,caste,aadhaar_no,udise_pen,apaar_no,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+"INSERT INTO users(name,email,password,role,class_name,section,admission_no,roll_no,exam_roll_no,father_name,mother_name,dob,address,caste,aadhaar_no,udise_pen,apaar_no,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
     ).run(
       name,
       email,
