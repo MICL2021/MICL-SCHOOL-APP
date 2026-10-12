@@ -380,6 +380,8 @@ app.post("/api/admin/users",auth,admin,(req,res)=>{
     class_name,
     section,
     admission_no,
+    roll_no,
+exam_roll_no,
     father_name,
 mother_name,
 dob,
@@ -392,7 +394,7 @@ caste,
 
   try{
     const r=db.prepare(
-      "INSERT INTO users(name,email,password,role,class_name,section,admission_no,father_name,mother_name,dob,address,caste,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+"INSERT INTO users(name,email,password,role,class_name,section,admission_no,roll_no,exam_roll_no,father_name,mother_name,dob,address,caste,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
     ).run(
       name,
       email,
@@ -401,6 +403,8 @@ caste,
       class_name,
       section,
       admission_no,
+      roll_no,
+exam_roll_no,
       father_name,
 mother_name,
 dob,
