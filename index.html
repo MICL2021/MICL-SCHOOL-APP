@@ -1047,7 +1047,8 @@ const data = await response.json();
    
 
     localStorage.setItem('micl_token', data.token);
-    localStorage.setItem('micl_user', JSON.stringify(data.user));
+    const { photo, ...userWithoutPhoto } = data.user;
+localStorage.setItem('micl_user', JSON.stringify(userWithoutPhoto));
 
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';
