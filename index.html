@@ -584,7 +584,11 @@ box-sizing:border-box;
 
 <div class="card" id="adminProfileCard">
 <h3>✏️ Edit Admin Profile</h3>
-
+<div class="card">
+  <h3>📷 Admin Photo</h3>
+  <input id="adminPhotoUpload" type="file" accept="image/*">
+  <img id="adminPhotoPreview" alt="Admin Photo" style="width:100px;height:100px;object-fit:cover;border-radius:50%;display:none;">
+</div>
 <input id="editProfileName" placeholder="Admin Name">
 
 <input id="editProfilePhone" placeholder="Phone Number">
