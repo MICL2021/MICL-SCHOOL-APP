@@ -1056,18 +1056,18 @@ document.getElementById('profileEmail').textContent =
   data.user.email || '-';
 document.getElementById('profilePhone').textContent =
   data.user.phone || '-';
-    document.getElementById('profileFatherName').textContent =
-    data.user.father_name || '-';
-document.getElementById('profileMotherName').textContent =
-    data.user.mother_name || '-';
-document.getElementById('profileDob').textContent =
-    data.user.dob || '-';
-document.getElementById('profileAddress').textContent =
-    data.user.address || '-';
-document.getElementById('profileCaste').textContent =
-    data.user.caste || '-';
-    document.getElementById('profileRole').textContent =
-    data.user.role || 'student';
+    const fatherField = document.getElementById('profileFatherName');
+if (fatherField) fatherField.textContent = data.user.father_name || '-';
+const motherField = document.getElementById('profileMotherName');
+if (motherField) motherField.textContent = data.user.mother_name || '-';
+const dobField = document.getElementById('profileDob');
+if (dobField) dobField.textContent = data.user.dob || '-';
+const addressField = document.getElementById('profileAddress');
+if (addressField) addressField.textContent = data.user.address || '-';
+const casteField = document.getElementById('profileCaste');
+if (casteField) casteField.textContent = data.user.caste || '-';
+    const roleField = document.getElementById('profileRole');
+if (roleField) roleField.textContent = data.user.role || 'student';
 
 
     if (data.user.role === 'admin') {
@@ -1080,11 +1080,19 @@ document.getElementById('profileCaste').textContent =
     } else {
       alert('Welcome Student');
       show('studentDashboard', 'Student Dashboard');
-      document.getElementById('studentProfileName').textContent = data.user.name || '-';
-document.getElementById('studentProfileEmail').textContent = data.user.email || '-';
-document.getElementById('studentProfileClass').textContent = data.user.class_name || '-';
-document.getElementById('studentProfileSection').textContent = data.user.section || '-';
-document.getElementById('studentProfileAdmission').textContent = data.user.admission_no || '-';
+      const studentNameField = document.getElementById('studentProfileName');
+if (studentNameField) studentNameField.textContent = data.user.name || '-';
+
+const studentEmailField = document.getElementById('studentProfileEmail');
+if (studentEmailField) studentEmailField.textContent = data.user.email || '-';
+
+const studentClassField = document.getElementById('studentProfileClass');
+if (studentClassField) studentClassField.textContent = data.user.class_name || '-';
+
+const studentSectionField = document.getElementById('studentProfileSection');
+if (studentSectionField) studentSectionField.textContent = data.user.section || '-';
+const admissionField = document.getElementById('studentProfileAdmission');
+if (admissionField) admissionField.textContent = data.user.admission_no || '-';
     }
 } catch (e) {
   alert('Server connection error: ' + e.message);
