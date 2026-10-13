@@ -1081,9 +1081,8 @@ document.getElementById('studentProfileClass').textContent = data.user.class_nam
 document.getElementById('studentProfileSection').textContent = data.user.section || '-';
 document.getElementById('studentProfileAdmission').textContent = data.user.admission_no || '-';
     }
-  } catch (e) {
-  alert('Server connection error: ' + e.message);
-  console.error(e);
+} catch (e) {
+  alert('Server connection error');
 }
 }
   function logout() {
