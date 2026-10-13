@@ -1186,6 +1186,7 @@ const aadhaar_no = document.getElementById('studentAadhaarNo').value.trim();
 const udise_pen = document.getElementById('studentUdisePen').value.trim();
 const apaar_no = document.getElementById('studentApaarId').value.trim();
   const phone = document.getElementById('studentPhone').value.trim();
+  const photoFile = document.getElementById('studentPhoto').files[0];
   if (!name || !email || !password || !class_name || !section || !admission_no) {
     alert('Please fill all student details');
     return;
