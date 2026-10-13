@@ -335,6 +335,7 @@ box-sizing:border-box;
   <p>Class: <span id="studentProfileClass">-</span></p>
   <p>Section: <span id="studentProfileSection">-</span></p>
   <p>Admission No: <span id="studentProfileAdmission">-</span></p>
+  <p>Phone: <span id="studentProfilePhone">-</span></p>
   <p>Father Name: <span id="studentProfileFatherName">-</span></p>
 <p>Mother Name: <span id="studentProfileMotherName">-</span></p>
 <p>Date of Birth: <span id="studentProfileDob">-</span></p>
@@ -595,7 +596,10 @@ box-sizing:border-box;
   <img id="adminPhotoPreview" alt="Admin Photo" style="width:100px;height:100px;object-fit:cover;border-radius:50%;display:none;">
 </div>
 <input id="editProfileName" placeholder="Admin Name">
-
+<p>Name: <span id="adminDisplayName">MICL Admin</span></p>
+<p>Username / Login ID: <span id="adminDisplayUsername">-</span></p>
+<p>Email: <span id="adminDisplayEmail">-</span></p>
+<p>Role: <span>Admin</span></p>
 <input id="editProfilePhone" placeholder="Phone Number">
 
 <button class="btn" onclick="saveAdminProfile()">
@@ -1056,6 +1060,14 @@ document.getElementById('profileEmail').textContent =
   data.user.email || '-';
 document.getElementById('profilePhone').textContent =
   data.user.phone || '-';
+    const adminNameDisplay = document.getElementById('adminDisplayName');
+if (adminNameDisplay) adminNameDisplay.textContent = data.user.name || '-';
+
+const adminUsernameDisplay = document.getElementById('adminDisplayUsername');
+if (adminUsernameDisplay) adminUsernameDisplay.textContent = data.user.username || data.user.email || '-';
+
+const adminEmailDisplay = document.getElementById('adminDisplayEmail');
+if (adminEmailDisplay) adminEmailDisplay.textContent = data.user.email || '-';
     const fatherField = document.getElementById('profileFatherName');
 if (fatherField) fatherField.textContent = data.user.father_name || '-';
 const motherField = document.getElementById('profileMotherName');
