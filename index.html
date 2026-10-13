@@ -1278,7 +1278,12 @@ exam_roll_no,
 aadhaar_no,
 udise_pen,
 apaar_no,
-phone
+phone,
+  photo: photoFile ? await new Promise((resolve) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.readAsDataURL(photoFile);
+}) : "",
 })
 
     });
