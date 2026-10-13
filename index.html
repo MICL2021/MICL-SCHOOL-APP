@@ -761,6 +761,14 @@ Security
 
   document.getElementById('schoolInfoStatus').style.color = 'green';
 }
+document.getElementById('adminPhotoUpload').addEventListener('change', function () {
+  const file = this.files[0];
+  const preview = document.getElementById('adminPhotoPreview');
+  if (file) {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+  }
+});
   async function saveAdminProfile() {
   const name = document.getElementById('editProfileName').value.trim();
   const phone = document.getElementById('editProfilePhone').value.trim();
