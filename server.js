@@ -36,7 +36,7 @@ const columns = [
   ["udise_pen", "TEXT"],
   ["roll_no", "TEXT"],
 ["exam_roll_no", "TEXT"],
-  ["username", "TEXT"]
+  ["username", "TEXT"],
   ["photo", "TEXT"]
 ];
 
