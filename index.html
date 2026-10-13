@@ -562,6 +562,11 @@ box-sizing:border-box;
 
 <p>
 <b>Username / Login ID:</b>
+  <div style="text-align:center;margin:15px 0;">
+  <img id="profilePhoto" src=""
+       alt="Student Photo"
+       style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #063b82;">
+</div>
 <span id="profileUsername">Loading...</span>
 </p>
 
@@ -574,7 +579,11 @@ box-sizing:border-box;
 <b>Phone:</b>
 <span id="profilePhone">-</span>
 </p>
-  
+  <p><b>Class:</b> <span id="profileClass">-</span></p>
+<p><b>Section:</b> <span id="profileSection">-</span></p>
+<p><b>Admission No.:</b> <span id="profileAdmission">-</span></p>
+<p><b>Roll No.:</b> <span id="profileRollNo">-</span></p>
+<p><b>Exam Roll No.:</b> <span id="profileExamRollNo">-</span></p>
 <div class="card">
 <p>
 <b>Role:</b>
@@ -1123,9 +1132,23 @@ if (addressField) addressField.textContent = data.user.address || '-';
 
 const casteField = document.getElementById('studentProfileCaste');
 if (casteField) casteField.textContent = data.user.caste || '-';
+      const profileClass = document.getElementById('profileClass');
+if (profileClass) profileClass.textContent = data.user.class_name || '-';
+
+const profileSection = document.getElementById('profileSection');
+if (profileSection) profileSection.textContent = data.user.section || '-';
+
+const profileAdmission = document.getElementById('profileAdmission');
+if (profileAdmission) profileAdmission.textContent = data.user.admission_no || '-';
+
+const profileRoll = document.getElementById('profileRollNo');
+if (profileRoll) profileRoll.textContent = data.user.roll_no || '-';
+
+const profileExamRoll = document.getElementById('profileExamRollNo');
+if (profileExamRoll) profileExamRoll.textContent = data.user.exam_roll_no || '-';
     }
     
-const studentPhoto = document.getElementById('studentProfilePhoto');
+const studentPhoto = document.getElementById('profilePhoto');
 if (studentPhoto && data.user.photo) {
   studentPhoto.src = data.user.photo;
   studentPhoto.style.display = 'block';
