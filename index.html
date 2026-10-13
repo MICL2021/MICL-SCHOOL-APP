@@ -1093,6 +1093,23 @@ const studentSectionField = document.getElementById('studentProfileSection');
 if (studentSectionField) studentSectionField.textContent = data.user.section || '-';
 const admissionField = document.getElementById('studentProfileAdmission');
 if (admissionField) admissionField.textContent = data.user.admission_no || '-';
+const phoneField = document.getElementById('studentProfilePhone');
+if (phoneField) phoneField.textContent = data.user.phone || '-';
+
+const fatherField = document.getElementById('studentProfileFatherName');
+if (fatherField) fatherField.textContent = data.user.father_name || '-';
+
+const motherField = document.getElementById('studentProfileMotherName');
+if (motherField) motherField.textContent = data.user.mother_name || '-';
+
+const dobField = document.getElementById('studentProfileDob');
+if (dobField) dobField.textContent = data.user.dob || '-';
+
+const addressField = document.getElementById('studentProfileAddress');
+if (addressField) addressField.textContent = data.user.address || '-';
+
+const casteField = document.getElementById('studentProfileCaste');
+if (casteField) casteField.textContent = data.user.caste || '-';
     }
 } catch (e) {
   alert('Server connection error: ' + e.message);
