@@ -1082,8 +1082,9 @@ document.getElementById('studentProfileSection').textContent = data.user.section
 document.getElementById('studentProfileAdmission').textContent = data.user.admission_no || '-';
     }
   } catch (e) {
-    alert('Server connection error');
-  }
+  alert('Server connection error: ' + e.message);
+  console.error(e);
+}
 }
   function logout() {
   localStorage.removeItem('micl_token');
