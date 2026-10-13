@@ -1123,6 +1123,15 @@ if (addressField) addressField.textContent = data.user.address || '-';
 const casteField = document.getElementById('studentProfileCaste');
 if (casteField) casteField.textContent = data.user.caste || '-';
     }
+    
+const studentPhoto = document.getElementById('studentProfilePhoto');
+if (studentPhoto && data.user.photo) {
+  studentPhoto.src = data.user.photo;
+  studentPhoto.style.display = 'block';
+} else if (studentPhoto) {
+  studentPhoto.style.display = 'none';
+}
+
 } catch (e) {
   alert('Server connection error: ' + e.message);
 }
