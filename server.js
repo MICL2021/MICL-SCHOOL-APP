@@ -37,6 +37,7 @@ const columns = [
   ["roll_no", "TEXT"],
 ["exam_roll_no", "TEXT"],
   ["username", "TEXT"]
+  ["photo", "TEXT"]
 ];
 
 for (const [column, type] of columns) {
@@ -107,6 +108,7 @@ mother_name: u.mother_name || "",
 dob: u.dob || "",
 address: u.address || "",
 caste: u.caste || ""
+    photo: u.photo || ""
   }
 });
 
@@ -392,12 +394,14 @@ udise_pen,
 apaar_no,
     phone,
     qualification,
-    username
+    username,
+    photo
   }=req.body;
   try{
     
     const r=db.prepare(
-"INSERT INTO users(name,email,password,role,class_name,section,admission_no,roll_no,exam_roll_no,father_name,mother_name,dob,address,caste,aadhaar_no,udise_pen,apaar_no,phone,qualification,username) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+
+"INSERT INTO users(name,email,password,role,class_name,section,admission_no,roll_no,exam_roll_no,father_name,mother_name,dob,address,caste,aadhaar_no,udise_pen,apaar_no,phone,qualification,username,photo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
     ).run(
       name,
       email,
@@ -418,7 +422,8 @@ udise_pen,
 apaar_no,
       phone,
       qualification,
-      username
+      username,
+      photo
     );
 
     res.json({id:r.lastInsertRowid});
