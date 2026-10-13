@@ -107,7 +107,7 @@ father_name: u.father_name || "",
 mother_name: u.mother_name || "",
 dob: u.dob || "",
 address: u.address || "",
-caste: u.caste || ""
+caste: u.caste || "",
     photo: u.photo || ""
   }
 });
