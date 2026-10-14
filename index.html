@@ -92,7 +92,13 @@ box-sizing:border-box;
 
 <div id="login" class="login">
   <div class="loginbox">
-    <div class="logo"><div class="mark">📚</div><h1>MICL</h1><p>Modern Institute of Creative Learning</p></div>
+    
+<div class="logo">
+  <img src="/micl_logo.png" alt="MICL School Logo" style="width:100px;height:100px;object-fit:contain;display:block;margin:0 auto 10px;">
+  <h1>MICL</h1>
+  <p>Modern Institute of Creative Learning</p>
+</div>
+
     <h2 id="loginTitle">Student Login</h2>
     <input id="sid" placeholder="Student ID / Admission No.">
     <button class="btn" onclick="setRole('student')">Student Login</button>
@@ -116,7 +122,13 @@ box-sizing:border-box;
   <div class="top">
     <div>
    <button class="back" onclick="toggleMenu()" type="button">☰</button>
-      <span class="brand" id="title">MICL</span>
+      
+<span class="brand" id="title" style="display:flex;align-items:center;gap:8px;">
+  <img src="/micl_logo.png" alt="MICL Logo"
+       style="width:36px;height:36px;object-fit:contain;">
+  MICL
+</span>
+
     </div>
     <span>🔔</span>
   </div>
