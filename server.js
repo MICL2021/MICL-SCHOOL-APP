@@ -314,7 +314,7 @@ app.delete("/api/admin/students/:id",auth,admin,(req,res)=>{
 
 app.get("/api/admin/profile",auth,admin,(req,res)=>{
   const user=db.prepare(
-    "SELECT id,name,email,username,phone,role,photo FROM users WHERE id=? AND role='admin'"
+    "SELECT id,name,email,username,phone,photo,role FROM users WHERE id=? AND role='admin'"
   ).get(req.user.id);
 
   if(!user){
@@ -324,19 +324,23 @@ app.get("/api/admin/profile",auth,admin,(req,res)=>{
   res.json(user);
 });
 
-app.put("/api/admin/profile",auth,admin,(req,res)=>{
-  const {name,phone,photo}=req.body;
 
-  if(!name || !name.trim()){
-    return res.status(400).json({error:"Admin name is required"});
+app.put("/api/admin/profile", auth, admin, (req, res) => {
+  const { name, phone, photo } = req.body;
+
+  if (!name || !name.trim()) {
+    return res.status(400).json({
+      error: "Admin name is required"
+    });
   }
 
   db.prepare(
-    "UPDATE users SET name=?, phone=?, photo=COALESCE(?,photo) WHERE id=? AND role='admin'"
-).run(name.trim(),phone||"",photo||null,req.user.id);
+    "UPDATE users SET name=?, phone=?, photo=COALESCE(?, photo) WHERE id=? AND role='admin'"
+  ).run(name.trim(), phone || "", photo || null, req.user.id);
 
-  res.json({message:"Admin profile saved successfully"});
+  res.json({ message: "Admin profile saved successfully" });
 });
+
 
 app.delete("/api/admin/profile",auth,admin,(req,res)=>{
   db.prepare(
