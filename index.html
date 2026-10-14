@@ -2263,8 +2263,11 @@ const adminProfileCard = document.getElementById('adminProfileCard');
 
 if (adminProfileCard) {
   adminProfileCard.style.display =
-    role === 'admin' ? 'block' : 'none';
+    JSON.parse(localStorage.getItem('micl_user') || '{}').role === 'admin'
+      ? 'block'
+      : 'none';
 }
+
 const studentProfileInfo =
     document.getElementById('studentProfileInfo');
 
