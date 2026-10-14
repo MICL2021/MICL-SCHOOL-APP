@@ -807,7 +807,17 @@ document.getElementById('adminPhotoUpload').addEventListener('change', function 
   const name = document.getElementById('editProfileName').value.trim();
   const phone = document.getElementById('editProfilePhone').value.trim();
   const status = document.getElementById('profileStatus');
+let photo = null;
+const photoFile = document.getElementById('adminPhotoUpload').files[0];
 
+if (photoFile) {
+  photo = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(photoFile);
+  });
+}
   if (!name) {
     status.textContent = 'Please enter admin name';
     status.style.color = 'red';
@@ -824,9 +834,10 @@ document.getElementById('adminPhotoUpload').addEventListener('change', function 
         'Authorization': 'Bearer ' + token
       },
       body: JSON.stringify({
-        name: name,
-        phone: phone
-      })
+  name: name,
+  phone: phone,
+  photo: photo
+})
     });
 
     const data = await response.json();
