@@ -1113,14 +1113,11 @@ if (academicProfileFields) {
 }
 
     if (data.user.role === 'admin') {
-      alert('Welcome Admin');
       show('home', 'Admin Dashboard');
       document.getElementById('teacherMenuButton').style.display = 'block';
     } else if (data.user.role === 'teacher') {
-      alert('Welcome Teacher');
       show('teacherDashboard', 'Teacher Dashboard');
     } else {
-      alert('Welcome Student');
       show('studentDashboard', 'Student Dashboard');
       const studentNameField = document.getElementById('studentProfileName');
 if (studentNameField) studentNameField.textContent = data.user.name || '-';
