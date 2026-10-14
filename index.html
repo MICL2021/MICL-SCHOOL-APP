@@ -2274,8 +2274,12 @@ const studentProfileInfo =
 
 
 if (studentProfileInfo) {
-    studentProfileInfo.style.display =
-        role === 'admin' ? 'none' : 'block';
+  const currentUser = JSON.parse(
+    localStorage.getItem('micl_user') || '{}'
+  );
+
+  studentProfileInfo.style.display =
+    currentUser.role === 'admin' ? 'none' : 'block';
 }
 
   async function loadAdminFeeRecords() {
