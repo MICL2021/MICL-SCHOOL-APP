@@ -2192,7 +2192,9 @@ async function submitAttendance() {
     });
 
     const targetScreen = document.getElementById(id);
-
+if (id === 'profile') {
+  loadAdminPhoto();
+}
     if (targetScreen) {
         targetScreen.classList.add('active');
         targetScreen.style.setProperty('display', 'block', 'important');
