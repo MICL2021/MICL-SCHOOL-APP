@@ -803,6 +803,28 @@ document.getElementById('adminPhotoUpload').addEventListener('change', function 
     preview.style.display = 'block';
   }
 });
+  
+async function loadAdminPhoto() {
+  try {
+    const token = localStorage.getItem('micl_token');
+    const response = await fetch('/api/admin/profile', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const preview = document.getElementById('adminPhotoPreview');
+
+    if (data.photo && preview) {
+      preview.src = data.photo;
+      preview.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Admin photo load failed:', error);
+  }
+}
+
   async function saveAdminProfile() {
   const name = document.getElementById('editProfileName').value.trim();
   const phone = document.getElementById('editProfilePhone').value.trim();
