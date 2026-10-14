@@ -593,11 +593,13 @@ box-sizing:border-box;
 <b>Phone:</b>
 <span id="profilePhone">-</span>
 </p>
+  <div id="academicProfileFields">
   <p><b>Class:</b> <span id="profileClass">-</span></p>
 <p><b>Section:</b> <span id="profileSection">-</span></p>
 <p><b>Admission No.:</b> <span id="profileAdmission">-</span></p>
 <p><b>Roll No.:</b> <span id="profileRollNo">-</span></p>
 <p><b>Exam Roll No.:</b> <span id="profileExamRollNo">-</span></p>
+    </div>
 <div class="card">
 <p>
 <b>Role:</b>
@@ -1104,7 +1106,11 @@ const casteField = document.getElementById('profileCaste');
 if (casteField) casteField.textContent = data.user.caste || '-';
     const roleField = document.getElementById('profileRole');
 if (roleField) roleField.textContent = data.user.role || 'student';
-
+const academicProfileFields = document.getElementById('academicProfileFields');
+if (academicProfileFields) {
+    academicProfileFields.style.display =
+        data.user.role === 'admin' ? 'none' : '';
+}
 
     if (data.user.role === 'admin') {
       alert('Welcome Admin');
