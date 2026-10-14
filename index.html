@@ -1094,6 +1094,15 @@ const adminUsernameDisplay = document.getElementById('adminDisplayUsername');
 if (adminUsernameDisplay) adminUsernameDisplay.textContent = data.user.username || data.user.email || '-';
 
 const adminEmailDisplay = document.getElementById('adminDisplayEmail');
+  const adminPhoneInput = document.getElementById('editProfilePhone');
+if (adminPhoneInput) {
+    adminPhoneInput.value = data.user.phone || '';
+}
+
+const adminPhotoPreview = document.getElementById('adminPhotoPreview');
+if (adminPhotoPreview && data.user.photo) {
+    adminPhotoPreview.src = data.user.photo;
+}  
 if (adminEmailDisplay) adminEmailDisplay.textContent = data.user.email || '-';
     const fatherField = document.getElementById('profileFatherName');
 if (fatherField) fatherField.textContent = data.user.father_name || '-';
