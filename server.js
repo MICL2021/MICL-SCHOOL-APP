@@ -86,10 +86,16 @@ db.prepare("UPDATE users SET password=? WHERE email=?").run(
   "admin@micl.edu"
 );
 app.post("/api/login",(req,res)=>{
-const {email,password}=req.body;
+const {email,password,role}=req.body;
 const login=String(email||"").trim();
 const u=db.prepare("SELECT * FROM users WHERE email=? OR admission_no=? OR username=?").get(login,login,login);
-if(!u||!bcrypt.compareSync(password||"",u.password))return res.status(401).json({error:"Invalid username/email or password"});
+if (!u || !bcrypt.compareSync(password || "", u.password)) {
+  return res.status(401).json({ error: "Invalid username/email or password" });
+}
+
+if (u.role !== role) {
+  return res.status(401).json({ error: "Wrong login role or username/password" });
+}
 const token=jwt.sign({id:u.id,role:u.role},SECRET,{expiresIn:"7d"});
 
 res.json({
