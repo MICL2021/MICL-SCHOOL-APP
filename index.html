@@ -1055,11 +1055,12 @@ async function enterApp() {
     const response = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: id,
-        email: id,
-        password: pw
-      })
+     body: JSON.stringify({
+  username: id,
+  email: id,
+  password: pw,
+  role: role
+})
     });
 const data = await response.json();
 
