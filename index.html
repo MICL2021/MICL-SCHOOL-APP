@@ -2250,21 +2250,19 @@ if (adminProfileCard) {
   adminProfileCard.style.display =
     role === 'admin' ? 'block' : 'none';
 }
-const adminProfileCard =
-  document.getElementById('adminProfileCard');
-
 const studentProfileInfo =
-  document.getElementById('studentProfileInfo');
+    document.getElementById('studentProfileInfo');
 
 if (adminProfileCard) {
-  adminProfileCard.style.display =
-    role === 'admin' ? 'block' : 'none';
+    adminProfileCard.style.display =
+        role === 'admin' ? 'block' : 'none';
 }
 
 if (studentProfileInfo) {
-  studentProfileInfo.style.display =
-    role === 'admin' ? 'none' : 'block';
+    studentProfileInfo.style.display =
+        role === 'admin' ? 'none' : 'block';
 }
+
   async function loadAdminFeeRecords() {
   try {
     const token = localStorage.getItem("micl_token");
