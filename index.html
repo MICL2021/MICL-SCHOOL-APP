@@ -818,6 +818,16 @@ async function loadAdminPhoto() {
     if (!response.ok) return;
 
     const data = await response.json();
+    
+document.getElementById('adminDesignation').value =
+    data.designation || '';
+
+document.getElementById('adminSchoolName').value =
+    data.school_name || data.schoolName || '';
+
+document.getElementById('adminProfileUpdated').textContent =
+    data.profile_updated || 'Not updated yet';
+
     const preview = document.getElementById('adminPhotoPreview');
 
     if (data.photo && preview) {
