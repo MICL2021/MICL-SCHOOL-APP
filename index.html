@@ -819,6 +819,33 @@ async function loadAdminPhoto() {
 
     const data = await response.json();
     
+const setValue = (id, value) => {
+  const el = document.getElementById(id);
+  if (el) el.value = value || '';
+};
+
+const setText = (id, value) => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value || '-';
+};
+
+setValue('editProfileName', data.name);
+setValue('editProfilePhone', data.phone);
+setValue('adminDesignation', data.designation);
+setValue('adminSchoolName', data.school_name);
+
+setText('profileName', data.name);
+setText('profilePhone', data.phone);
+setText('adminDisplayName', data.name);
+setText('adminDisplayUsername', data.username);
+setText('adminDisplayEmail', data.email);
+
+const photo = document.getElementById('adminPhotoPreview');
+if (photo && data.photo) {
+  photo.src = data.photo;
+  photo.style.display = 'block';
+}
+    
 document.getElementById('adminDesignation').value =
     data.designation || '';
 
