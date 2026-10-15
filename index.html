@@ -390,52 +390,6 @@ box-sizing:border-box;
     required
   ></textarea>
 
-<label for="noticeAttachment">Upload Attachment (PDF, JPG, PNG)</label>
-<input
-  type="file"
-  id="noticeAttachment"
-  accept=".pdf,.jpg,.jpeg,.png,.webp"
->
-
-<h4>Digital Signature</h4>
-<canvas
-  id="noticeSignatureCanvas"
-  width="500"
-  height="160"
-  style="width:100%;max-width:500px;height:160px;border:1px solid #ccc;background:#fff;touch-action:none;"
-  onpointerdown="noticeSignatureStart(event)"
-  onpointermove="noticeSignatureMove(event)"
-  onpointerup="noticeSignatureEnd()"
-  onpointercancel="noticeSignatureEnd()"
-></canvas>
-
-<button type="button" class="btn" onclick="clearNoticeSignature()">
-  Clear Signature
-</button>
-
-<label for="noticeAttachment">Upload Attachment (PDF, JPG, PNG)</label>
-<input
-  type="file"
-  id="noticeAttachment"
-  accept=".pdf,.jpg,.jpeg,.png,.webp"
->
-
-<h4>Digital Signature</h4>
-<canvas
-  id="noticeSignatureCanvas"
-  width="500"
-  height="160"
-  style="width:100%;max-width:500px;height:160px;border:1px solid #ccc;background:#fff;touch-action:none;"
-  onpointerdown="noticeSignatureStart(event)"
-  onpointermove="noticeSignatureMove(event)"
-  onpointerup="noticeSignatureEnd()"
-  onpointercancel="noticeSignatureEnd()"
-></canvas>
-
-<button type="button" class="btn" onclick="clearNoticeSignature()">
-  Clear Signature
-</button>
-
   <label for="noticeAttachment">Upload Attachment (PDF/JPG/PNG/WEBP)</label>
   <input
     type="file"
