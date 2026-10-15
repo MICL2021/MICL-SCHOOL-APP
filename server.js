@@ -5,7 +5,38 @@ const Database = require("better-sqlite3");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 const app = express();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
+
+const noticeUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+    files: 1
+  },
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF, JPG, PNG or WEBP files are allowed"));
+    }
+  }
+});
+
 const dataDir = path.join(__dirname, "data");
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new Database(path.join(dataDir, "micl.db"));
@@ -24,6 +55,24 @@ CREATE TABLE IF NOT EXISTS results(id INTEGER PRIMARY KEY AUTOINCREMENT,student_
 CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,description TEXT,event_date TEXT);
 CREATE TABLE IF NOT EXISTS gallery(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,image_url TEXT);
 `);
+
+const noticeColumns = db
+  .prepare("PRAGMA table_info(notices)")
+  .all()
+  .map(column => column.name);
+
+if (!noticeColumns.includes("attachment_url")) {
+  db.exec("ALTER TABLE notices ADD COLUMN attachment_url TEXT");
+}
+
+if (!noticeColumns.includes("attachment_name")) {
+  db.exec("ALTER TABLE notices ADD COLUMN attachment_name TEXT");
+}
+
+if (!noticeColumns.includes("signature_url")) {
+  db.exec("ALTER TABLE notices ADD COLUMN signature_url TEXT");
+}
+
 const columns = [
   ["father_name", "TEXT"],
   ["mother_name", "TEXT"],
@@ -383,7 +432,89 @@ app.get("/api/gallery",auth,(req,res)=>res.json(db.prepare("SELECT * FROM galler
 app.get("/api/attendance",auth,(req,res)=>res.json(db.prepare("SELECT date,status,subject FROM attendance WHERE student_id=? ORDER BY date DESC").all(req.user.id)));
 app.get("/api/results",auth,(req,res)=>res.json(db.prepare("SELECT exam,subject,marks,max_marks FROM results WHERE student_id=? ORDER BY id DESC").all(req.user.id)));
 
-app.post("/api/admin/notices",auth,admin,(req,res)=>{const {title,body}=req.body;const r=db.prepare("INSERT INTO notices(title,body) VALUES(?,?)").run(title,body);res.json({id:r.lastInsertRowid})});
+
+app.post(
+  "/api/admin/notices",
+  auth,
+  admin,
+  noticeUpload.single("attachment"),
+  async (req, res) => {
+    try {
+      const { title, body, signature } = req.body;
+
+      if (!title || !title.trim()) {
+        return res.status(400).json({
+          error: "Notice title is required"
+        });
+      }
+
+      let attachmentUrl = null;
+      let attachmentName = null;
+      let signatureUrl = null;
+
+      if (req.file) {
+        const uploaded = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "micl/notices",
+              resource_type: "auto"
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          );
+
+          stream.end(req.file.buffer);
+        });
+
+        attachmentUrl = uploaded.secure_url;
+        attachmentName = req.file.originalname;
+      }
+
+      if (signature) {
+        if (!signature.startsWith("data:image/png;base64,")) {
+          return res.status(400).json({
+            error: "Invalid signature image"
+          });
+        }
+
+        const uploadedSignature = await cloudinary.uploader.upload(
+          signature,
+          {
+            folder: "micl/notices/signatures",
+            resource_type: "image"
+          }
+        );
+
+        signatureUrl = uploadedSignature.secure_url;
+      }
+
+      const result = db.prepare(`
+        INSERT INTO notices
+        (title, body, attachment_url, attachment_name, signature_url)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(
+        title.trim(),
+        body || "",
+        attachmentUrl,
+        attachmentName,
+        signatureUrl
+      );
+
+      res.json({
+        id: result.lastInsertRowid,
+        message: "Notice published successfully"
+      });
+    } catch (error) {
+      console.error("Notice upload error:", error);
+      res.status(500).json({
+        error: "Unable to publish notice. Please try again."
+      });
+    }
+  }
+);
+
 app.delete("/api/admin/notices/:id", auth, admin, (req, res) => {
   try {
     const id = Number(req.params.id);
