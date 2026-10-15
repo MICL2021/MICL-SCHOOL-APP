@@ -2671,6 +2671,42 @@ if (user.role === 'admin') {
 
 restoreLoginAfterRefresh();
   
+const MICL_AUTO_LOGOUT_TIME = 30 * 60 * 1000;
+
+function updateMiclActivity() {
+  if (localStorage.getItem('micl_token')) {
+    localStorage.setItem(
+      'micl_last_activity',
+      Date.now().toString()
+    );
+  }
+}
+
+function checkMiclAutoLogout() {
+  const token = localStorage.getItem('micl_token');
+  if (!token) return;
+
+  const lastActivity = Number(
+    localStorage.getItem('micl_last_activity') || 0
+  );
+
+  if (
+    lastActivity &&
+    Date.now() - lastActivity >= MICL_AUTO_LOGOUT_TIME
+  ) {
+    logout();
+  }
+}
+
+['click', 'keydown', 'touchstart', 'scroll'].forEach(event => {
+  document.addEventListener(event, updateMiclActivity, {
+    passive: true
+  });
+});
+
+setInterval(checkMiclAutoLogout, 60 * 1000);
+checkMiclAutoLogout();
+
 </script>
 </body>
 </html>
