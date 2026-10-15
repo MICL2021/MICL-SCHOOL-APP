@@ -626,7 +626,11 @@ box-sizing:border-box;
 <p>Email: <span id="adminDisplayEmail">-</span></p>
 <p>Role: <span>Admin</span></p>
 <input id="editProfilePhone" placeholder="Phone Number">
+<input id="adminDesignation" placeholder="Admin Designation (e.g. Principal)">
 
+<input id="adminSchoolName" placeholder="School Name">
+
+<p>Last Profile Update: <span id="adminProfileUpdated">Not updated yet</span></p>
 <button class="btn" onclick="saveAdminProfile()">
 💾 Save Profile
 </button>
@@ -829,6 +833,11 @@ async function loadAdminPhoto() {
   const name = document.getElementById('editProfileName').value.trim();
   const phone = document.getElementById('editProfilePhone').value.trim();
   const status = document.getElementById('profileStatus');
+    
+const designation = document.getElementById('adminDesignation').value.trim();
+const schoolName = document.getElementById('adminSchoolName').value.trim();
+const updatedField = document.getElementById('adminProfileUpdated');
+
 let photo = null;
 const photoFile = document.getElementById('adminPhotoUpload').files[0];
 
@@ -856,9 +865,11 @@ if (photoFile) {
         'Authorization': 'Bearer ' + token
       },
       body: JSON.stringify({
-  name: name,
-  phone: phone,
-  photo: photo
+    name: name,
+    phone: phone,
+    photo: photo,
+    designation: document.getElementById('adminDesignation').value.trim(),
+    schoolName: document.getElementById('adminSchoolName').value.trim()
 })
     });
 
@@ -873,6 +884,11 @@ if (photoFile) {
 
     status.textContent = '✅ Admin profile saved successfully';
     status.style.color = 'green';
+
+const updatedField = document.getElementById('adminProfileUpdated');
+if (updatedField) {
+    updatedField.textContent = new Date().toLocaleString('en-IN');
+}
 
   } catch (error) {
     status.textContent = '❌ ' + error.message;
