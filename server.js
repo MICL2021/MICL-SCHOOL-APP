@@ -384,6 +384,27 @@ app.get("/api/attendance",auth,(req,res)=>res.json(db.prepare("SELECT date,statu
 app.get("/api/results",auth,(req,res)=>res.json(db.prepare("SELECT exam,subject,marks,max_marks FROM results WHERE student_id=? ORDER BY id DESC").all(req.user.id)));
 
 app.post("/api/admin/notices",auth,admin,(req,res)=>{const {title,body}=req.body;const r=db.prepare("INSERT INTO notices(title,body) VALUES(?,?)").run(title,body);res.json({id:r.lastInsertRowid})});
+app.delete("/api/admin/notices/:id", auth, admin, (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ error: "Invalid notice ID" });
+    }
+
+    const result = db.prepare(
+      "DELETE FROM notices WHERE id = ?"
+    ).run(id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Notice not found" });
+    }
+
+    res.json({ message: "Notice deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to delete notice" });
+  }
+});
 app.post("/api/admin/homework",auth,admin,(req,res)=>{const {title,description,due_date}=req.body;const r=db.prepare("INSERT INTO homework(title,description,due_date) VALUES(?,?,?)").run(title,description,due_date);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/events",auth,admin,(req,res)=>{const {title,description,event_date}=req.body;const r=db.prepare("INSERT INTO events(title,description,event_date) VALUES(?,?,?)").run(title,description,event_date);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/users",auth,admin,(req,res)=>{
