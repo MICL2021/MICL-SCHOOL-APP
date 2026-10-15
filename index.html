@@ -372,6 +372,7 @@ box-sizing:border-box;
 </section>
 <section id="notices" class="screen">
   <h2>Notice Board</h2>
+
 <div id="adminNoticeForm" class="card" style="display:none;">
   <h3>➕ Add New Notice</h3>
 
@@ -389,12 +390,84 @@ box-sizing:border-box;
     required
   ></textarea>
 
-  <button class="btn" onclick="addNotice()">
+<label for="noticeAttachment">Upload Attachment (PDF, JPG, PNG)</label>
+<input
+  type="file"
+  id="noticeAttachment"
+  accept=".pdf,.jpg,.jpeg,.png,.webp"
+>
+
+<h4>Digital Signature</h4>
+<canvas
+  id="noticeSignatureCanvas"
+  width="500"
+  height="160"
+  style="width:100%;max-width:500px;height:160px;border:1px solid #ccc;background:#fff;touch-action:none;"
+  onpointerdown="noticeSignatureStart(event)"
+  onpointermove="noticeSignatureMove(event)"
+  onpointerup="noticeSignatureEnd()"
+  onpointercancel="noticeSignatureEnd()"
+></canvas>
+
+<button type="button" class="btn" onclick="clearNoticeSignature()">
+  Clear Signature
+</button>
+
+<label for="noticeAttachment">Upload Attachment (PDF, JPG, PNG)</label>
+<input
+  type="file"
+  id="noticeAttachment"
+  accept=".pdf,.jpg,.jpeg,.png,.webp"
+>
+
+<h4>Digital Signature</h4>
+<canvas
+  id="noticeSignatureCanvas"
+  width="500"
+  height="160"
+  style="width:100%;max-width:500px;height:160px;border:1px solid #ccc;background:#fff;touch-action:none;"
+  onpointerdown="noticeSignatureStart(event)"
+  onpointermove="noticeSignatureMove(event)"
+  onpointerup="noticeSignatureEnd()"
+  onpointercancel="noticeSignatureEnd()"
+></canvas>
+
+<button type="button" class="btn" onclick="clearNoticeSignature()">
+  Clear Signature
+</button>
+
+  <label for="noticeAttachment">Upload Attachment (PDF/JPG/PNG/WEBP)</label>
+  <input
+    type="file"
+    id="noticeAttachment"
+    accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+  >
+
+  <h4>Digital Signature</h4>
+  <p>Draw your signature below using your mouse or touchscreen.</p>
+
+  <canvas
+    id="noticeSignatureCanvas"
+    width="600"
+    height="180"
+    style="display:block;width:100%;max-width:600px;height:180px;border:2px solid #b8c7d9;border-radius:8px;background:white;touch-action:none;"
+    onpointerdown="noticeSignatureStart(event)"
+    onpointermove="noticeSignatureMove(event)"
+    onpointerup="noticeSignatureEnd(event)"
+    onpointercancel="noticeSignatureEnd(event)"
+  ></canvas>
+
+  <button type="button" class="btn" onclick="clearNoticeSignature()">
+    Clear Signature
+  </button>
+
+  <button type="button" class="btn" id="publishNoticeButton" onclick="addNotice()">
     Publish Notice
   </button>
 
   <p id="noticeStatus"></p>
 </div>
+
 
 <div id="noticeList"></div>
   <div id="noticesList" class="card">
@@ -2310,6 +2383,28 @@ if (form) form.style.display = isAdmin ? 'block' : 'none';
       body.textContent = notice.body || '';
 
       card.append(title, body);
+if (notice.attachment_url) {
+  const attachmentLink = document.createElement("a");
+  attachmentLink.href = notice.attachment_url;
+  attachmentLink.target = "_blank";
+  attachmentLink.rel = "noopener noreferrer";
+  attachmentLink.textContent =
+    "📎 " + (notice.attachment_name || "Open attachment");
+
+  card.appendChild(attachmentLink);
+}
+
+if (notice.signature_url) {
+  const signatureImage = document.createElement("img");
+  signatureImage.src = notice.signature_url;
+  signatureImage.alt = "Notice digital signature";
+  signatureImage.style.display = "block";
+  signatureImage.style.maxWidth = "220px";
+  signatureImage.style.maxHeight = "100px";
+  signatureImage.style.marginTop = "12px";
+
+  card.appendChild(signatureImage);
+}
 
       if (isAdmin) {
         const deleteButton = document.createElement('button');
@@ -2352,63 +2447,141 @@ if (form) form.style.display = isAdmin ? 'block' : 'none';
     box.textContent = 'Unable to load notices. Please try again.';
   }
 }
+  
+let noticeSignatureDrawing = false;
+let noticeSignatureHasInk = false;
+
+function noticeSignatureStart(event) {
+  const canvas = document.getElementById("noticeSignatureCanvas");
+  const ctx = canvas.getContext("2d");
+  const rect = canvas.getBoundingClientRect();
+
+  event.preventDefault();
+  canvas.setPointerCapture(event.pointerId);
+
+  ctx.beginPath();
+  ctx.moveTo(
+    (event.clientX - rect.left) * canvas.width / rect.width,
+    (event.clientY - rect.top) * canvas.height / rect.height
+  );
+
+  noticeSignatureDrawing = true;
+}
+
+function noticeSignatureMove(event) {
+  if (!noticeSignatureDrawing) return;
+
+  const canvas = document.getElementById("noticeSignatureCanvas");
+  const ctx = canvas.getContext("2d");
+  const rect = canvas.getBoundingClientRect();
+
+  event.preventDefault();
+
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = "#111111";
+
+  ctx.lineTo(
+    (event.clientX - rect.left) * canvas.width / rect.width,
+    (event.clientY - rect.top) * canvas.height / rect.height
+  );
+
+  ctx.stroke();
+  noticeSignatureHasInk = true;
+}
+
+function noticeSignatureEnd() {
+  noticeSignatureDrawing = false;
+}
+
+function clearNoticeSignature() {
+  const canvas = document.getElementById("noticeSignatureCanvas");
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  noticeSignatureHasInk = false;
+}
+
+
 async function addNotice() {
-  const titleInput = document.getElementById('noticeTitle');
-  const bodyInput = document.getElementById('noticeBody');
-  const status = document.getElementById('noticeStatus');
+  const titleInput = document.getElementById("noticeTitle");
+  const bodyInput = document.getElementById("noticeBody");
+  const fileInput = document.getElementById("noticeAttachment");
+  const canvas = document.getElementById("noticeSignatureCanvas");
+  const status = document.getElementById("noticeStatus");
+  const button = document.getElementById("publishNoticeButton");
 
   const title = titleInput.value.trim();
   const body = bodyInput.value.trim();
-  const token = localStorage.getItem('micl_token');
+  const token = localStorage.getItem("micl_token");
 
   const user = JSON.parse(
-    localStorage.getItem('micl_user') || '{}'
+    localStorage.getItem("micl_user") || "{}"
   );
 
-  if (user.role !== 'admin') {
-    status.textContent = 'Only Admin can publish notices.';
+  if (user.role !== "admin") {
+    status.textContent = "Only Admin can publish notices.";
     return;
   }
 
   if (!title || !body) {
-    status.textContent = 'Please enter notice title and details.';
+    status.textContent = "Please enter notice title and details.";
     return;
   }
 
-  const button = document.querySelector(
-    '#adminNoticeForm button'
-  );
+  const file = fileInput.files[0];
+
+  if (file && file.size > 10 * 1024 * 1024) {
+    status.textContent = "Attachment must be 10 MB or smaller.";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("body", body);
+
+  if (file) {
+    formData.append("attachment", file);
+  }
+
+  if (noticeSignatureHasInk) {
+    formData.append("signature", canvas.toDataURL("image/png"));
+  }
 
   try {
-    status.textContent = 'Publishing notice...';
-    if (button) button.disabled = true;
+    status.textContent = "Publishing notice...";
+    button.disabled = true;
 
-    const response = await fetch('/api/admin/notices', {
-      method: 'POST',
+    const response = await fetch("/api/admin/notices", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
+        "Authorization": "Bearer " + token
       },
-      body: JSON.stringify({ title, body })
+      body: formData
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Unable to publish notice');
+      throw new Error(data.error || "Unable to publish notice");
     }
 
-    titleInput.value = '';
-    bodyInput.value = '';
-    status.textContent = 'Notice published successfully!';
+    titleInput.value = "";
+    bodyInput.value = "";
+    fileInput.value = "";
+    clearNoticeSignature();
 
+    status.textContent = "Notice published successfully!";
     await loadNotices();
   } catch (error) {
-    status.textContent = error.message || 'Server connection error.';
+    status.textContent =
+      error.message || "Server connection error.";
   } finally {
-    if (button) button.disabled = false;
+    button.disabled = false;
   }
-} 
+}
+
   function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
