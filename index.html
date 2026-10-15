@@ -2588,6 +2588,49 @@ async function deleteFeeRecord(studentId) {
     alert("Unable to load students");
   }
 }
+  
+async function restoreLoginAfterRefresh() {
+  const token = localStorage.getItem('micl_token');
+
+  if (!token) return;
+
+  try {
+    const response = await fetch('/api/me', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem('micl_token');
+      localStorage.removeItem('micl_user');
+      return;
+    }
+
+    if (!response.ok) return;
+
+    const result = await response.json();
+    const user = result.user || result;
+
+    if (!user || !user.role) return;
+
+    localStorage.setItem('micl_user', JSON.stringify(user));
+
+    role = user.role.toLowerCase();
+
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    applyRoleMenu(role);
+    home();
+
+  } catch (error) {
+    console.error('Session restore failed:', error);
+  }
+}
+
+restoreLoginAfterRefresh();
+  
 </script>
 </body>
 </html>
