@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+8<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2609,8 +2609,18 @@ async function restoreLoginAfterRefresh() {
 
     if (!response.ok) return;
 
-    const result = await response.json();
-    const user = result.user || result;
+    
+const result = await response.json();
+const apiUser = result.user || result;
+const savedUser = JSON.parse(
+  localStorage.getItem('micl_user') || '{}'
+);
+const user = { ...savedUser, ...apiUser };
+
+if (!user || !user.role) return;
+
+localStorage.setItem('micl_user', JSON.stringify(user));
+
 
     if (!user || !user.role) return;
 
@@ -2623,7 +2633,10 @@ async function restoreLoginAfterRefresh() {
 
     applyRoleMenu(role);
     home();
-
+if (user.role === 'admin') {
+  show('profile', 'My Profile');
+  loadAdminProfile();
+}
   } catch (error) {
     console.error('Session restore failed:', error);
   }
