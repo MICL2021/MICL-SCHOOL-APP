@@ -372,6 +372,31 @@ box-sizing:border-box;
 </section>
 <section id="notices" class="screen">
   <h2>Notice Board</h2>
+<div id="adminNoticeForm" class="card" style="display:none;">
+  <h3>➕ Add New Notice</h3>
+
+  <input
+    type="text"
+    id="noticeTitle"
+    placeholder="Notice title"
+    required
+  >
+
+  <textarea
+    id="noticeBody"
+    placeholder="Write notice details here"
+    rows="4"
+    required
+  ></textarea>
+
+  <button class="btn" onclick="addNotice()">
+    Publish Notice
+  </button>
+
+  <p id="noticeStatus"></p>
+</div>
+
+<div id="noticeList"></div>
   <div id="noticesList" class="card">
     Loading notices...
   </div>
