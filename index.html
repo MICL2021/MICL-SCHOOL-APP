@@ -1159,6 +1159,7 @@ const data = await response.json();
    
 
     localStorage.setItem('micl_token', data.token);
+    localStorage.setItem('micl_last_activity', Date.now().toString());
     const { photo, ...userWithoutPhoto } = data.user;
 localStorage.setItem('micl_user', JSON.stringify(userWithoutPhoto));
 
