@@ -2269,14 +2269,18 @@ async function submitAttendance() {
   }
 }
 async function loadNotices() {
-  const box = document.getElementById('noticesList');
+async function loadNotices() {
+  const box = document.getElementById('noticeList');
   if (!box) return;
 
   box.textContent = 'Loading notices...';
 
   try {
     const token = localStorage.getItem('micl_token');
-
+    const user = JSON.parse(localStorage.getItem('micl_user') || '{}');
+    const isAdmin = user.role === 'admin';
+const form = document.getElementById('adminNoticeForm');
+if (form) form.style.display = isAdmin ? 'block' : 'none';
     const response = await fetch('/api/notices', {
       headers: {
         'Authorization': 'Bearer ' + token
@@ -2289,24 +2293,59 @@ async function loadNotices() {
       throw new Error(data.error || 'Unable to load notices');
     }
 
+    box.replaceChildren();
+
     if (!Array.isArray(data) || data.length === 0) {
       box.textContent = 'No notices available.';
       return;
     }
 
-    box.replaceChildren();
-
     data.forEach(notice => {
       const card = document.createElement('div');
       card.className = 'card';
 
-      const title = document.createElement('b');
+      const title = document.createElement('h3');
       title.textContent = notice.title || 'Notice';
 
       const body = document.createElement('p');
       body.textContent = notice.body || '';
 
       card.append(title, body);
+
+      if (isAdmin) {
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'btn';
+        deleteButton.textContent = '🗑️ Delete Notice';
+
+        deleteButton.onclick = async () => {
+          if (!confirm('Delete this notice?')) return;
+
+          try {
+            const result = await fetch(
+              '/api/admin/notices/' + encodeURIComponent(notice.id),
+              {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': 'Bearer ' + token
+                }
+              }
+            );
+
+            const resultData = await result.json();
+
+            if (!result.ok) {
+              throw new Error(resultData.error || 'Delete failed');
+            }
+
+            await loadNotices();
+          } catch (error) {
+            alert(error.message || 'Unable to delete notice');
+          }
+        };
+
+        card.appendChild(deleteButton);
+      }
+
       box.appendChild(card);
     });
   } catch (error) {
@@ -2314,6 +2353,63 @@ async function loadNotices() {
     box.textContent = 'Unable to load notices. Please try again.';
   }
 }
+async function addNotice() {
+  const titleInput = document.getElementById('noticeTitle');
+  const bodyInput = document.getElementById('noticeBody');
+  const status = document.getElementById('noticeStatus');
+
+  const title = titleInput.value.trim();
+  const body = bodyInput.value.trim();
+  const token = localStorage.getItem('micl_token');
+
+  const user = JSON.parse(
+    localStorage.getItem('micl_user') || '{}'
+  );
+
+  if (user.role !== 'admin') {
+    status.textContent = 'Only Admin can publish notices.';
+    return;
+  }
+
+  if (!title || !body) {
+    status.textContent = 'Please enter notice title and details.';
+    return;
+  }
+
+  const button = document.querySelector(
+    '#adminNoticeForm button'
+  );
+
+  try {
+    status.textContent = 'Publishing notice...';
+    if (button) button.disabled = true;
+
+    const response = await fetch('/api/admin/notices', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ title, body })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to publish notice');
+    }
+
+    titleInput.value = '';
+    bodyInput.value = '';
+    status.textContent = 'Notice published successfully!';
+
+    await loadNotices();
+  } catch (error) {
+    status.textContent = error.message || 'Server connection error.';
+  } finally {
+    if (button) button.disabled = false;
+  }
+} 
   function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
