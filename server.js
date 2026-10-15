@@ -316,7 +316,7 @@ app.delete("/api/admin/students/:id",auth,admin,(req,res)=>{
 
 app.get("/api/admin/profile",auth,admin,(req,res)=>{
   const user=db.prepare(
-    "SELECT id,name,email,username,phone,photo,role FROM users WHERE id=? AND role='admin'"
+    "SELECT id,name,email,username,phone,photo,role,designation,school_name FROM users WHERE id=? AND role='admin'"
   ).get(req.user.id);
 
   if(!user){
