@@ -38,7 +38,9 @@ const columns = [
   ["roll_no", "TEXT"],
 ["exam_roll_no", "TEXT"],
   ["username", "TEXT"],
-  ["photo", "TEXT"]
+  ["photo", "TEXT"],
+  ["designation", "TEXT"],
+["school_name", "TEXT"]
 ];
 
 for (const [column, type] of columns) {
@@ -326,7 +328,7 @@ app.get("/api/admin/profile",auth,admin,(req,res)=>{
 
 
 app.put("/api/admin/profile", auth, admin, (req, res) => {
-  const { name, phone, photo } = req.body;
+  const { name, phone, photo, designation, schoolName } = req.body;
 
   if (!name || !name.trim()) {
     return res.status(400).json({
@@ -335,8 +337,8 @@ app.put("/api/admin/profile", auth, admin, (req, res) => {
   }
 
   db.prepare(
-    "UPDATE users SET name=?, phone=?, photo=COALESCE(?, photo) WHERE id=? AND role='admin'"
-  ).run(name.trim(), phone || "", photo || null, req.user.id);
+ "UPDATE users SET name=?, phone=?, photo=COALESCE(?, photo), designation=?, school_name=? WHERE id=? AND role='admin'"
+).run(name.trim(), phone || "", photo || null, designation || "", schoolName || "", req.user.id);   
 
   res.json({ message: "Admin profile saved successfully" });
 });
