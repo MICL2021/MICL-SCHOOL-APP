@@ -1,4 +1,4 @@
-8<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -370,8 +370,12 @@ box-sizing:border-box;
     </button>
   </div>
 </section>
-  <section id="notices" class="screen"><h2>Notice Board</h2><div class="card"><b>📢 Parent-Teacher Meeting</b><p>Important meeting for parents and teachers.</p><span class="badge">Academic</span></div><div class="card"><b>☀️ Summer Vacation</b><p>School holiday schedule will be announced here.</p></div><div class="card"><b>🏆 Inter-House Sports Competition</b><p>Students can register through their class teacher.</p></div></section>
-
+<section id="notices" class="screen">
+  <h2>Notice Board</h2>
+  <div id="noticesList" class="card">
+    Loading notices...
+  </div>
+</section>
 <section id="timetable" class="screen"><h2>School Timetable</h2><div class="card"><span class="badge">Monday</span><div class="row"><b>1</b> English <span>Teacher</span></div><div class="row"><b>2</b> Mathematics <span>Teacher</span></div><div class="row"><b>3</b> Science <span>Teacher</span></div><div class="row"><b>4</b> Social Science <span>Teacher</span></div><div class="row"><b>5</b> Computer <span>Teacher</span></div></div></section>
 
 <section id="attendance" class="screen">
@@ -2239,6 +2243,52 @@ async function submitAttendance() {
     message.textContent = 'Server connection error.';
   }
 }
+async function loadNotices() {
+  const box = document.getElementById('noticesList');
+  if (!box) return;
+
+  box.textContent = 'Loading notices...';
+
+  try {
+    const token = localStorage.getItem('micl_token');
+
+    const response = await fetch('/api/notices', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to load notices');
+    }
+
+    if (!Array.isArray(data) || data.length === 0) {
+      box.textContent = 'No notices available.';
+      return;
+    }
+
+    box.replaceChildren();
+
+    data.forEach(notice => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const title = document.createElement('b');
+      title.textContent = notice.title || 'Notice';
+
+      const body = document.createElement('p');
+      body.textContent = notice.body || '';
+
+      card.append(title, body);
+      box.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Notice loading error:', error);
+    box.textContent = 'Unable to load notices. Please try again.';
+  }
+}
   function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
@@ -2256,6 +2306,9 @@ if (id === 'profile') {
       if (id === 'feemanagement') {
   loadFeeStudents();
   loadAdminFeeRecords();
+}
+      if (id === 'notices') {
+  loadNotices();
 }
       if (id === 'studentList') {
   loadStudents();
