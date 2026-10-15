@@ -837,7 +837,7 @@ setValue('adminSchoolName', data.school_name);
 setText('profileName', data.name);
 setText('profilePhone', data.phone);
 setText('adminDisplayName', data.name);
-setText('adminDisplayUsername', data.username);
+setText('adminDisplayUsername', data.username || data.email);
 setText('adminDisplayEmail', data.email);
 
 const photo = document.getElementById('adminPhotoPreview');
