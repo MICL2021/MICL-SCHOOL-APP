@@ -420,6 +420,43 @@ app.post("/api/change-password",auth,(req,res)=>{
 
   res.json({message:"Password changed successfully"});
 });
+// Admin-only: reset a student's or teacher's password
+app.post("/api/admin/reset-password", auth, admin, (req, res) => {
+  const { userId, newPassword } = req.body;
+
+  if (!userId || !newPassword) {
+    return res.status(400).json({
+      error: "User ID and new password are required"
+    });
+  }
+
+  if (String(newPassword).length < 6) {
+    return res.status(400).json({
+      error: "Password must be at least 6 characters"
+    });
+  }
+
+  const targetUser = db.prepare(
+    "SELECT id, role FROM users WHERE id = ?"
+  ).get(userId);
+
+  if (!targetUser || !["student", "teacher"].includes(
+    String(targetUser.role).toLowerCase()
+  )) {
+    return res.status(404).json({
+      error: "Student or teacher not found"
+    });
+  }
+
+  const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+  db.prepare("UPDATE users SET password = ? WHERE id = ?")
+    .run(hashedPassword, targetUser.id);
+
+  return res.json({
+    message: "Password reset successfully"
+  });
+});
 app.get("/api/me", auth, (req, res) => {
   try {
     const user = db.prepare(`
