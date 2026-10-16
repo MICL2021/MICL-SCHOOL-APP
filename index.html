@@ -3202,7 +3202,102 @@ function checkMiclAutoLogout() {
 
 setInterval(checkMiclAutoLogout, 60 * 1000);
 checkMiclAutoLogout();
+async function loadResetUsers() {
+  const token = localStorage.getItem('micl_token');
+  const role = document.getElementById('resetAccountType').value;
+  const list = document.getElementById('resetUserId');
+  const status = document.getElementById('resetPasswordStatus');
 
+  list.innerHTML = '<option value="">Loading...</option>';
+  status.textContent = '';
+
+  try {
+    const response = await fetch(
+      role === 'student' ? '/api/admin/students' : '/api/admin/teachers',
+      {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      }
+    );
+
+    const users = await response.json();
+
+    if (!response.ok) {
+      throw new Error(users.error || 'Accounts load nahi hue');
+    }
+
+    list.innerHTML = '<option value="">Account select karein</option>';
+
+    users.forEach(user => {
+      const option = document.createElement('option');
+      option.value = user.id;
+      option.textContent =
+        user.name + ' — ' + (user.admission_no || user.email || user.username || user.id);
+      list.appendChild(option);
+    });
+
+    status.textContent = users.length
+      ? 'Accounts load ho gaye.'
+      : 'Koi account nahi mila.';
+  } catch (error) {
+    list.innerHTML = '<option value="">Accounts load nahi hue</option>';
+    status.textContent = error.message;
+  }
+}
+
+async function resetSelectedUserPassword() {
+  const token = localStorage.getItem('micl_token');
+  const userId = document.getElementById('resetUserId').value;
+  const password = document.getElementById('resetNewPassword').value;
+  const confirmPassword = document.getElementById('resetConfirmPassword').value;
+  const status = document.getElementById('resetPasswordStatus');
+
+  if (!userId) {
+    status.textContent = 'Pehle Student ya Teacher select karein.';
+    return;
+  }
+
+  if (password.length < 6) {
+    status.textContent = 'Password kam se kam 6 characters ka hona chahiye.';
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    status.textContent = 'Dono passwords match nahi karte.';
+    return;
+  }
+
+  if (!confirm('Kya aap selected account ka password reset karna chahte hain?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/admin/reset-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        userId: Number(userId),
+        newPassword: password
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Password reset nahi hua.');
+    }
+
+    status.textContent = 'Password successfully reset ho gaya.';
+    document.getElementById('resetNewPassword').value = '';
+    document.getElementById('resetConfirmPassword').value = '';
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
 </script>
 </body>
 </html>
