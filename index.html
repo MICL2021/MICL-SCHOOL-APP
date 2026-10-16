@@ -417,8 +417,7 @@ box-sizing:border-box;
 <h2>Teacher List</h2>
 <div id="teachersBox" class="card">Loading...</div>
 </section>
-  <section id="teacherDashboard" class="screen">
-  
+
 <section id="teacherDashboard" class="screen">
   <h2>👨‍🏫 Teacher Dashboard</h2>
 
@@ -3301,30 +3300,41 @@ async function resetSelectedUserPassword() {
     status.textContent = error.message;
   }
 }
-  
-<section id="teacherDashboard" class="screen">
-  <h2>👨‍🏫 Teacher Dashboard</h2>
 
-  <div class="card">
-    <h3>📚 Upload Homework</h3>
+async function publishTeacherHomework() {
+  const title = document.getElementById('teacherHomeworkTitle').value.trim();
+  const description = document.getElementById('teacherHomeworkDescription').value.trim();
+  const due_date = document.getElementById('teacherHomeworkDueDate').value;
+  const status = document.getElementById('teacherHomeworkStatus');
 
-    <input id="teacherHomeworkTitle"
-           type="text"
-           placeholder="Homework title">
+  if (!title || !description) {
+    status.textContent = 'Homework title aur details likhein.';
+    return;
+  }
 
-    <textarea id="teacherHomeworkDescription"
-              placeholder="Homework details / instructions"></textarea>
+  status.textContent = 'Publishing...';
 
-    <input id="teacherHomeworkDueDate"
-           type="date">
+  try {
+    const response = await fetch('/api/admin/homework', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+      },
+      body: JSON.stringify({ title, description, due_date })
+    });
 
-    <button class="btn" onclick="publishTeacherHomework()">
-      Publish Homework
-    </button>
+    const result = await response.json();
 
-    <p id="teacherHomeworkStatus" aria-live="polite"></p>
-  </div>
-</section>
+    if (!response.ok) {
+      throw new Error(result.error || 'Homework publish nahi hua.');
+    }
+
+    status.textContent = 'Homework publish ho gaya!';
+  } catch (error) {
+    status.textContent = error.message || 'Server connection error.';
+  }
+}
 
 </script>
 </body>
