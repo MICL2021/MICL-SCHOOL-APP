@@ -615,6 +615,7 @@ app.delete("/api/admin/notices/:id", auth, admin, (req, res) => {
   }
 });
 
+
 app.post("/api/admin/homework", auth, (req, res) => {
   const role = String(req.user.role || "").toLowerCase();
 
@@ -652,6 +653,7 @@ app.post("/api/admin/homework", auth, (req, res) => {
     });
   }
 });
+
 
 app.post("/api/admin/events",auth,admin,(req,res)=>{const {title,description,event_date}=req.body;const r=db.prepare("INSERT INTO events(title,description,event_date) VALUES(?,?,?)").run(title,description,event_date);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/users",auth,admin,(req,res)=>{
