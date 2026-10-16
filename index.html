@@ -3011,7 +3011,9 @@ async function restoreLoginAfterRefresh() {
     console.error('Session restore failed:', error);
   }
 }
-
+localStorage.removeItem('micl_token');
+localStorage.removeItem('micl_user');
+localStorage.removeItem('micl_last_activity');
 restoreLoginAfterRefresh();
   
 const MICL_AUTO_LOGOUT_TIME = 30 * 60 * 1000;
