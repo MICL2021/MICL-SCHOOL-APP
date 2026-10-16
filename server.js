@@ -614,7 +614,44 @@ app.delete("/api/admin/notices/:id", auth, admin, (req, res) => {
     res.status(500).json({ error: "Unable to delete notice" });
   }
 });
-app.post("/api/admin/homework",auth,admin,(req,res)=>{const {title,description,due_date}=req.body;const r=db.prepare("INSERT INTO homework(title,description,due_date) VALUES(?,?,?)").run(title,description,due_date);res.json({id:r.lastInsertRowid})});
+app.post("/api/admin/homework", auth, (req, res) => {
+  const role = String(req.user.role || "").toLowerCase();
+
+  if (role !== "admin" && role !== "teacher") {
+    return res.status(403).json({
+      error: "Only Admin or Teacher can publish homework"
+    });
+  }
+
+  const { title, description, due_date } = req.body;
+
+  if (!title || !String(title).trim()) {
+    return res.status(400).json({
+      error: "Homework title is required"
+    });
+  }
+
+  try {
+    const result = db.prepare(`
+      INSERT INTO homework (title, description, due_date)
+      VALUES (?, ?, ?)
+    `).run(
+      String(title).trim(),
+      description || "",
+      due_date || ""
+    );
+
+    res.json({
+      id: result.lastInsertRowid,
+      message: "Homework published successfully"
+    });
+  } catch (error) {
+    console.error("Homework publish error:", error);
+    res.status(500).json({
+      error: "Could not publish homework"
+    });
+  }
+});
 app.post("/api/admin/events",auth,admin,(req,res)=>{const {title,description,event_date}=req.body;const r=db.prepare("INSERT INTO events(title,description,event_date) VALUES(?,?,?)").run(title,description,event_date);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/users",auth,admin,(req,res)=>{
   const {
