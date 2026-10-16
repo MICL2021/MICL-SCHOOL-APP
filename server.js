@@ -423,7 +423,51 @@ app.post("/api/change-password",auth,(req,res)=>{
 
   res.json({message:"Password changed successfully"});
 });
-app.get("/api/me",auth,(req,res)=>res.json(db.prepare("SELECT id,name,email,phone,role,class_name,section,admission_no FROM users WHERE id=?").get(req.user.id)));
+app.get("/api/me", auth, (req, res) => {
+  try {
+    const user = db.prepare(`
+      SELECT
+        id,
+        name,
+        username,
+        email,
+        phone,
+        role,
+        class_name,
+        section,
+        admission_no,
+        roll_no,
+        exam_roll_no,
+        father_name,
+        mother_name,
+        dob,
+        address,
+        caste,
+        aadhaar_no,
+        apaar_no,
+        udise_pen,
+        qualification,
+        designation,
+        school_name,
+        photo
+      FROM users
+      WHERE id = ?
+    `).get(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User profile not found"
+      });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Profile loading error:", error);
+    res.status(500).json({
+      error: "Unable to load profile"
+    });
+  }
+});
 app.get("/api/notices",auth,(req,res)=>res.json(db.prepare("SELECT * FROM notices ORDER BY id DESC").all()));
 app.get("/api/timetable",auth,(req,res)=>res.json(db.prepare("SELECT * FROM timetable ORDER BY CASE day WHEN 'Monday' THEN 1 WHEN 'Tuesday' THEN 2 WHEN 'Wednesday' THEN 3 WHEN 'Thursday' THEN 4 WHEN 'Friday' THEN 5 WHEN 'Saturday' THEN 6 END,period").all()));
 app.get("/api/homework",auth,(req,res)=>res.json(db.prepare("SELECT * FROM homework ORDER BY due_date").all()));
