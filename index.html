@@ -70,23 +70,39 @@ box-sizing:border-box;
 <body>
   <div id="menuOverlay" onclick="toggleMenu()"></div>
 
+
 <div id="sideMenu">
   <button onclick="home();toggleMenu()">🏠 Home</button>
+
   <button onclick="show('notices','Notice Board');toggleMenu()">📢 Notices</button>
+
   <button onclick="show('attendance','Attendance');toggleMenu()">📅 Attendance</button>
+
   <button onclick="show('profile','Profile');toggleMenu()">👤 Profile</button>
+
   <button onclick="show('settings','Settings');toggleMenu()">⚙️ Settings</button>
+
   <button id="teacherMenuButton" style="display:none" onclick="show('addTeacher','Add Teacher');toggleMenu()">👨‍🏫 Add Teacher</button>
+
   <button onclick="show('feemanagement','Fee Management');toggleMenu()">💰 Fee Management</button>
+
   <button onclick="show('classManagement','Class Management');toggleMenu()">🏫 Class Management</button>
-  <button onclick="show('addStudent','Add Student');toggleMenu()">🎓 Add Student</button>
+
+  <button onclick="show('addStudent','Add Student');toggleMenu()">➕ Add Student</button>
+
   <button onclick="show('studentList','Student List');toggleMenu()">📋 Student List</button>
+
   <button onclick="show('teacherList','Teacher List');toggleMenu()">👨‍🏫 Teacher List</button>
+
   <button onclick="show('onlineFee','Online Fee');toggleMenu()">💳 Online Fee</button>
+
   <button onclick="show('feeRecords','Student Fee Records');loadFeeRecords();toggleMenu()">💰 Fee Records</button>
+
   <button onclick="show('about','About School');toggleMenu()">🏫 About School</button>
+
   <button onclick="logout()">🚪 Logout</button>
 </div>
+
 
 <div id="login" class="login">
   <div class="loginbox">
