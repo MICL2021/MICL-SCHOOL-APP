@@ -745,78 +745,40 @@ box-sizing:border-box;
 </div>
 
 </section>
-  
+
 <section id="settings" class="screen">
+  <div style="background:#0b3b78;color:white;padding:20px;border-radius:16px;margin-bottom:18px;">
+    <h2 style="margin:0 0 6px;">⚙️ Settings</h2>
+    <p style="margin:0;font-size:13px;opacity:0.9;">
+      MICL School App · Admin Control Panel
+    </p>
+  </div>
 
-<h2>⚙️ Settings</h2>
+  <div class="card" style="padding:18px;border-radius:14px;margin-bottom:14px;">
+    <h3>👤 Admin Profile</h3>
+    <p>Admin ka naam, photo, phone aur email manage karein.</p>
+    <button class="btn" onclick="show('profile','Admin Profile')">
+      Open Admin Profile →
+    </button>
+  </div>
 
-<div class="card">
-<h3>🔐 Change Admin Password</h3>
-<p>Admin password change karein.</p>
-<button class="btn" onclick="show('profile','Change Password')">
-Change Password
-</button>
-</div>
+  <div class="card" style="padding:18px;border-radius:14px;margin-bottom:14px;">
+    <h3>🏫 School Information</h3>
+    <p>School ka naam, address, phone aur email manage karein.</p>
+    <button class="btn" onclick="show('schoolInformation','School Information')">
+      School Information →
+    </button>
+  </div>
 
-<div class="card" id="adminSettingsProfileCard">
-<h3>👤 Admin Profile</h3>
-<p>Admin account ki information yahan manage hogi.</p>
-<button class="btn" onclick="show('profile','Admin Profile')">
-Admin Profile
-</button>
-</div>
-
-<div class="card">
-<h3>🏫 School Information</h3>
-<p>School Name, Address, Phone aur Email</p>
-<button class="btn" onclick="show('schoolInformation','School Information')">
-School Information
-</button>
-</div>
-
-<div class="card">
-<h3>📚 Classes & Sections</h3>
-<p>Classes aur Sections manage karein.</p>
-<button class="btn" onclick="show('classManagement','Class Management')">
-Manage Classes
-</button>
-</div>
-
-<div class="card">
-<h3>🔔 Notification Settings</h3>
-<p>School notifications manage karein.</p>
-<button class="btn" onclick="alert('Notification Settings coming next')">
-Notifications
-</button>
-</div>
-
-<div class="card">
-<h3>💰 Fee Settings</h3>
-<p>School fee settings manage karein.</p>
-<button class="btn" onclick="show('feemanagement','Fee Management')">
-Fee Settings
-</button>
-</div>
-
-<div class="card">
-<h3>🔑 User / Role Permissions</h3>
-<p>Admin, Teacher aur Student permissions.</p>
-<button class="btn" onclick="alert('Role Permissions coming next')">
-Permissions
-</button>
-</div>
-
-<div class="card">
-<h3>🛡️ Security Settings</h3>
-<p>School app security settings.</p>
-<button class="btn" onclick="alert('Security Settings coming next')">
-Security
-</button>
-</div>
-
-
-
+  <div class="card" style="padding:18px;border-radius:14px;margin-bottom:14px;">
+    <h3>🔐 Change Password</h3>
+    <p>Apne admin account ka password change karein.</p>
+    <button class="btn" onclick="show('profile','Change Password')">
+      Change Password →
+    </button>
+  </div>
 </section>
+
   <section id="schoolInformation" class="screen">
 
 <h2>🏫 School Information</h2>
