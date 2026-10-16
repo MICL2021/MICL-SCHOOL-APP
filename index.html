@@ -64,6 +64,110 @@ box-sizing:border-box;
 } 
 
   .badge{display:inline-block;background:#e9f5ff;color:#063b82;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:bold}.ok{color:#149447;font-weight:bold}.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.photo{height:120px;border-radius:12px;background:linear-gradient(135deg,#c9e3f7,#eaf5ff);display:flex;align-items:center;justify-content:center;font-size:38px}
+  
+/* MICL Professional Admin Profile */
+#adminProfileCard {
+  background: #ffffff;
+  border: 1px solid #dbe5f1;
+  border-radius: 18px;
+  padding: 22px;
+  margin: 16px 0;
+  box-shadow: 0 8px 24px rgba(11, 59, 120, 0.09);
+  color: #18324d;
+}
+
+#adminProfileCard > h3 {
+  background: linear-gradient(135deg, #0b3b78, #1769aa);
+  color: #ffffff;
+  padding: 17px;
+  margin: -22px -22px 22px;
+  border-radius: 17px 17px 0 0;
+  font-size: 19px;
+}
+
+#adminProfileCard input:not([type="file"]) {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  margin: 12px 0;
+  border: 1px solid #d3dfed;
+  border-radius: 10px;
+  background: #f8fbff;
+  color: #18324d;
+  font-size: 15px;
+}
+
+#adminProfileCard input:focus {
+  outline: 2px solid #1769aa;
+  border-color: #1769aa;
+  background: #ffffff;
+}
+
+#adminProfileCard input[type="file"] {
+  display: block;
+  max-width: 100%;
+  margin: 14px 0;
+  font-size: 13px;
+}
+
+#adminProfileCard img {
+  width: 112px !important;
+  height: 112px !important;
+  object-fit: cover;
+  border: 4px solid #dbeafe;
+  box-shadow: 0 4px 12px rgba(11, 59, 120, 0.15);
+  margin: 10px 0;
+}
+
+#adminProfileCard p {
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+
+#adminProfileCard .btn,
+#adminPasswordCard .btn {
+  background: #0b3b78;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin: 6px 5px 6px 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#adminProfileCard .btn:hover,
+#adminPasswordCard .btn:hover {
+  background: #1769aa;
+}
+
+#adminPasswordCard {
+  background: #f8fbff;
+  border: 1px solid #dbe5f1;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+#adminPasswordCard input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  margin: 12px 0;
+  border: 1px solid #d3dfed;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+#profileStatus,
+#passwordStatus {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
 </style>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
