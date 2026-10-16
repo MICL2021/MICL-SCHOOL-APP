@@ -1454,16 +1454,31 @@ if (profileExamRoll) profileExamRoll.textContent = data.user.exam_roll_no || '-'
 const profilePhoto = document.getElementById('profilePhoto');
 const dashboardPhoto = document.getElementById('studentProfilePhoto');
 
+
 if (data.user.photo) {
-  if (profilePhoto) {
-    profilePhoto.src = data.user.photo;
-    profilePhoto.style.display = 'block';
-  }
-  if (dashboardPhoto) {
-    dashboardPhoto.src = data.user.photo;
-    dashboardPhoto.style.display = 'block';
+  const currentRole = String(data.user.role || "").toLowerCase();
+
+  if (currentRole === "student") {
+    if (profilePhoto) {
+      profilePhoto.src = data.user.photo;
+      profilePhoto.style.display = "block";
+    }
+
+    if (dashboardPhoto) {
+      dashboardPhoto.src = data.user.photo;
+      dashboardPhoto.style.display = "block";
+    }
+  } else {
+    if (profilePhoto) {
+      profilePhoto.style.display = "none";
+    }
+
+    if (dashboardPhoto) {
+      dashboardPhoto.style.display = "none";
+    }
   }
 }
+
 
 
 } catch (e) {
