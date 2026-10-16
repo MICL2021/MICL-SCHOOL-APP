@@ -2919,7 +2919,6 @@ async function deleteFeeRecord(studentId) {
   
 async function restoreLoginAfterRefresh() {
   const token = localStorage.getItem('micl_token');
-
   if (!token) return;
 
   try {
@@ -2932,39 +2931,106 @@ async function restoreLoginAfterRefresh() {
     if (response.status === 401 || response.status === 403) {
       localStorage.removeItem('micl_token');
       localStorage.removeItem('micl_user');
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('login').style.display = 'block';
       return;
     }
 
-    if (!response.ok) return;
+    if (!response.ok) {
+      console.error('Profile restore failed:', response.status);
+      return;
+    }
 
-    
-const result = await response.json();
-const apiUser = result.user || result;
-const savedUser = JSON.parse(
-  localStorage.getItem('micl_user') || '{}'
-);
-const user = { ...savedUser, ...apiUser };
+    const result = await response.json();
+    const apiUser = result.user || result;
+    const savedUser = JSON.parse(
+      localStorage.getItem('micl_user') || '{}'
+    );
 
-if (!user || !user.role) return;
+    const user = { ...savedUser, ...apiUser };
+    if (!user.role) return;
 
-localStorage.setItem('micl_user', JSON.stringify(user));
-
-
-    if (!user || !user.role) return;
-
+    user.role = user.role.toLowerCase();
     localStorage.setItem('micl_user', JSON.stringify(user));
-
-    role = user.role.toLowerCase();
 
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';
 
-    applyRoleMenu(role);
-    home();
-if (user.role === 'admin') {
-  show('profile', 'My Profile');
-  loadAdminProfile();
-}
+    const setText = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value || '-';
+    };
+
+    setText('profileName', user.name);
+    setText('profileEmail', user.email);
+    setText('profilePhone', user.phone);
+    setText('profileRole', user.role);
+    setText('profileFatherName', user.father_name);
+    setText('profileMotherName', user.mother_name);
+    setText('profileDob', user.dob);
+    setText('profileAddress', user.address);
+    setText('profileCaste', user.caste);
+
+    setText('studentProfileName', user.name);
+    setText('studentProfileEmail', user.email);
+    setText('studentProfilePhone', user.phone);
+    setText('studentProfileClass', user.class_name);
+    setText('studentProfileSection', user.section);
+    setText('studentProfileAdmission', user.admission_no);
+    setText('studentProfileFatherName', user.father_name);
+    setText('studentProfileMotherName', user.mother_name);
+    setText('studentProfileDob', user.dob);
+    setText('studentProfileAddress', user.address);
+    setText('studentProfileCaste', user.caste);
+    setText('profileClass', user.class_name);
+    setText('profileSection', user.section);
+    setText('profileAdmission', user.admission_no);
+    setText('profileRollNo', user.roll_no);
+    setText('profileExamRollNo', user.exam_roll_no);
+
+    const adminCard = document.getElementById('adminProfileCard');
+    if (adminCard) {
+      adminCard.style.display = user.role === 'admin' ? 'block' : 'none';
+    }
+
+    const studentInfo = document.getElementById('studentProfileInfo');
+    if (studentInfo) {
+      studentInfo.style.display = user.role === 'admin' ? 'none' : 'block';
+    }
+
+    const academicFields = document.getElementById('academicProfileFields');
+    if (academicFields) {
+      academicFields.style.display = user.role === 'admin' ? 'none' : '';
+    }
+
+    const teacherButton = document.getElementById('teacherMenuButton');
+    if (teacherButton) {
+      teacherButton.style.display = user.role === 'admin' ? 'block' : 'none';
+    }
+
+    const photo = user.photo;
+    if (photo) {
+      ['profilePhoto', 'studentProfilePhoto', 'adminPhotoPreview']
+        .forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.src = photo;
+            el.style.display = 'block';
+          }
+        });
+    }
+
+    applyRoleMenu(user.role);
+
+    if (user.role === 'admin') {
+      show('home', 'Admin Dashboard');
+      loadAdminProfile();
+    } else if (user.role === 'teacher') {
+      show('teacherDashboard', 'Teacher Dashboard');
+    } else {
+      show('studentDashboard', 'Student Dashboard');
+    }
+
   } catch (error) {
     console.error('Session restore failed:', error);
   }
