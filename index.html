@@ -418,32 +418,35 @@ box-sizing:border-box;
 <div id="teachersBox" class="card">Loading...</div>
 </section>
   <section id="teacherDashboard" class="screen">
+  
+<section id="teacherDashboard" class="screen">
   <h2>👨‍🏫 Teacher Dashboard</h2>
 
   <div class="card">
-    <h3>My Assigned Class — Students</h3>
-    <button class="btn" onclick="loadTeacherStudents()">
-      View My Students
-    </button>
-    <div id="teacherStudentsBox">Students yahan dikhenge.</div>
-  </div>
+    <h3>📚 Upload Homework</h3>
 
-  <div class="card">
-    <h3>Class Attendance</h3>
-    <button class="btn" onclick="loadTeacherAttendance()">
-      View Attendance
-    </button>
-    <div id="teacherAttendanceBox">Attendance yahan dikhegi.</div>
-  </div>
+    <input
+      id="teacherHomeworkTitle"
+      type="text"
+      placeholder="Homework Title"
+    >
 
-  <div class="card">
-    <h3>Class Results</h3>
-    <button class="btn" onclick="loadTeacherResults()">
-      View Marks
+    <textarea
+      id="teacherHomeworkDescription"
+      placeholder="Homework details / instructions"
+    ></textarea>
+
+    <label for="teacherHomeworkDueDate">Due Date</label>
+    <input id="teacherHomeworkDueDate" type="date">
+
+    <button class="btn" onclick="publishTeacherHomework()">
+      Publish Homework
     </button>
-    <div id="teacherResultsBox">Marks yahan dikhenge.</div>
+
+    <p id="teacherHomeworkStatus" aria-live="polite"></p>
   </div>
 </section>
+
 <section id="studentDashboard" class="screen">
   <h2>🎓 Student Dashboard</h2>
 
@@ -3298,6 +3301,31 @@ async function resetSelectedUserPassword() {
     status.textContent = error.message;
   }
 }
+  
+<section id="teacherDashboard" class="screen">
+  <h2>👨‍🏫 Teacher Dashboard</h2>
+
+  <div class="card">
+    <h3>📚 Upload Homework</h3>
+
+    <input id="teacherHomeworkTitle"
+           type="text"
+           placeholder="Homework title">
+
+    <textarea id="teacherHomeworkDescription"
+              placeholder="Homework details / instructions"></textarea>
+
+    <input id="teacherHomeworkDueDate"
+           type="date">
+
+    <button class="btn" onclick="publishTeacherHomework()">
+      Publish Homework
+    </button>
+
+    <p id="teacherHomeworkStatus" aria-live="polite"></p>
+  </div>
+</section>
+
 </script>
 </body>
 </html>
