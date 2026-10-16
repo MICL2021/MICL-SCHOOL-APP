@@ -418,25 +418,46 @@ box-sizing:border-box;
 <div id="teachersBox" class="card">Loading...</div>
 </section>
 
+
 <section id="teacherDashboard" class="screen">
   <h2>👨‍🏫 Teacher Dashboard</h2>
 
   <div class="card">
     <h3>📚 Upload Homework</h3>
 
+    <label for="teacherHomeworkTitle">Homework Title</label>
     <input
       id="teacherHomeworkTitle"
       type="text"
       placeholder="Homework Title"
     >
 
+    <label for="teacherHomeworkDescription">Homework Details</label>
     <textarea
       id="teacherHomeworkDescription"
       placeholder="Homework details / instructions"
     ></textarea>
 
+    <label for="teacherHomeworkFile">
+      📎 Attach PDF, Photo or Document
+    </label>
+    <input
+      id="teacherHomeworkFile"
+      type="file"
+      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+    >
+
     <label for="teacherHomeworkDueDate">Due Date</label>
     <input id="teacherHomeworkDueDate" type="date">
+
+    <button class="btn" onclick="publishTeacherHomework()">
+      📤 Publish Homework
+    </button>
+
+    <p id="teacherHomeworkStatus" aria-live="polite"></p>
+  </div>
+</section>
+
 
     <button class="btn" onclick="publishTeacherHomework()">
       Publish Homework
@@ -3316,40 +3337,58 @@ async function resetSelectedUserPassword() {
   }
 }
 
+
 async function publishTeacherHomework() {
   const title = document.getElementById('teacherHomeworkTitle').value.trim();
   const description = document.getElementById('teacherHomeworkDescription').value.trim();
   const due_date = document.getElementById('teacherHomeworkDueDate').value;
+  const fileInput = document.getElementById('teacherHomeworkFile');
   const status = document.getElementById('teacherHomeworkStatus');
+  const file = fileInput.files[0];
 
   if (!title || !description) {
-    status.textContent = 'Homework title aur details likhein.';
+    status.textContent = 'Homework title aur details zaroor likhein.';
     return;
   }
 
-  status.textContent = 'Publishing...';
+  if (file && file.size > 10 * 1024 * 1024) {
+    status.textContent = 'File size 10 MB se kam honi chahiye.';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('description', description);
+  formData.append('due_date', due_date);
+  if (file) formData.append('homeworkFile', file);
+
+  status.textContent = 'Uploading homework...';
 
   try {
     const response = await fetch('/api/admin/homework', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
       },
-      body: JSON.stringify({ title, description, due_date })
+      body: formData
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || 'Homework publish nahi hua.');
+      throw new Error(result.error || 'Homework upload nahi hua.');
     }
 
-    status.textContent = 'Homework publish ho gaya!';
+    status.textContent = '✅ Homework publish ho gaya!';
+    document.getElementById('teacherHomeworkTitle').value = '';
+    document.getElementById('teacherHomeworkDescription').value = '';
+    document.getElementById('teacherHomeworkDueDate').value = '';
+    fileInput.value = '';
   } catch (error) {
-    status.textContent = error.message || 'Server connection error.';
+    status.textContent = '❌ ' + error.message;
   }
 }
+
 
 </script>
 </body>
