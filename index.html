@@ -919,6 +919,44 @@ box-sizing:border-box;
 </div>
 
 </section>
+  
+<section id="adminPasswordReset" class="screen">
+  <h2>🔐 Student / Teacher Password Management</h2>
+
+  <div class="card" id="adminPasswordCard">
+    <p>Admin yahan student ya teacher ka password reset kar sakta hai.</p>
+
+    <label for="resetAccountType">Account Type</label>
+    <select id="resetAccountType" onchange="loadResetUsers()">
+      <option value="student">Student</option>
+      <option value="teacher">Teacher</option>
+    </select>
+
+    <button class="btn" type="button" onclick="loadResetUsers()">
+      Load Accounts
+    </button>
+
+    <label for="resetUserId">Select Student / Teacher</label>
+    <select id="resetUserId">
+      <option value="">Pehle accounts load karein</option>
+    </select>
+
+    <input id="resetNewPassword" type="password"
+      placeholder="New password (minimum 6 characters)"
+      autocomplete="new-password">
+
+    <input id="resetConfirmPassword" type="password"
+      placeholder="Confirm new password"
+      autocomplete="new-password">
+
+    <button class="btn" type="button" onclick="resetSelectedUserPassword()">
+      Reset Password
+    </button>
+
+    <p id="resetPasswordStatus" role="status"></p>
+  </div>
+</section>
+
   <nav>
   <button class="active" onclick="show('home','MICL')">🏠 Home</button>
   <button onclick="show('feeRecords','Student Fee Records');loadFeeRecords()">💰 Fee Records</button>
