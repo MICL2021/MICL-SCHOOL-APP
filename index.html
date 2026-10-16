@@ -3282,36 +3282,45 @@ async function resetSelectedUserPassword() {
 
 
 async function publishTeacherHomework() {
-  const title = document.getElementById('teacherHomeworkTitle').value.trim();
-  const description = document.getElementById('teacherHomeworkDescription').value.trim();
-  const due_date = document.getElementById('teacherHomeworkDueDate').value;
-  const fileInput = document.getElementById('teacherHomeworkFile');
-  const status = document.getElementById('teacherHomeworkStatus');
-  const file = fileInput.files[0];
+  const title = document
+    .getElementById("teacherHomeworkTitle").value.trim();
+
+  const description = document
+    .getElementById("teacherHomeworkDescription").value.trim();
+
+  const due_date = document
+    .getElementById("teacherHomeworkDueDate").value;
+
+  const fileInput = document.getElementById("teacherHomeworkFile");
+  const status = document.getElementById("teacherHomeworkStatus");
+  const file = fileInput ? fileInput.files[0] : null;
 
   if (!title || !description) {
-    status.textContent = 'Homework title aur details zaroor likhein.';
+    status.textContent = "Homework title aur details likhein.";
     return;
   }
 
   if (file && file.size > 10 * 1024 * 1024) {
-    status.textContent = 'File size 10 MB se kam honi chahiye.';
+    status.textContent = "File 10 MB se chhoti honi chahiye.";
     return;
   }
 
   const formData = new FormData();
-  formData.append('title', title);
-  formData.append('description', description);
-  formData.append('due_date', due_date);
-  if (file) formData.append('homeworkFile', file);
+  formData.append("title", title);
+  formData.append("description", description);
+  formData.append("due_date", due_date);
 
-  status.textContent = 'Uploading homework...';
+  if (file) {
+    formData.append("homeworkFile", file);
+  }
+
+  status.textContent = "Uploading homework...";
 
   try {
-    const response = await fetch('/api/admin/homework', {
-      method: 'POST',
+    const response = await fetch("/api/admin/homework", {
+      method: "POST",
       headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+        Authorization: "Bearer " + localStorage.getItem("micl_token")
       },
       body: formData
     });
@@ -3319,16 +3328,22 @@ async function publishTeacherHomework() {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || 'Homework upload nahi hua.');
+      throw new Error(result.error || "Homework upload nahi hua.");
     }
 
-    status.textContent = '✅ Homework publish ho gaya!';
-    document.getElementById('teacherHomeworkTitle').value = '';
-    document.getElementById('teacherHomeworkDescription').value = '';
-    document.getElementById('teacherHomeworkDueDate').value = '';
-    fileInput.value = '';
+    status.textContent = "✅ Homework publish ho gaya.";
+
+    document.getElementById("teacherHomeworkTitle").value = "";
+    document.getElementById("teacherHomeworkDescription").value = "";
+    document.getElementById("teacherHomeworkDueDate").value = "";
+
+    if (fileInput) fileInput.value = "";
+
+    if (typeof loadHomework === "function") {
+      await loadHomework();
+    }
   } catch (error) {
-    status.textContent = '❌ ' + error.message;
+    status.textContent = "❌ " + error.message;
   }
 }
 
