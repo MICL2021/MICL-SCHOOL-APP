@@ -2686,6 +2686,16 @@ if (titleElement) {
   titleElement.lastChild.textContent = title;
 }
 
+const homeworkHeading =
+  document.getElementById('homeworkDashboardHeading');
+
+if (homeworkHeading) {
+  homeworkHeading.textContent =
+    currentUser.role === 'admin'
+      ? '🛡️ Admin Dashboard'
+      : '👨‍🏫 Teacher Dashboard';
+}
+
 if (id === 'profile') {
   loadAdminPhoto();
 }
