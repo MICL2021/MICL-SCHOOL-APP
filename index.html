@@ -3342,9 +3342,9 @@ async function publishTeacherHomework() {
     if (typeof loadHomework === "function") {
       await loadHomework();
     }
-  } catch (error) {
-    status.textContent = "❌ " + error.message;
-  }
+    } catch (error) {
+  status.textContent = '❌ ' + error.message;
+}
 }
 
 
