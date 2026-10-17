@@ -144,11 +144,6 @@ if (!homeworkColumnsForClass.includes("section")) {
   db.exec("ALTER TABLE homework ADD COLUMN section TEXT DEFAULT ''");
 }
 
-if (!homeworkStatusColumns.includes("status")) {
-  db.exec(
-    "ALTER TABLE homework ADD COLUMN status TEXT NOT NULL DEFAULT 'published'"
-  );
-}
 const columns = [
   ["father_name", "TEXT"],
   ["mother_name", "TEXT"],
