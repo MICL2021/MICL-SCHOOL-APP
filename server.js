@@ -121,7 +121,17 @@ if (!homeworkColumns.includes("created_by")) {
   db.exec("ALTER TABLE homework ADD COLUMN created_by INTEGER");
 }
 const homeworkStatusColumns = db
-  const homeworkColumnsForClass = db
+  .prepare("PRAGMA table_info(homework)")
+  .all()
+  .map(column => column.name);
+
+if (!homeworkStatusColumns.includes("status")) {
+  db.exec(
+    "ALTER TABLE homework ADD COLUMN status TEXT NOT NULL DEFAULT 'published'"
+  );
+}
+
+const homeworkColumnsForClass = db
   .prepare("PRAGMA table_info(homework)")
   .all()
   .map(column => column.name);
@@ -133,9 +143,6 @@ if (!homeworkColumnsForClass.includes("class_name")) {
 if (!homeworkColumnsForClass.includes("section")) {
   db.exec("ALTER TABLE homework ADD COLUMN section TEXT DEFAULT ''");
 }
-  .prepare("PRAGMA table_info(homework)")
-  .all()
-  .map(column => column.name);
 
 if (!homeworkStatusColumns.includes("status")) {
   db.exec(
