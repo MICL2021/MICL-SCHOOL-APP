@@ -2837,7 +2837,13 @@ if (homeworkHeading) {
 }
 
 if (id === 'profile') {
-  loadAdminPhoto();
+  const currentUser = JSON.parse(
+    localStorage.getItem('micl_user') || '{}'
+  );
+
+  if (currentUser.role === 'admin') {
+    loadAdminPhoto();
+  }
 }
     if (targetScreen) {
         targetScreen.classList.add('active');
