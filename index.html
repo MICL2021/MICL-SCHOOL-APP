@@ -2763,28 +2763,29 @@ function home() {
   });
 }
   
-const adminProfileCard = document.getElementById('adminProfileCard');
 
-if (adminProfileCard) {
-  adminProfileCard.style.display =
-    JSON.parse(localStorage.getItem('micl_user') || '{}').role === 'admin'
-      ? 'block'
-      : 'none';
-}
+function updateProfileVisibility(role) {
+  const isAdmin = String(role || '').toLowerCase() === 'admin';
 
-const studentProfileInfo =
+  const adminProfileCard =
+    document.getElementById('adminProfileCard');
+
+  const studentProfileInfo =
     document.getElementById('studentProfileInfo');
 
+  if (adminProfileCard) {
+    adminProfileCard.style.display = isAdmin ? 'block' : 'none';
+  }
 
-
-if (studentProfileInfo) {
-  const currentUser = JSON.parse(
-    localStorage.getItem('micl_user') || '{}'
-  );
-
-  studentProfileInfo.style.display =
-    currentUser.role === 'admin' ? 'none' : 'block';
+  if (studentProfileInfo) {
+    studentProfileInfo.style.display = isAdmin ? 'none' : 'block';
+  }
 }
+
+updateProfileVisibility(
+  JSON.parse(localStorage.getItem('micl_user') || '{}').role
+);
+
 
   async function loadAdminFeeRecords() {
   try {
