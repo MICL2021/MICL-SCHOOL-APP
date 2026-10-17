@@ -2672,7 +2672,9 @@ const currentUser = JSON.parse(
   localStorage.getItem('micl_user') || '{}'
 );
     const targetScreen = document.getElementById(id);
-    
+    if (id === 'home') {
+  title = 'Admin Dashboard';
+}
 if (id === 'teacherDashboard') {
   const currentUser = JSON.parse(
     localStorage.getItem('micl_user') || '{}'
