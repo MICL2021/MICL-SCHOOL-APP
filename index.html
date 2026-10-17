@@ -2681,6 +2681,11 @@ if (id === 'teacherDashboard') {
     : 'Teacher Dashboard';
 }
 
+const titleElement = document.getElementById('title');
+if (titleElement) {
+  titleElement.lastChild.textContent = title;
+}
+
 if (id === 'profile') {
   loadAdminPhoto();
 }
