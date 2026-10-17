@@ -544,7 +544,13 @@ box-sizing:border-box;
 </div>
 </section>
 
-<section id="homework" class="screen"><h2>Homework</h2><div class="card"><b>Mathematics Homework</b><p>Chapter 5 — Exercise 5.2</p><span class="badge">Due: Friday</span></div><div class="card"><b>Science Assignment</b><p>Make a chart on “Our Environment”.</p></div><div class="card"><b>English Homework</b><p>Write a letter to your friend.</p></div></section>
+
+<section id="homework" class="screen">
+  <h2>Homework</h2>
+  <div id="homeworkList">
+    <div class="card">Loading homework...</div>
+  </div>
+</section>
 
 <section id="results" class="screen"><h2>Exams & Results</h2><div class="card"><b>Unit Test 1</b><p>Result available</p><button class="btn">View Result</button></div><div class="card"><b>Mid Term Exam</b><p>Result will appear here.</p></div><div class="card"><b>Final Examination</b><p>Academic session result.</p></div></section>
 
@@ -3348,6 +3354,65 @@ async function publishTeacherHomework() {
 }
 }
 
+
+async function loadHomework() {
+  const list = document.getElementById("homeworkList");
+  if (!list) return;
+
+  list.innerHTML = '<div class="card">Loading homework...</div>';
+
+  try {
+    const response = await fetch("/api/homework", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("micl_token")
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Homework load nahi hua. Login check karein.");
+    }
+
+    const items = await response.json();
+    list.innerHTML = "";
+
+    if (!Array.isArray(items) || items.length === 0) {
+      list.innerHTML = '<div class="card">Abhi homework upload nahi hua.</div>';
+      return;
+    }
+
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const title = document.createElement("h3");
+      title.textContent = item.title || "Homework";
+
+      const description = document.createElement("p");
+      description.textContent = item.description || "";
+
+      card.append(title, description);
+
+      if (item.due_date) {
+        const due = document.createElement("p");
+        due.textContent = "Due date: " + item.due_date;
+        card.appendChild(due);
+      }
+
+      if (item.file_url) {
+        const link = document.createElement("a");
+        link.href = item.file_url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "📎 View / Download Attachment";
+        card.appendChild(link);
+      }
+
+      list.appendChild(card);
+    });
+  } catch (error) {
+    list.textContent = error.message;
+  }
+}
 
 </script>
 </body>
