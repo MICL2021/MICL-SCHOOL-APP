@@ -2672,7 +2672,7 @@ function goBack() {
     show('home', 'Home', true);
   }
 }
-  function show(id, title) {
+  function show(id, title, isBack = false) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
         x.style.setProperty('display', 'none', 'important');
