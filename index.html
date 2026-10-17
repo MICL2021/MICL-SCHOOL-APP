@@ -2685,7 +2685,7 @@ function goBack() {
   if (activeScreen && activeScreen.id !== id) {
     screenHistory.push({
       id: activeScreen.id,
-      title: document.getElementById('title')?.lastChild?.textContent?.trim() || 'Home'
+      title: document.getElementById('title')?.innerText.trim() || 'Home'
     });
   }
 }
