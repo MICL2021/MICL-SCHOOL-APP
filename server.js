@@ -561,7 +561,34 @@ app.get("/api/me", auth, (req, res) => {
 });
 app.get("/api/notices",auth,(req,res)=>res.json(db.prepare("SELECT * FROM notices ORDER BY id DESC").all()));
 app.get("/api/timetable",auth,(req,res)=>res.json(db.prepare("SELECT * FROM timetable ORDER BY CASE day WHEN 'Monday' THEN 1 WHEN 'Tuesday' THEN 2 WHEN 'Wednesday' THEN 3 WHEN 'Thursday' THEN 4 WHEN 'Friday' THEN 5 WHEN 'Saturday' THEN 6 END,period").all()));
-app.get("/api/homework",auth,(req,res)=>res.json(db.prepare("SELECT * FROM homework ORDER BY due_date").all()));
+app.get("/api/homework", auth, (req, res) => {
+  const role = String(req.user.role || "").toLowerCase();
+
+  if (role === "admin") {
+    return res.json(
+      db.prepare("SELECT * FROM homework ORDER BY due_date").all()
+    );
+  }
+
+  if (role === "teacher") {
+    return res.json(
+      db.prepare(`
+        SELECT * FROM homework
+        WHERE status = 'published'
+           OR (created_by = ? AND status = 'pending')
+        ORDER BY due_date
+      `).all(req.user.id)
+    );
+  }
+
+  return res.json(
+    db.prepare(`
+      SELECT * FROM homework
+      WHERE status = 'published'
+      ORDER BY due_date
+    `).all()
+  );
+});
 app.get("/api/events",auth,(req,res)=>res.json(db.prepare("SELECT * FROM events ORDER BY event_date").all()));
 app.get("/api/gallery",auth,(req,res)=>res.json(db.prepare("SELECT * FROM gallery ORDER BY id DESC").all()));
 app.get("/api/attendance",auth,(req,res)=>res.json(db.prepare("SELECT date,status,subject FROM attendance WHERE student_id=? ORDER BY date DESC").all(req.user.id)));
@@ -681,7 +708,7 @@ app.post(
 
     if (role !== "admin" && role !== "teacher") {
       return res.status(403).json({
-        error: "Only Admin or Teacher can publish homework"
+        error: "Only Admin or Teacher can upload homework"
       });
     }
 
@@ -695,32 +722,89 @@ app.post(
 
     try {
       const uploaded = await uploadHomeworkFile(req.file);
+      const status = role === "admin" ? "published" : "pending";
 
       const result = db.prepare(`
         INSERT INTO homework
-          (title, description, due_date, file_url, file_name, created_by)
-        VALUES (?, ?, ?, ?, ?, ?)
+          (title, description, due_date, file_url, file_name, created_by, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `).run(
         String(title).trim(),
         String(description || "").trim(),
         due_date || "",
         uploaded ? uploaded.url : "",
         uploaded ? uploaded.name : "",
-        Number(req.user.id)
+        Number(req.user.id),
+        status
       );
 
       res.json({
         id: result.lastInsertRowid,
-        message: "Homework published successfully"
+        status,
+        message: status === "published"
+          ? "Homework published successfully"
+          : "Homework submitted for Admin approval"
       });
     } catch (error) {
-      console.error("Homework publish error:", error);
+      console.error("Homework upload error:", error);
       res.status(500).json({
-        error: "Homework upload nahi hua. Cloudinary settings check karein."
+        error: "Homework upload failed. Check Cloudinary settings."
       });
     }
   }
 );
+
+// Admin: publish pending homework
+app.put("/api/admin/homework/:id/publish", auth, admin, (req, res) => {
+  const result = db.prepare(
+    "UPDATE homework SET status='published' WHERE id=?"
+  ).run(Number(req.params.id));
+
+  if (!result.changes) {
+    return res.status(404).json({ error: "Homework not found" });
+  }
+
+  res.json({ success: true, message: "Homework published successfully" });
+});
+
+// Admin: edit homework details
+app.put("/api/admin/homework/:id", auth, admin, (req, res) => {
+  const { title, description, due_date } = req.body;
+
+  if (!title || !String(title).trim()) {
+    return res.status(400).json({ error: "Homework title is required" });
+  }
+
+  const result = db.prepare(`
+    UPDATE homework
+    SET title=?, description=?, due_date=?
+    WHERE id=?
+  `).run(
+    String(title).trim(),
+    String(description || "").trim(),
+    due_date || "",
+    Number(req.params.id)
+  );
+
+  if (!result.changes) {
+    return res.status(404).json({ error: "Homework not found" });
+  }
+
+  res.json({ success: true, message: "Homework updated successfully" });
+});
+
+// Admin: delete homework
+app.delete("/api/admin/homework/:id", auth, admin, (req, res) => {
+  const result = db.prepare(
+    "DELETE FROM homework WHERE id=?"
+  ).run(Number(req.params.id));
+
+  if (!result.changes) {
+    return res.status(404).json({ error: "Homework not found" });
+  }
+
+  res.json({ success: true, message: "Homework deleted successfully" });
+});
 app.post("/api/admin/events",auth,admin,(req,res)=>{const {title,description,event_date}=req.body;const r=db.prepare("INSERT INTO events(title,description,event_date) VALUES(?,?,?)").run(title,description,event_date);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/users",auth,admin,(req,res)=>{
   const {
