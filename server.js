@@ -36,7 +36,31 @@ const noticeUpload = multer({
     }
   }
 });
+async function uploadHomeworkFile(file) {
+  if (!file) return null;
 
+  const isPdf = file.mimetype === "application/pdf";
+
+  const uploaded = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "micl-homework",
+        resource_type: isPdf ? "raw" : "image"
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+
+    stream.end(file.buffer);
+  });
+
+  return {
+    url: uploaded.secure_url,
+    name: file.originalname
+  };
+}
 const dataDir = path.join(__dirname, "data");
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new Database(path.join(dataDir, "micl.db"));
@@ -53,7 +77,15 @@ CREATE TABLE IF NOT EXISTS attendance(id INTEGER PRIMARY KEY AUTOINCREMENT,stude
 CREATE TABLE IF NOT EXISTS homework(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,description TEXT,due_date TEXT);
 CREATE TABLE IF NOT EXISTS results(id INTEGER PRIMARY KEY AUTOINCREMENT,student_id INTEGER,exam TEXT,subject TEXT,marks REAL,max_marks REAL,FOREIGN KEY(student_id) REFERENCES users(id));
 CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,description TEXT,event_date TEXT);
-CREATE TABLE IF NOT EXISTS gallery(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,image_url TEXT);
+CREATE TABLE IF NOT EXISTS homework(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT,
+  description TEXT,
+  due_date TEXT,
+  file_url TEXT,
+  file_name TEXT,
+  created_by INTEGER
+);
 `);
 
 const noticeColumns = db
@@ -72,7 +104,22 @@ if (!noticeColumns.includes("attachment_name")) {
 if (!noticeColumns.includes("signature_url")) {
   db.exec("ALTER TABLE notices ADD COLUMN signature_url TEXT");
 }
+const homeworkColumns = db
+  .prepare("PRAGMA table_info(homework)")
+  .all()
+  .map(column => column.name);
 
+if (!homeworkColumns.includes("file_url")) {
+  db.exec("ALTER TABLE homework ADD COLUMN file_url TEXT");
+}
+
+if (!homeworkColumns.includes("file_name")) {
+  db.exec("ALTER TABLE homework ADD COLUMN file_name TEXT");
+}
+
+if (!homeworkColumns.includes("created_by")) {
+  db.exec("ALTER TABLE homework ADD COLUMN created_by INTEGER");
+}
 const columns = [
   ["father_name", "TEXT"],
   ["mother_name", "TEXT"],
@@ -615,46 +662,55 @@ app.delete("/api/admin/notices/:id", auth, admin, (req, res) => {
   }
 });
 
+app.post(
+  "/api/admin/homework",
+  auth,
+  noticeUpload.single("homeworkFile"),
+  async (req, res) => {
+    const role = String(req.user.role || "").toLowerCase();
 
-app.post("/api/admin/homework", auth, (req, res) => {
-  const role = String(req.user.role || "").toLowerCase();
+    if (role !== "admin" && role !== "teacher") {
+      return res.status(403).json({
+        error: "Only Admin or Teacher can publish homework"
+      });
+    }
 
-  if (role !== "admin" && role !== "teacher") {
-    return res.status(403).json({
-      error: "Only Admin or Teacher can publish homework"
-    });
+    const { title, description, due_date } = req.body;
+
+    if (!title || !String(title).trim()) {
+      return res.status(400).json({
+        error: "Homework title is required"
+      });
+    }
+
+    try {
+      const uploaded = await uploadHomeworkFile(req.file);
+
+      const result = db.prepare(`
+        INSERT INTO homework
+          (title, description, due_date, file_url, file_name, created_by)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(
+        String(title).trim(),
+        String(description || "").trim(),
+        due_date || "",
+        uploaded ? uploaded.url : "",
+        uploaded ? uploaded.name : "",
+        Number(req.user.id)
+      );
+
+      res.json({
+        id: result.lastInsertRowid,
+        message: "Homework published successfully"
+      });
+    } catch (error) {
+      console.error("Homework publish error:", error);
+      res.status(500).json({
+        error: "Homework upload nahi hua. Cloudinary settings check karein."
+      });
+    }
   }
-
-  const { title, description, due_date } = req.body;
-
-  if (!title || !String(title).trim()) {
-    return res.status(400).json({
-      error: "Homework title is required"
-    });
-  }
-
-  try {
-    const result = db.prepare(
-      "INSERT INTO homework (title, description, due_date) VALUES (?, ?, ?)"
-    ).run(
-      String(title).trim(),
-      String(description || "").trim(),
-      due_date || ""
-    );
-
-    res.json({
-      id: result.lastInsertRowid,
-      message: "Homework published successfully"
-    });
-  } catch (error) {
-    console.error("Homework publish error:", error);
-    res.status(500).json({
-      error: "Could not publish homework"
-    });
-  }
-});
-
-
+);
 app.post("/api/admin/events",auth,admin,(req,res)=>{const {title,description,event_date}=req.body;const r=db.prepare("INSERT INTO events(title,description,event_date) VALUES(?,?,?)").run(title,description,event_date);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/users",auth,admin,(req,res)=>{
   const {
