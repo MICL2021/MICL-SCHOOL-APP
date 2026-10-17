@@ -2662,7 +2662,16 @@ async function addNotice() {
     button.disabled = false;
   }
 }
+let screenHistory = [];
 
+function goBack() {
+  if (screenHistory.length > 0) {
+    const previousScreen = screenHistory.pop();
+    show(previousScreen.id, previousScreen.title, true);
+  } else {
+    show('home', 'Home', true);
+  }
+}
   function show(id, title) {
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
