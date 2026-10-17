@@ -3319,7 +3319,15 @@ async function publishTeacherHomework() {
   formData.append("title", title);
   formData.append("description", description);
   formData.append("due_date", due_date);
+formData.append(
+  "class_name",
+  document.getElementById("teacherHomeworkClass").value.trim()
+);
 
+formData.append(
+  "section",
+  document.getElementById("teacherHomeworkSection").value.trim()
+);
   if (file) {
     formData.append("homeworkFile", file);
   }
