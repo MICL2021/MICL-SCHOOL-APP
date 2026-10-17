@@ -3301,6 +3301,8 @@ async function publishTeacherHomework() {
   const title = document.getElementById("teacherHomeworkTitle").value.trim();
   const description = document.getElementById("teacherHomeworkDescription").value.trim();
   const due_date = document.getElementById("teacherHomeworkDueDate").value;
+  const class_name = document.getElementById("teacherHomeworkClass").value.trim();
+const section = document.getElementById("teacherHomeworkSection").value.trim();
   const fileInput = document.getElementById("teacherHomeworkFile");
   const status = document.getElementById("teacherHomeworkStatus");
   const file = fileInput ? fileInput.files[0] : null;
@@ -3319,6 +3321,8 @@ async function publishTeacherHomework() {
   formData.append("title", title);
   formData.append("description", description);
   formData.append("due_date", due_date);
+  formData.append("class_name", class_name);
+formData.append("section", section);
 formData.append(
   "class_name",
   document.getElementById("teacherHomeworkClass").value.trim()
