@@ -2670,6 +2670,17 @@ async function addNotice() {
     });
 
     const targetScreen = document.getElementById(id);
+    
+if (id === 'teacherDashboard') {
+  const currentUser = JSON.parse(
+    localStorage.getItem('micl_user') || '{}'
+  );
+
+  title = currentUser.role === 'admin'
+    ? 'Admin Dashboard'
+    : 'Teacher Dashboard';
+}
+
 if (id === 'profile') {
   loadAdminPhoto();
 }
