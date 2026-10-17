@@ -3396,6 +3396,145 @@ async function loadHomework() {
         card.appendChild(link);
       }
 
+const currentUser = JSON.parse(
+  localStorage.getItem("micl_user") || "{}"
+);
+
+if (currentUser.role === "admin") {
+  const controls = document.createElement("div");
+  controls.style.marginTop = "12px";
+
+  const status = document.createElement("p");
+  status.textContent =
+    "Status: " + (item.status || "published");
+  controls.appendChild(status);
+
+  if (item.status !== "published") {
+    const publishButton = document.createElement("button");
+    publishButton.className = "btn";
+    publishButton.textContent = "✅ Publish";
+
+    publishButton.onclick = async () => {
+      if (!confirm("Is homework ko publish karein?")) return;
+
+      try {
+        const response = await fetch(
+          "/api/admin/homework/" + item.id + "/publish",
+          {
+            method: "PUT",
+            headers: {
+              Authorization:
+                "Bearer " + localStorage.getItem("micl_token")
+            }
+          }
+        );
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Publish failed");
+        }
+
+        await loadHomework();
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    controls.appendChild(publishButton);
+  }
+
+  const editButton = document.createElement("button");
+  editButton.className = "btn";
+  editButton.textContent = "✏️ Edit";
+
+  editButton.onclick = async () => {
+    const title = prompt("Homework title:", item.title || "");
+    if (title === null) return;
+
+    if (!title.trim()) {
+      alert("Homework title zaroori hai.");
+      return;
+    }
+
+    const description = prompt(
+      "Homework details:",
+      item.description || ""
+    );
+    if (description === null) return;
+
+    const due_date = prompt(
+      "Due date (YYYY-MM-DD):",
+      item.due_date || ""
+    );
+    if (due_date === null) return;
+
+    try {
+      const response = await fetch(
+        "/api/admin/homework/" + item.id,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer " + localStorage.getItem("micl_token")
+          },
+          body: JSON.stringify({
+            title: title.trim(),
+            description: description.trim(),
+            due_date
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Edit failed");
+      }
+
+      await loadHomework();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  controls.appendChild(editButton);
+
+  const deleteButton = document.createElement("button");
+  deleteButton.className = "btn";
+  deleteButton.textContent = "🗑️ Delete";
+
+  deleteButton.onclick = async () => {
+    if (!confirm("Kya aap ye homework delete karna chahte hain?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "/api/admin/homework/" + item.id,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization:
+              "Bearer " + localStorage.getItem("micl_token")
+          }
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Delete failed");
+      }
+
+      await loadHomework();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  controls.appendChild(deleteButton);
+  card.appendChild(controls);
+}
+
       list.appendChild(card);
     });
   } catch (error) {
