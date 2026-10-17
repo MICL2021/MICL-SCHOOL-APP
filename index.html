@@ -2673,6 +2673,16 @@ function goBack() {
   }
 }
   function show(id, title, isBack = false) {
+    if (!isBack) {
+  const activeScreen = document.querySelector('.screen.active');
+
+  if (activeScreen && activeScreen.id !== id) {
+    screenHistory.push({
+      id: activeScreen.id,
+      title: document.getElementById('title')?.lastChild?.textContent?.trim() || 'Home'
+    });
+  }
+}
     document.querySelectorAll('.screen').forEach(x => {
         x.classList.remove('active');
         x.style.setProperty('display', 'none', 'important');
