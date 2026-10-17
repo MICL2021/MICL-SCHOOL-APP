@@ -762,8 +762,9 @@ if (role === "teacher") {
 
       const result = db.prepare(`
         INSERT INTO homework
-          (title, description, due_date, file_url, file_name, created_by, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+  (title, description, due_date, file_url, file_name,
+   created_by, status, class_name, section)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         String(title).trim(),
         String(description || "").trim(),
