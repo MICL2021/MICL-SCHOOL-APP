@@ -3068,7 +3068,11 @@ async function restoreLoginAfterRefresh() {
 
     user.role = user.role.toLowerCase();
     localStorage.setItem('micl_user', JSON.stringify(user));
+user.role = user.role.toLowerCase();
+localStorage.setItem('micl_user', JSON.stringify(user));
+updateProfileVisibility(user.role);
 
+document.getElementById('login').style.display = 'none';
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';
 
