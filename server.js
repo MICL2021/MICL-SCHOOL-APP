@@ -724,7 +724,13 @@ app.post(
       });
     }
 
-    const { title, description, due_date } = req.body;
+    const {
+  title,
+  description,
+  due_date,
+  class_name,
+  section
+} = req.body;
 
     if (!title || !String(title).trim()) {
       return res.status(400).json({
