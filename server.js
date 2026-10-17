@@ -120,6 +120,16 @@ if (!homeworkColumns.includes("file_name")) {
 if (!homeworkColumns.includes("created_by")) {
   db.exec("ALTER TABLE homework ADD COLUMN created_by INTEGER");
 }
+const homeworkStatusColumns = db
+  .prepare("PRAGMA table_info(homework)")
+  .all()
+  .map(column => column.name);
+
+if (!homeworkStatusColumns.includes("status")) {
+  db.exec(
+    "ALTER TABLE homework ADD COLUMN status TEXT NOT NULL DEFAULT 'published'"
+  );
+}
 const columns = [
   ["father_name", "TEXT"],
   ["mother_name", "TEXT"],
