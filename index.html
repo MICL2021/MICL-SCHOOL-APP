@@ -3294,15 +3294,9 @@ async function resetSelectedUserPassword() {
 
 
 async function publishTeacherHomework() {
-  const title = document
-    .getElementById("teacherHomeworkTitle").value.trim();
-
-  const description = document
-    .getElementById("teacherHomeworkDescription").value.trim();
-
-  const due_date = document
-    .getElementById("teacherHomeworkDueDate").value;
-
+  const title = document.getElementById("teacherHomeworkTitle").value.trim();
+  const description = document.getElementById("teacherHomeworkDescription").value.trim();
+  const due_date = document.getElementById("teacherHomeworkDueDate").value;
   const fileInput = document.getElementById("teacherHomeworkFile");
   const status = document.getElementById("teacherHomeworkStatus");
   const file = fileInput ? fileInput.files[0] : null;
@@ -3343,28 +3337,23 @@ async function publishTeacherHomework() {
       throw new Error(result.error || "Homework upload nahi hua.");
     }
 
-    status.textContent = "✅ Homework publish ho gaya.";
-
+    status.textContent = "Homework successfully uploaded.";
     document.getElementById("teacherHomeworkTitle").value = "";
     document.getElementById("teacherHomeworkDescription").value = "";
     document.getElementById("teacherHomeworkDueDate").value = "";
-
     if (fileInput) fileInput.value = "";
 
-    if (typeof loadHomework === "function") {
-      await loadHomework();
-    }
-    } catch (error) {
-  status.textContent = '❌ ' + error.message;
+    await loadHomework();
+  } catch (error) {
+    status.textContent = "Error: " + error.message;
+  }
 }
-}
-
 
 async function loadHomework() {
   const list = document.getElementById("homeworkList");
   if (!list) return;
 
-  list.innerHTML = '<div class="card">Loading homework...</div>';
+  list.textContent = "Loading homework...";
 
   try {
     const response = await fetch("/api/homework", {
@@ -3373,15 +3362,16 @@ async function loadHomework() {
       }
     });
 
+    const items = await response.json();
+
     if (!response.ok) {
-      throw new Error("Homework load nahi hua. Login check karein.");
+      throw new Error(items.error || "Homework load nahi hua. Login check karein.");
     }
 
-    const items = await response.json();
-    list.innerHTML = "";
+    list.replaceChildren();
 
     if (!Array.isArray(items) || items.length === 0) {
-      list.innerHTML = '<div class="card">Abhi homework upload nahi hua.</div>';
+      list.textContent = "Abhi homework upload nahi hua.";
       return;
     }
 
@@ -3394,7 +3384,6 @@ async function loadHomework() {
 
       const description = document.createElement("p");
       description.textContent = item.description || "";
-
       card.append(title, description);
 
       if (item.due_date) {
@@ -3408,14 +3397,14 @@ async function loadHomework() {
         link.href = item.file_url;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.textContent = "📎 View / Download Attachment";
+        link.textContent = "View / Download Attachment";
         card.appendChild(link);
       }
 
       list.appendChild(card);
     });
   } catch (error) {
-    list.textContent = error.message;
+    list.textContent = "Homework load error: " + error.message;
   }
 }
 
