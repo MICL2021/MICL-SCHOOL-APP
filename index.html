@@ -187,7 +187,10 @@ box-sizing:border-box;
   <button onclick="show('settings','Settings');toggleMenu()">⚙️ Settings</button>
 
   <button id="teacherMenuButton" style="display:none" onclick="show('addTeacher','Add Teacher');toggleMenu()">👨‍🏫 Add Teacher</button>
-
+<button id="homeworkUploadMenuButton" style="display:none"
+  onclick="show('teacherDashboard','Homework Upload');toggleMenu()">
+  📚 Upload Homework
+</button>
   <button onclick="show('feemanagement','Fee Management');toggleMenu()">💰 Fee Management</button>
 
   <button onclick="show('classManagement','Class Management');toggleMenu()">🏫 Class Management</button>
@@ -2728,7 +2731,13 @@ function home() {
 }
   function applyRoleMenu(role) {
   const buttons = document.querySelectorAll('#sideMenu button');
+const homeworkUploadButton =
+  document.getElementById('homeworkUploadMenuButton');
 
+if (homeworkUploadButton) {
+  homeworkUploadButton.style.display =
+    role === 'admin' || role === 'teacher' ? 'block' : 'none';
+}
   const allowed = [
     'home',
     'notices',
