@@ -3139,7 +3139,7 @@ async function restoreLoginAfterRefresh() {
 
     if (user.role === 'admin') {
       show('home', 'Admin Dashboard');
-      loadAdminProfile();
+      loadAdminPhoto();
     } else if (user.role === 'teacher') {
       show('teacherDashboard', 'Teacher Dashboard');
     } else {
