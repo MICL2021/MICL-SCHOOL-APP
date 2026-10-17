@@ -734,6 +734,30 @@ app.post(
 
     try {
       const uploaded = await uploadHomeworkFile(req.file);
+      const selectedClass = String(class_name || "").trim();
+const selectedSection = String(section || "").trim();
+
+if (!selectedClass || !selectedSection) {
+  return res.status(400).json({
+    error: "Class aur Section select karna zaroori hai."
+  });
+}
+
+if (role === "teacher") {
+  const teacher = db.prepare(
+    "SELECT class_name, section FROM users WHERE id = ? AND role = 'teacher'"
+  ).get(Number(req.user.id));
+
+  if (
+    !teacher ||
+    String(teacher.class_name || "").trim() !== selectedClass ||
+    String(teacher.section || "").trim() !== selectedSection
+  ) {
+    return res.status(403).json({
+      error: "Aap sirf apni assigned class aur section ka homework upload kar sakte hain."
+    });
+  }
+}
       const status = role === "admin" ? "published" : "pending";
 
       const result = db.prepare(`
