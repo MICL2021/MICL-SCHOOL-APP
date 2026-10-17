@@ -2668,7 +2668,9 @@ async function addNotice() {
         x.classList.remove('active');
         x.style.setProperty('display', 'none', 'important');
     });
-
+const currentUser = JSON.parse(
+  localStorage.getItem('micl_user') || '{}'
+);
     const targetScreen = document.getElementById(id);
     
 if (id === 'teacherDashboard') {
