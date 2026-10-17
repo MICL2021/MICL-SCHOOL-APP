@@ -785,7 +785,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         uploaded ? uploaded.url : "",
         uploaded ? uploaded.name : "",
         Number(req.user.id),
-        status
+        status,
         selectedClass,
 selectedSection
       );
