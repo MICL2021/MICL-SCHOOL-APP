@@ -773,6 +773,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         uploaded ? uploaded.name : "",
         Number(req.user.id),
         status
+        selectedClass,
+selectedSection
       );
 
       res.json({
