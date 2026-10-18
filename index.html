@@ -3935,6 +3935,78 @@ async function loadSchoolTimetable() {
   }
 }
 
+async function loadTimetableSubjects() {
+  const token = localStorage.getItem("micl_token");
+  const dropdown = document.getElementById("ttSubject");
+
+  if (!dropdown) return;
+
+  try {
+    const response = await fetch("/api/admin/subjects", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not load subjects");
+    }
+
+    dropdown.innerHTML =
+      '<option value="">Select Subject</option>';
+
+    data.forEach(subject => {
+      const option = document.createElement("option");
+      option.value = subject.name;
+      option.textContent = subject.name;
+      dropdown.appendChild(option);
+    });
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function addTimetableSubject() {
+  const input = document.getElementById("newSubjectName");
+  const name = input.value.trim();
+  const token = localStorage.getItem("micl_token");
+
+  if (!name) {
+    alert("Please enter a subject name.");
+    input.focus();
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/admin/subjects", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ name })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Subject could not be added");
+    }
+
+    input.value = "";
+    await loadTimetableSubjects();
+
+    const dropdown = document.getElementById("ttSubject");
+    if (dropdown) dropdown.value = data.name;
+
+    alert("Subject added successfully!");
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
 </script>
 </body>
 </html>
