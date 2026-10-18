@@ -3825,6 +3825,107 @@ if (currentUser.role === "admin") {
   }
 }
 
+async function loadSchoolTimetable() {
+  const list = document.getElementById("schoolTimetableList");
+  const classInput = document.getElementById("viewTTClass");
+  const sectionInput = document.getElementById("viewTTSection");
+  const dayInput = document.getElementById("viewTTDay");
+
+  if (!list || !classInput || !sectionInput || !dayInput) {
+    alert("Timetable fields nahi mile. Page refresh karein.");
+    return;
+  }
+
+  const className = classInput.value.trim().toLowerCase();
+  const section = sectionInput.value.trim().toLowerCase();
+  const selectedDay = dayInput.value;
+
+  if (!className || !section) {
+    list.textContent = "Please enter Class and Section.";
+    return;
+  }
+
+  list.textContent = "Loading timetable...";
+
+  try {
+    const response = await fetch("/api/timetable", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("micl_token")
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Timetable load nahi hua. Dobara login karke try karein.");
+    }
+
+    const timetable = await response.json();
+
+    const filtered = timetable.filter(item =>
+      String(item.class_name || "").trim().toLowerCase() === className &&
+      String(item.section || "").trim().toLowerCase() === section &&
+      (!selectedDay || item.day === selectedDay)
+    );
+
+    if (filtered.length === 0) {
+      list.textContent = "Is class aur section ka timetable nahi mila.";
+      return;
+    }
+
+    filtered.sort((a, b) => {
+      const days = [
+        "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"
+      ];
+      const dayOrder = days.indexOf(a.day) - days.indexOf(b.day);
+      return dayOrder || Number(a.period) - Number(b.period);
+    });
+
+    const table = document.createElement("table");
+    table.style.width = "100%";
+    table.style.borderCollapse = "collapse";
+
+    const headings = [
+      "Day", "Period", "Time", "Subject", "Teacher"
+    ];
+    const header = document.createElement("tr");
+
+    headings.forEach(label => {
+      const th = document.createElement("th");
+      th.textContent = label;
+      th.style.border = "1px solid #ccc";
+      th.style.padding = "8px";
+      header.appendChild(th);
+    });
+
+    table.appendChild(header);
+
+    filtered.forEach(item => {
+      const row = document.createElement("tr");
+      const values = [
+        item.day || "",
+        item.period ?? "",
+        [item.start_time, item.end_time].filter(Boolean).join(" - ") || "—",
+        item.subject || "",
+        item.teacher || ""
+      ];
+
+      values.forEach(value => {
+        const td = document.createElement("td");
+        td.textContent = String(value);
+        td.style.border = "1px solid #ccc";
+        td.style.padding = "8px";
+        row.appendChild(td);
+      });
+
+      table.appendChild(row);
+    });
+
+    list.replaceChildren(table);
+  } catch (error) {
+    list.textContent = error.message || "Timetable load error.";
+  }
+}
+
 </script>
 </body>
 </html>
