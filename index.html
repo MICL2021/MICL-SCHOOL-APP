@@ -642,7 +642,80 @@ box-sizing:border-box;
 <div id="noticeList">Loading notices...</div>
 </div>
 </section>
-<section id="timetable" class="screen"><h2>School Timetable</h2><div class="card"><span class="badge">Monday</span><div class="row"><b>1</b> English <span>Teacher</span></div><div class="row"><b>2</b> Mathematics <span>Teacher</span></div><div class="row"><b>3</b> Science <span>Teacher</span></div><div class="row"><b>4</b> Social Science <span>Teacher</span></div><div class="row"><b>5</b> Computer <span>Teacher</span></div></div></section>
+<section id="timetable" class="screen">
+  <h2>📅 School Timetable</h2>
+
+  <div id="adminTimetableControls" class="card" style="display:none">
+    <h3>📚 Manage Subjects</h3>
+
+    <input id="newSubjectName"
+      type="text" placeholder="Enter subject name">
+
+    <button class="btn" onclick="addTimetableSubject()">
+      Add Subject
+    </button>
+
+    <div id="timetableSubjectList"></div>
+
+    <hr>
+
+    <h3>➕ Add Timetable Period</h3>
+
+    <input id="ttClass" placeholder="Class (e.g. 10th)">
+    <input id="ttSection" placeholder="Section (e.g. A)">
+
+    <select id="ttDay">
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+    </select>
+
+    <input id="ttPeriod" type="number"
+      min="1" placeholder="Period number">
+
+    <select id="ttSubject">
+      <option value="">Select Subject</option>
+    </select>
+
+    <input id="ttTeacher" placeholder="Teacher name">
+    <input id="ttStart" type="time">
+    <input id="ttEnd" type="time">
+
+    <button class="btn" onclick="saveTimetablePeriod()">
+      Save Timetable
+    </button>
+
+    <p id="ttStatus"></p>
+  </div>
+
+  <div class="card">
+    <h3>View Timetable</h3>
+
+    <input id="viewTTClass" placeholder="Class">
+    <input id="viewTTSection" placeholder="Section">
+
+    <select id="viewTTDay">
+      <option value="">All Days</option>
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+    </select>
+
+    <button class="btn" onclick="loadSchoolTimetable()">
+      View Timetable
+    </button>
+
+    <div id="schoolTimetableList">
+      Select a class and section to view the timetable.
+    </div>
+  </div>
+</section>
 
 <section id="attendance" class="screen">
   <h2>Attendance</h2>
