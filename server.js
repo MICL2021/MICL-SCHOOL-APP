@@ -295,6 +295,194 @@ app.get("/api/admin/subjects", auth, admin, (req, res) => {
   res.json(subjects);
 });
 
+/* MICL ONLINE FORM MANAGEMENT */
+
+// List all forms for Admin
+app.get("/api/admin/forms", auth, admin, (req, res) => {
+  const forms = db.prepare(
+    "SELECT * FROM online_forms ORDER BY id DESC"
+  ).all();
+
+  res.json(forms);
+});
+
+// Create a form
+app.post("/api/admin/forms", auth, admin, (req, res) => {
+  const {
+    title, description, fields, fee, last_date
+  } = req.body;
+
+  if (!String(title || "").trim()) {
+    return res.status(400).json({
+      error: "Form title is required"
+    });
+  }
+
+  try {
+    const result = db.prepare(`
+      INSERT INTO online_forms
+      (title, description, fields_json, fee, last_date, status)
+      VALUES (?, ?, ?, ?, ?, 'Draft')
+    `).run(
+      String(title).trim(),
+      String(description || ""),
+      JSON.stringify(Array.isArray(fields) ? fields : []),
+      Math.max(0, Number(fee) || 0),
+      String(last_date || "")
+    );
+
+    res.json({
+      success: true,
+      id: result.lastInsertRowid,
+      message: "Form created as Draft"
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Could not create form" });
+  }
+});
+
+// Edit a form
+app.put("/api/admin/forms/:id", auth, admin, (req, res) => {
+  const { title, description, fields, fee, last_date } = req.body;
+
+  if (!String(title || "").trim()) {
+    return res.status(400).json({ error: "Form title is required" });
+  }
+
+  const result = db.prepare(`
+    UPDATE online_forms
+    SET title = ?, description = ?, fields_json = ?,
+        fee = ?, last_date = ?
+    WHERE id = ?
+  `).run(
+    String(title).trim(),
+    String(description || ""),
+    JSON.stringify(Array.isArray(fields) ? fields : []),
+    Math.max(0, Number(fee) || 0),
+    String(last_date || ""),
+    Number(req.params.id)
+  );
+
+  if (!result.changes) {
+    return res.status(404).json({ error: "Form not found" });
+  }
+
+  res.json({ success: true, message: "Form updated" });
+});
+
+// Publish or close a form
+app.patch("/api/admin/forms/:id/status", auth, admin, (req, res) => {
+  const status = String(req.body.status || "");
+
+  if (!["Draft", "Published", "Closed"].includes(status)) {
+    return res.status(400).json({ error: "Invalid form status" });
+  }
+
+  const result = db.prepare(
+    "UPDATE online_forms SET status = ? WHERE id = ?"
+  ).run(status, Number(req.params.id));
+
+  if (!result.changes) {
+    return res.status(404).json({ error: "Form not found" });
+  }
+
+  res.json({ success: true, status });
+});
+
+// Public list of published forms
+app.get("/api/forms", (req, res) => {
+  const forms = db.prepare(`
+    SELECT id, title, description, fields_json, fee, last_date
+    FROM online_forms
+    WHERE status = 'Published'
+    ORDER BY id DESC
+  `).all();
+
+  res.json(forms);
+});
+
+// Receive an application
+app.post("/api/forms/:id/applications", (req, res) => {
+  const form = db.prepare(`
+    SELECT id FROM online_forms
+    WHERE id = ? AND status = 'Published'
+  `).get(Number(req.params.id));
+
+  if (!form) {
+    return res.status(404).json({
+      error: "Published form not found"
+    });
+  }
+
+  const {
+    applicant_name, applicant_email,
+    applicant_phone, answers
+  } = req.body;
+
+  if (!String(applicant_name || "").trim()) {
+    return res.status(400).json({
+      error: "Applicant name is required"
+    });
+  }
+
+  const result = db.prepare(`
+    INSERT INTO form_applications
+    (form_id, applicant_name, applicant_email,
+     applicant_phone, answers_json)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(
+    form.id,
+    String(applicant_name).trim(),
+    String(applicant_email || ""),
+    String(applicant_phone || ""),
+    JSON.stringify(
+      answers && typeof answers === "object" ? answers : {}
+    )
+  );
+
+  res.json({
+    success: true,
+    application_id: result.lastInsertRowid,
+    status: "Received"
+  });
+});
+
+// Admin: view received applications
+app.get("/api/admin/applications", auth, admin, (req, res) => {
+  const applications = db.prepare(`
+    SELECT a.*, f.title AS form_title
+    FROM form_applications a
+    JOIN online_forms f ON f.id = a.form_id
+    ORDER BY a.id DESC
+  `).all();
+
+  res.json(applications);
+});
+
+// Admin: update application status
+app.patch("/api/admin/applications/:id/status", auth, admin, (req, res) => {
+  const status = String(req.body.status || "");
+
+  if (!["Received", "Under Review", "Accepted", "Rejected"].includes(status)) {
+    return res.status(400).json({
+      error: "Invalid application status"
+    });
+  }
+
+  const result = db.prepare(
+    "UPDATE form_applications SET status = ? WHERE id = ?"
+  ).run(status, Number(req.params.id));
+
+  if (!result.changes) {
+    return res.status(404).json({
+      error: "Application not found"
+    });
+  }
+
+  res.json({ success: true, status });
+});
+
 app.post("/api/login",(req,res)=>{
 const {email,password,role}=req.body;
 const login=String(email||"").trim();
