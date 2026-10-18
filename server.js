@@ -1000,6 +1000,127 @@ app.put("/api/admin/teachers/:id", auth, admin, (req, res) => {
     });
   }
 });
+
+/* ADMIN TIMETABLE MANAGEMENT */
+
+// Add a timetable period
+app.post("/api/admin/timetable", auth, admin, (req, res) => {
+  const {
+    class_name,
+    section,
+    day,
+    period,
+    subject,
+    teacher,
+    start_time,
+    end_time
+  } = req.body;
+
+  if (
+    !class_name || !section || !day ||
+    !period || !subject || !teacher
+  ) {
+    return res.status(400).json({
+      error: "Class, section, day, period, subject and teacher are required"
+    });
+  }
+
+  try {
+    const result = db.prepare(`
+      INSERT INTO timetable
+      (class_name, section, day, period, subject, teacher, start_time, end_time)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      String(class_name).trim(),
+      String(section).trim(),
+      String(day).trim(),
+      Number(period),
+      String(subject).trim(),
+      String(teacher).trim(),
+      start_time || "",
+      end_time || ""
+    );
+
+    res.json({
+      success: true,
+      id: result.lastInsertRowid,
+      message: "Timetable period saved successfully"
+    });
+  } catch (error) {
+    console.error("Timetable save error:", error);
+    res.status(500).json({ error: "Could not save timetable" });
+  }
+});
+
+// Edit a timetable period
+app.put("/api/admin/timetable/:id", auth, admin, (req, res) => {
+  const {
+    class_name,
+    section,
+    day,
+    period,
+    subject,
+    teacher,
+    start_time,
+    end_time
+  } = req.body;
+
+  if (
+    !class_name || !section || !day ||
+    !period || !subject || !teacher
+  ) {
+    return res.status(400).json({
+      error: "Please fill all required timetable fields"
+    });
+  }
+
+  try {
+    const result = db.prepare(`
+      UPDATE timetable
+      SET class_name = ?, section = ?, day = ?, period = ?,
+          subject = ?, teacher = ?, start_time = ?, end_time = ?
+      WHERE id = ?
+    `).run(
+      String(class_name).trim(),
+      String(section).trim(),
+      String(day).trim(),
+      Number(period),
+      String(subject).trim(),
+      String(teacher).trim(),
+      start_time || "",
+      end_time || "",
+      Number(req.params.id)
+    );
+
+    if (!result.changes) {
+      return res.status(404).json({ error: "Timetable period not found" });
+    }
+
+    res.json({ success: true, message: "Timetable updated successfully" });
+  } catch (error) {
+    console.error("Timetable edit error:", error);
+    res.status(500).json({ error: "Could not update timetable" });
+  }
+});
+
+// Delete a timetable period
+app.delete("/api/admin/timetable/:id", auth, admin, (req, res) => {
+  try {
+    const result = db.prepare(
+      "DELETE FROM timetable WHERE id = ?"
+    ).run(Number(req.params.id));
+
+    if (!result.changes) {
+      return res.status(404).json({ error: "Timetable period not found" });
+    }
+
+    res.json({ success: true, message: "Timetable period deleted successfully" });
+  } catch (error) {
+    console.error("Timetable delete error:", error);
+    res.status(500).json({ error: "Could not delete timetable" });
+  }
+});
+
 app.post("/api/admin/classes", auth, admin, (req, res) => {
   const { name, section } = req.body;
 
