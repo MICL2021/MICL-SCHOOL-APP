@@ -215,6 +215,32 @@ db.exec(`
     name TEXT NOT NULL UNIQUE
   );
 `);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS online_forms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    fields_json TEXT NOT NULL DEFAULT '[]',
+    fee REAL NOT NULL DEFAULT 0,
+    last_date TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'Draft',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS form_applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    form_id INTEGER NOT NULL,
+    applicant_name TEXT NOT NULL,
+    applicant_email TEXT DEFAULT '',
+    applicant_phone TEXT DEFAULT '',
+    answers_json TEXT NOT NULL DEFAULT '{}',
+    status TEXT NOT NULL DEFAULT 'Received',
+    submitted_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (form_id) REFERENCES online_forms(id)
+  );
+`);
+
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
