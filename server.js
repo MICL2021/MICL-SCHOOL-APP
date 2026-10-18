@@ -87,7 +87,23 @@ CREATE TABLE IF NOT EXISTS homework(
   created_by INTEGER
 );
 `);
+const timetableColumns = db
+  .prepare("PRAGMA table_info(timetable)")
+  .all()
+  .map(column => column.name);
 
+const timetableExtraColumns = [
+  ["class_name", "TEXT DEFAULT ''"],
+  ["section", "TEXT DEFAULT ''"],
+  ["start_time", "TEXT DEFAULT ''"],
+  ["end_time", "TEXT DEFAULT ''"]
+];
+
+for (const [column, type] of timetableExtraColumns) {
+  if (!timetableColumns.includes(column)) {
+    db.exec(`ALTER TABLE timetable ADD COLUMN ${column} ${type}`);
+  }
+}
 const noticeColumns = db
   .prepare("PRAGMA table_info(notices)")
   .all()
