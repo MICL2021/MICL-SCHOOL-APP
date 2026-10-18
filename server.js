@@ -216,24 +216,6 @@ db.exec(`
   );
 `);
 
-const timetableColumns = db
-  .prepare("PRAGMA table_info(timetable)")
-  .all()
-  .map(column => column.name);
-
-const timetableExtraColumns = [
-  ["class_name", "TEXT DEFAULT ''"],
-  ["section", "TEXT DEFAULT ''"],
-  ["start_time", "TEXT DEFAULT ''"],
-  ["end_time", "TEXT DEFAULT ''"]
-];
-
-for (const [column, type] of timetableExtraColumns) {
-  if (!timetableColumns.includes(column)) {
-    db.exec(`ALTER TABLE timetable ADD COLUMN ${column} ${type}`);
-  }
-}
-
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
