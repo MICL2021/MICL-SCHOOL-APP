@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS homework(
   file_name TEXT,
   created_by INTEGER
 );
+`);
 const timetableColumns = db
   .prepare("PRAGMA table_info(timetable)")
   .all()
