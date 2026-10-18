@@ -717,6 +717,44 @@ box-sizing:border-box;
   </div>
 </section>
 
+<section id="formManagement" class="screen">
+  <h2>Online Form Management</h2>
+
+  <div class="card">
+    <h3>Create / Edit Form</h3>
+
+    <input id="formId" type="hidden">
+
+    <input id="formTitle" placeholder="Form title">
+
+    <textarea id="formDescription"
+      placeholder="Form description"></textarea>
+
+    <input id="formLastDate" type="date">
+
+    <input id="formFields"
+      placeholder="Fields separated by commas">
+
+    <button class="btn" onclick="saveOnlineForm()">
+      Save Draft
+    </button>
+
+    <div id="formEditorStatus"></div>
+  </div>
+
+  <div class="card">
+    <h3>Manage Forms</h3>
+    <div id="adminFormsList">Loading forms...</div>
+  </div>
+
+  <div class="card">
+    <h3>Received Applications</h3>
+    <div id="adminApplicationsList">
+      Applications will appear here.
+    </div>
+  </div>
+</section>
+
 <section id="attendance" class="screen">
   <h2>Attendance</h2>
   <div id="studentAttendanceBox" class="card">
@@ -4063,6 +4101,273 @@ async function saveTimetablePeriod() {
 
   } catch (error) {
     status.textContent = "Error: " + error.message;
+  }
+}
+
+/* MICL ONLINE FORM MANAGEMENT FRONTEND */
+
+function formEscape(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[ch]);
+}
+
+async function saveOnlineForm() {
+  const status = document.getElementById("formEditorStatus");
+  const token = localStorage.getItem("micl_token");
+
+  const id = document.getElementById("formId").value;
+  const title = document.getElementById("formTitle").value.trim();
+  const description =
+    document.getElementById("formDescription").value.trim();
+  const last_date = document.getElementById("formLastDate").value;
+  const fieldsText =
+    document.getElementById("formFields").value.trim();
+
+  if (!token) {
+    status.textContent = "Please login as Admin again.";
+    return;
+  }
+
+  if (!title) {
+    status.textContent = "Please enter a form title.";
+    return;
+  }
+
+  const fields = fieldsText
+    ? fieldsText.split(",").map(x => x.trim()).filter(Boolean)
+    : [];
+
+  status.textContent = "Saving form...";
+
+  try {
+    const response = await fetch(
+      id ? "/api/admin/forms/" + encodeURIComponent(id)
+         : "/api/admin/forms",
+      {
+        method: id ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          fields,
+          fee: 0,
+          last_date
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not save form");
+    }
+
+    document.getElementById("formId").value = "";
+    document.getElementById("formTitle").value = "";
+    document.getElementById("formDescription").value = "";
+    document.getElementById("formLastDate").value = "";
+    document.getElementById("formFields").value = "";
+
+    status.textContent = data.message || "Form saved as Draft.";
+    await loadAdminForms();
+  } catch (error) {
+    status.textContent = "Error: " + error.message;
+  }
+}
+
+async function loadAdminForms() {
+  const list = document.getElementById("adminFormsList");
+  const token = localStorage.getItem("micl_token");
+
+  list.textContent = "Loading forms...";
+
+  try {
+    const response = await fetch("/api/admin/forms", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const forms = await response.json();
+
+    if (!response.ok) {
+      throw new Error(forms.error || "Could not load forms");
+    }
+
+    if (!forms.length) {
+      list.textContent = "No forms created yet.";
+      return;
+    }
+
+    list.innerHTML = forms.map(form => `
+      <div class="card">
+        <h4>${formEscape(form.title)}</h4>
+        <p>${formEscape(form.description)}</p>
+        <p>Status: <b>${formEscape(form.status)}</b></p>
+        <p>Last date: ${formEscape(form.last_date || "Not set")}</p>
+        <button class="btn"
+          onclick="editOnlineForm(${Number(form.id)})">Edit</button>
+        <button class="btn"
+          onclick="changeOnlineFormStatus(${Number(form.id)}, 'Published')">
+          Publish</button>
+        <button class="btn"
+          onclick="changeOnlineFormStatus(${Number(form.id)}, 'Closed')">
+          Close</button>
+        <button class="btn"
+          onclick="changeOnlineFormStatus(${Number(form.id)}, 'Draft')">
+          Make Draft</button>
+      </div>
+    `).join("");
+  } catch (error) {
+    list.textContent = "Error: " + error.message;
+  }
+}
+
+async function editOnlineForm(id) {
+  const token = localStorage.getItem("micl_token");
+
+  try {
+    const response = await fetch("/api/admin/forms", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const forms = await response.json();
+
+    if (!response.ok) {
+      throw new Error(forms.error || "Could not load form");
+    }
+
+    const form = forms.find(item => Number(item.id) === Number(id));
+
+    if (!form) {
+      throw new Error("Form not found");
+    }
+
+    document.getElementById("formId").value = form.id;
+    document.getElementById("formTitle").value = form.title || "";
+    document.getElementById("formDescription").value =
+      form.description || "";
+    document.getElementById("formLastDate").value = form.last_date || "";
+
+    let fields = [];
+    try {
+      fields = JSON.parse(form.fields_json || "[]");
+    } catch (_) {}
+
+    document.getElementById("formFields").value =
+      Array.isArray(fields) ? fields.join(", ") : "";
+
+    document.getElementById("formEditorStatus").textContent =
+      "Editing form #" + form.id;
+    document.getElementById("formTitle").focus();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function changeOnlineFormStatus(id, status) {
+  const token = localStorage.getItem("micl_token");
+
+  try {
+    const response = await fetch(
+      "/api/admin/forms/" + encodeURIComponent(id) + "/status",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ status })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not update status");
+    }
+
+    await loadAdminForms();
+    alert("Form status: " + status);
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function loadAdminApplications() {
+  const list = document.getElementById("adminApplicationsList");
+  const token = localStorage.getItem("micl_token");
+
+  list.textContent = "Loading applications...";
+
+  try {
+    const response = await fetch("/api/admin/applications", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const applications = await response.json();
+
+    if (!response.ok) {
+      throw new Error(applications.error || "Could not load applications");
+    }
+
+    if (!applications.length) {
+      list.textContent = "No applications received yet.";
+      return;
+    }
+
+    list.innerHTML = applications.map(app => `
+      <div class="card">
+        <h4>${formEscape(app.applicant_name)}</h4>
+        <p>Form: ${formEscape(app.form_title)}</p>
+        <p>Email: ${formEscape(app.applicant_email)}</p>
+        <p>Phone: ${formEscape(app.applicant_phone)}</p>
+        <p>Submitted: ${formEscape(app.submitted_at)}</p>
+        <p>Answers: ${formEscape(app.answers_json)}</p>
+        <p>Status: ${formEscape(app.status)}</p>
+        <select onchange="updateApplicationStatus(${Number(app.id)}, this.value)">
+          ${["Received", "Under Review", "Accepted", "Rejected"].map(s =>
+            `<option value="${s}" ${app.status === s ? "selected" : ""}>${s}</option>`
+          ).join("")}
+        </select>
+      </div>
+    `).join("");
+  } catch (error) {
+    list.textContent = "Error: " + error.message;
+  }
+}
+
+async function updateApplicationStatus(id, status) {
+  const token = localStorage.getItem("micl_token");
+
+  try {
+    const response = await fetch(
+      "/api/admin/applications/" + encodeURIComponent(id) + "/status",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ status })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not update application");
+    }
+
+    await loadAdminApplications();
+  } catch (error) {
+    alert(error.message);
   }
 }
 
