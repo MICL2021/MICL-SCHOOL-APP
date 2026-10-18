@@ -4007,6 +4007,65 @@ async function addTimetableSubject() {
   }
 }
 
+async function saveTimetablePeriod() {
+  const status = document.getElementById("ttStatus");
+  const token = localStorage.getItem("micl_token");
+
+  const class_name = document.getElementById("ttClass").value.trim();
+  const section = document.getElementById("ttSection").value.trim();
+  const day = document.getElementById("ttDay").value;
+  const period = document.getElementById("ttPeriod").value;
+  const subject = document.getElementById("ttSubject").value;
+  const teacher = document.getElementById("ttTeacher").value.trim();
+  const start_time = document.getElementById("ttStart").value;
+  const end_time = document.getElementById("ttEnd").value;
+
+  if (!class_name || !section || !day || !period || !subject || !teacher) {
+    status.textContent = "Please fill Class, Section, Day, Period, Subject and Teacher.";
+    return;
+  }
+
+  if (!token) {
+    status.textContent = "Please login again as Admin.";
+    return;
+  }
+
+  status.textContent = "Saving timetable...";
+
+  try {
+    const response = await fetch("/api/admin/timetable", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        class_name,
+        section,
+        day,
+        period: Number(period),
+        subject,
+        teacher,
+        start_time,
+        end_time
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Timetable could not be saved.");
+    }
+
+    status.textContent = "Timetable saved successfully!";
+    document.getElementById("ttPeriod").value = "";
+    document.getElementById("ttTeacher").value = "";
+
+  } catch (error) {
+    status.textContent = "Error: " + error.message;
+  }
+}
+
 </script>
 </body>
 </html>
