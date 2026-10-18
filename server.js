@@ -215,7 +215,6 @@ db.exec(`
     name TEXT NOT NULL UNIQUE
   );
 `);
-
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
@@ -227,6 +226,48 @@ function seed(){
  if(db.prepare("SELECT count(*) c FROM notices").get().c===0) db.prepare("INSERT INTO notices(title,body) VALUES(?,?)").run("Welcome to MICL","Welcome to the official Modern Institute of Creative Learning school app.");
 }
 seed();
+
+app.post("/api/admin/subjects", auth, admin, (req, res) => {
+  const name = String(req.body.name || "").trim();
+
+  if (!name) {
+    return res.status(400).json({
+      error: "Subject name is required"
+    });
+  }
+
+  try {
+    const result = db.prepare(
+      "INSERT INTO subjects(name) VALUES(?)"
+    ).run(name);
+
+    res.json({
+      success: true,
+      id: result.lastInsertRowid,
+      name,
+      message: "Subject added successfully"
+    });
+  } catch (error) {
+    if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+      return res.status(409).json({
+        error: "This subject already exists"
+      });
+    }
+
+    console.error(error);
+    res.status(500).json({
+      error: "Could not add subject"
+    });
+  }
+});
+
+app.get("/api/admin/subjects", auth, admin, (req, res) => {
+  const subjects = db.prepare(
+    "SELECT id, name FROM subjects ORDER BY name ASC"
+  ).all();
+
+  res.json(subjects);
+});
 
 app.post("/api/login",(req,res)=>{
 const {email,password,role}=req.body;
