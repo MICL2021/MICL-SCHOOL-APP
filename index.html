@@ -2928,7 +2928,13 @@ const currentUser = JSON.parse(
 );
     const timetableControls =
   document.getElementById('adminTimetableControls');
+const onlineFormsButton =
+  document.getElementById('onlineFormsNavBtn');
 
+if (onlineFormsButton) {
+  onlineFormsButton.style.display =
+    currentUser.role === 'admin' ? '' : 'none';
+}
 if (timetableControls) {
   timetableControls.style.display =
     currentUser.role === 'admin' && id === 'timetable'
