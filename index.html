@@ -2880,6 +2880,15 @@ function goBack() {
 const currentUser = JSON.parse(
   localStorage.getItem('micl_user') || '{}'
 );
+    const timetableControls =
+  document.getElementById('adminTimetableControls');
+
+if (timetableControls) {
+  timetableControls.style.display =
+    currentUser.role === 'admin' && id === 'timetable'
+      ? 'block'
+      : 'none';
+}
     const targetScreen = document.getElementById(id);
     if (id === 'home') {
   title = 'Admin Dashboard';
