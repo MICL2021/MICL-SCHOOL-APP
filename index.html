@@ -3088,13 +3088,13 @@ function home() {
     localStorage.getItem('micl_user') || '{}'
   );
 
-if (user.role === 'student') {
-  show('home', 'Student Dashboard');
-} else if (user.role === 'teacher') {
-  show('teacherDashboard', 'Teacher Dashboard');
-} else {
-  show('home', 'Admin Dashboard');
-}
+  if (user.role === 'student') {
+    show('home', 'Student Dashboard');
+  } else if (user.role === 'teacher') {
+    show('teacherDashboard', 'Teacher Dashboard');
+  } else {
+    show('home', 'Admin Dashboard');
+  }
 }
   function applyRoleMenu(role) {
   const buttons = document.querySelectorAll('#sideMenu button');
