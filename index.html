@@ -2952,7 +2952,9 @@ const onlineFormsButton =
 
 if (onlineFormsButton) {
   onlineFormsButton.style.display =
-    currentUser.role === 'admin' ? '' : 'none';
+  String(currentUser.role || '').toLowerCase() === 'admin'
+    ? ''
+    : 'none';
 }
 if (timetableControls) {
   timetableControls.style.display =
