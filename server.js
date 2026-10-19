@@ -228,6 +228,18 @@ CREATE TABLE IF NOT EXISTS fee_records (
 );
 `);
 db.exec(`
+  CREATE TABLE IF NOT EXISTS fee_payment_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    transaction_id TEXT NOT NULL,
+    payment_method TEXT NOT NULL DEFAULT 'UPI',
+    status TEXT NOT NULL DEFAULT 'Pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    verified_at TEXT
+  );
+`);
+db.exec(`
   CREATE TABLE IF NOT EXISTS classes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
