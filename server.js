@@ -241,6 +241,25 @@ db.exec(`
   );
 `);
 
+const applicationColumns = [
+  ["student_photo", "TEXT"],
+  ["payment_status", "TEXT NOT NULL DEFAULT 'Pending'"],
+  ["razorpay_order_id", "TEXT"],
+  ["razorpay_payment_id", "TEXT"]
+];
+
+for (const [column, definition] of applicationColumns) {
+  const columns = db.prepare(
+    "PRAGMA table_info(form_applications)"
+  ).all();
+
+  if (!columns.some(item => item.name === column)) {
+    db.exec(
+      `ALTER TABLE form_applications ADD COLUMN ${column} ${definition}`
+    );
+  }
+}
+
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
