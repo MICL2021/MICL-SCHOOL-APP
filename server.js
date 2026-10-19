@@ -61,6 +61,32 @@ async function uploadHomeworkFile(file) {
     name: file.originalname
   };
 }
+
+async function uploadStudentPhoto(file) {
+  if (!file) return null;
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.mimetype)) {
+    throw new Error("Student photo must be JPG, PNG or WEBP");
+  }
+
+  const uploaded = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "micl-student-photos",
+        resource_type: "image"
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+
+    stream.end(file.buffer);
+  });
+
+  return uploaded.secure_url;
+}
+
 const dataDir = path.join(__dirname, "data");
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new Database(path.join(dataDir, "micl.db"));
