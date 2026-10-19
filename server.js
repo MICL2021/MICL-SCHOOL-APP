@@ -448,7 +448,13 @@ app.get("/api/forms", (req, res) => {
 });
 
 // Receive an application
-app.post("/api/forms/:id/applications", (req, res) => {
+app.post(
+  "/api/forms/:id/applications",
+  multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (req, file, cb) => {
+    if (["image/jpeg", "image/png", "image/webp"].includes(file.mimetype)) cb(null, true);
+    else cb(new Error("Student photo must be JPG, PNG or WEBP"));
+  }}).single("student_photo"),
+  async (req, res) => {
   const form = db.prepare(`
     SELECT id FROM online_forms
     WHERE id = ? AND status = 'Published'
@@ -471,20 +477,25 @@ app.post("/api/forms/:id/applications", (req, res) => {
     });
   }
 
-  const result = db.prepare(`
-    INSERT INTO form_applications
-    (form_id, applicant_name, applicant_email,
-     applicant_phone, answers_json)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(
-    form.id,
-    String(applicant_name).trim(),
-    String(applicant_email || ""),
-    String(applicant_phone || ""),
-    JSON.stringify(
-      answers && typeof answers === "object" ? answers : {}
-    )
-  );
+  const studentPhoto = req.file
+  ? await uploadStudentPhoto(req.file)
+  : null;
+
+const result = db.prepare(`
+  INSERT INTO form_applications
+  (form_id, applicant_name, applicant_email,
+   applicant_phone, answers_json, student_photo)
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run(
+  form.id,
+  String(applicant_name).trim(),
+  String(applicant_email || ""),
+  String(applicant_phone || ""),
+  JSON.stringify(
+    answers && typeof answers === "object" ? answers : {}
+  ),
+  studentPhoto
+);
 
   res.json({
     success: true,
