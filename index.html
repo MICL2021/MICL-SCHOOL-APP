@@ -3084,7 +3084,7 @@ function home() {
   );
 
 if (user.role === 'student') {
-  show('studentDashboard', 'Student Dashboard');
+  show('home', 'Student Dashboard');
 } else if (user.role === 'teacher') {
   show('teacherDashboard', 'Teacher Dashboard');
 } else {
@@ -3514,7 +3514,7 @@ document.getElementById('login').style.display = 'none';
     } else if (user.role === 'teacher') {
       show('teacherDashboard', 'Teacher Dashboard');
     } else {
-      show('studentDashboard', 'Student Dashboard');
+      show('home', 'Student Dashboard');
     }
 
   } catch (error) {
