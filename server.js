@@ -1627,59 +1627,8 @@ app.get("/api/my-fee-record", auth, (req, res) => {
   res.json(record);
 });
 app.post("/api/fee-payment", auth, (req, res) => {
-  const { student_id, amount, transaction_id } = req.body;
-
-  const fee = Number(amount);
-
-  if (!student_id || !fee || fee <= 0 || !transaction_id) {
-    return res.status(400).json({
-      error: "Student ID, amount and transaction ID are required"
-    });
-  }
-
-  const record = db.prepare(`
-    SELECT * FROM fee_records
-    WHERE student_id = ?
-  `).get(student_id);
-
-  if (!record) {
-    return res.status(404).json({
-      error: "Fee record not found for this student"
-    });
-  }
-
-  const newPaid = Number(record.paid_fee) + fee;
-  const newBalance = Math.max(0, Number(record.total_fee) - newPaid);
-
-  const status =
-  newPaid === 0
-    ? "Pending"
-    : newBalance === 0
-    ? "Paid"
-    : "Partial";
-
-  db.prepare(`
-    UPDATE fee_records
-    SET paid_fee = ?,
-        balance_fee = ?,
-        last_payment_date = datetime('now'),
-        transaction_id = ?,
-        status = ?
-    WHERE student_id = ?
-  `).run(
-    newPaid,
-    newBalance,
-    transaction_id,
-    status,
-    student_id
-  );
-
-  res.json({
-    message: "Fee payment recorded successfully",
-    total_fee: record.total_fee,
-    paid_fee: newPaid,
-    balance_fee: newBalance,
-    status: status
+  return res.status(403).json({
+    error: "Direct fee updates are disabled. Submit a payment request for Admin verification."
   });
 });
 app.put("/api/admin/fee-records/:student_id", auth, admin, (req, res) => {
@@ -1783,6 +1732,143 @@ app.get("/api/admin/fee-records", auth, admin, (req, res) => {
   `).all();
 
   res.json(records);
+});
+// Student submits school QR/UPI payment for verification
+app.post("/api/fee-payment-request", auth, (req, res) => {
+  const studentId = Number(req.user.id);
+  const amount = Number(req.body.amount);
+  const transactionId = String(req.body.transaction_id || "").trim();
+  const method = String(req.body.payment_method || "UPI").toUpperCase();
+
+  if (
+    !studentId ||
+    !Number.isFinite(amount) ||
+    amount <= 0 ||
+    !transactionId ||
+    !["UPI", "QR"].includes(method)
+  ) {
+    return res.status(400).json({
+      error: "Valid amount, UTR and payment method are required."
+    });
+  }
+
+  const record = db.prepare(
+    "SELECT * FROM fee_records WHERE student_id = ?"
+  ).get(studentId);
+
+  if (!record) {
+    return res.status(404).json({
+      error: "Fee record not found."
+    });
+  }
+
+  if (amount > Number(record.balance_fee)) {
+    return res.status(400).json({
+      error: "Amount cannot exceed the remaining fee balance."
+    });
+  }
+
+  try {
+    const result = db.prepare(`
+      INSERT INTO fee_payment_requests
+      (student_id, amount, transaction_id, payment_method)
+      VALUES (?, ?, ?, ?)
+    `).run(studentId, amount, transactionId, method);
+
+    res.status(201).json({
+      message: "Payment request submitted. Waiting for Admin verification.",
+      request_id: result.lastInsertRowid,
+      status: "Pending"
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Could not submit payment request." });
+  }
+});
+
+// Admin views payment requests
+app.get("/api/admin/fee-payment-requests", auth, admin, (req, res) => {
+  const requests = db.prepare(`
+    SELECT r.id, r.student_id, r.amount, r.transaction_id,
+           r.payment_method, r.status, r.created_at,
+           u.name, u.admission_no, u.class_name, u.section
+    FROM fee_payment_requests r
+    LEFT JOIN users u ON u.id = r.student_id
+    ORDER BY r.id DESC
+  `).all();
+
+  res.json(requests);
+});
+
+// Admin approves or rejects a request
+app.patch("/api/admin/fee-payment-requests/:id", auth, admin, (req, res) => {
+  const requestId = Number(req.params.id);
+  const action = String(req.body.action || "").toLowerCase();
+
+  if (!requestId || !["approve", "reject"].includes(action)) {
+    return res.status(400).json({
+      error: "Valid request ID and action are required."
+    });
+  }
+
+  const approveRequest = db.transaction(() => {
+    const request = db.prepare(`
+      SELECT * FROM fee_payment_requests WHERE id = ?
+    `).get(requestId);
+
+    if (!request) throw new Error("Payment request not found.");
+    if (request.status !== "Pending") {
+      throw new Error("This request has already been reviewed.");
+    }
+
+    if (action === "reject") {
+      db.prepare(`
+        UPDATE fee_payment_requests
+        SET status = 'Rejected', verified_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(requestId);
+
+      return { status: "Rejected" };
+    }
+
+    const fee = db.prepare(`
+      SELECT * FROM fee_records WHERE student_id = ?
+    `).get(request.student_id);
+
+    if (!fee) throw new Error("Student fee record not found.");
+
+    if (Number(request.amount) > Number(fee.balance_fee)) {
+      throw new Error("Payment amount exceeds current fee balance.");
+    }
+
+    const paid = Number(fee.paid_fee) + Number(request.amount);
+    const balance = Math.max(0, Number(fee.total_fee) - paid);
+    const feeStatus = balance === 0 ? "Paid" : "Partial";
+
+    db.prepare(`
+      UPDATE fee_records
+      SET paid_fee = ?, balance_fee = ?,
+          last_payment_date = CURRENT_TIMESTAMP,
+          transaction_id = ?, status = ?
+      WHERE student_id = ?
+    `).run(
+      paid, balance, request.transaction_id, feeStatus,
+      request.student_id
+    );
+
+    db.prepare(`
+      UPDATE fee_payment_requests
+      SET status = 'Approved', verified_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(requestId);
+
+    return { status: "Approved", paid_fee: paid, balance_fee: balance };
+  });
+
+  try {
+    res.json(approveRequest());
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"index.html")));
 app.listen(process.env.PORT||3000,()=>console.log("MICL running on http://localhost:"+ (process.env.PORT||3000)));
