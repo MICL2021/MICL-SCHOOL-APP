@@ -2981,8 +2981,13 @@ if (timetableControls) {
       : 'none';
 }
     const targetScreen = document.getElementById(id);
-    if (id === 'home') {
-  title = 'Admin Dashboard';
+
+if (id === 'home') {
+  title = currentUser.role === 'admin'
+    ? 'Admin Dashboard'
+    : currentUser.role === 'teacher'
+      ? 'Teacher Dashboard'
+      : 'Student Dashboard';
 }
 if (id === 'teacherDashboard') {
   const currentUser = JSON.parse(
