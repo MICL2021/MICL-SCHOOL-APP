@@ -3133,19 +3133,22 @@ function toggleMenu() {
   if (menu) menu.classList.toggle('open');
   if (overlay) overlay.classList.toggle('open');
 }
-function home() {
-  const user = JSON.parse(
-    localStorage.getItem('micl_user') || '{}'
-  );
 
-  if (user.role === 'student') {
+function home() {
+  const user = JSON.parse(localStorage.getItem('micl_user') || '{}');
+  const role = String(user.role || '').toLowerCase();
+
+  if (role === 'student') {
     show('home', 'Student Dashboard');
-  } else if (user.role === 'teacher') {
+  } else if (role === 'teacher') {
     show('teacherDashboard', 'Teacher Dashboard');
-  } else {
+  } else if (role === 'admin') {
     show('home', 'Admin Dashboard');
+  } else {
+    alert('Please login again.');
   }
 }
+
   function applyRoleMenu(role) {
   const buttons = document.querySelectorAll('#sideMenu button');
 const homeworkUploadButton =
