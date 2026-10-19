@@ -2955,6 +2955,16 @@ const currentUser = JSON.parse(
 const onlineFormsButton =
   document.getElementById('onlineFormsNavBtn');
 
+const adminFormsMenuButton =
+    document.getElementById('adminOnlineFormsMenuBtn');
+
+if (adminFormsMenuButton) {
+    adminFormsMenuButton.style.display =
+        String(currentUser.role || '').toLowerCase() === 'admin'
+            ? ''
+            : 'none';
+}
+
 if (onlineFormsButton) {
   onlineFormsButton.style.display =
   String(currentUser.role || '').toLowerCase() === 'admin'
