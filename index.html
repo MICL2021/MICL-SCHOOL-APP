@@ -1690,11 +1690,13 @@ if (academicProfileFields) {
         data.user.role === 'admin' ? 'none' : '';
 }
 
-    if (data.user.role === 'admin') {
+    const loginRole = String(data.user.role || '').toLowerCase();
+
+if (loginRole === 'admin') {
       alert('Welcome Admin');
       show('home', 'Admin Dashboard');
       document.getElementById('teacherMenuButton').style.display = 'block';
-    } else if (data.user.role === 'teacher') {
+    } else if (loginRole === 'teacher') {
       alert('Welcome Teacher');
       show('teacherDashboard', 'Teacher Dashboard');
     } else {
@@ -1702,7 +1704,6 @@ if (academicProfileFields) {
       show('home', 'Student Dashboard');
       const studentNameField = document.getElementById('studentProfileName');
 if (studentNameField) studentNameField.textContent = data.user.name || '-';
-
 const studentEmailField = document.getElementById('studentProfileEmail');
 if (studentEmailField) studentEmailField.textContent = data.user.email || '-';
 
