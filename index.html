@@ -389,6 +389,22 @@ box-sizing:border-box;
     <p>Education Today • Leaders Tomorrow</p>
     <p><b>Learn • Create • Grow</b></p>
 </div>
+  
+<div id="studentDashboardProfile" class="card" style="display:none; margin:14px 0;">
+  <div style="display:flex; align-items:center; gap:14px;">
+    <img id="studentDashboardPhoto"
+         alt="Student Photo"
+         style="width:82px;height:82px;object-fit:cover;border-radius:50%;border:3px solid #063b82;display:none;">
+    <div>
+      <h3 id="studentDashboardName" style="margin:0 0 8px;">Student Name</h3>
+      <p style="margin:5px 0;">Admission No.: <span id="studentDashboardAdmission">-</span></p>
+      <p style="margin:5px 0;">Class: <span id="studentDashboardClass">-</span></p>
+      <p style="margin:5px 0;">Section: <span id="studentDashboardSection">-</span></p>
+      <p style="margin:5px 0;">Phone: <span id="studentDashboardPhone">-</span></p>
+    </div>
+  </div>
+</div>
+
 <div class="grid">
 <button class="tile" onclick="show('notices','Notice Board')"><span class="ico">📢</span><small>Notices</small></button>
 <button class="tile" onclick="show('timetable','School Timetable')"><span class="ico">📅</span><small>Time Table</small></button>
@@ -1593,6 +1609,40 @@ const data = await response.json();
     localStorage.setItem('micl_last_activity', Date.now().toString());
     const { photo, ...userWithoutPhoto } = data.user;
 localStorage.setItem('micl_user', JSON.stringify(userWithoutPhoto));
+
+const dashboardProfile = document.getElementById('studentDashboardProfile');
+
+if (dashboardProfile) {
+  const isStudent = String(data.user.role || '').toLowerCase() === 'student';
+  dashboardProfile.style.display = isStudent ? 'block' : 'none';
+
+  if (isStudent) {
+    document.getElementById('studentDashboardName').textContent =
+      data.user.name || '-';
+
+    document.getElementById('studentDashboardAdmission').textContent =
+      data.user.admission_no || '-';
+
+    document.getElementById('studentDashboardClass').textContent =
+      data.user.class_name || '-';
+
+    document.getElementById('studentDashboardSection').textContent =
+      data.user.section || '-';
+
+    document.getElementById('studentDashboardPhone').textContent =
+      data.user.phone || '-';
+
+    const photo = document.getElementById('studentDashboardPhoto');
+
+    if (data.user.photo) {
+      photo.src = data.user.photo;
+      photo.style.display = 'block';
+    } else {
+      photo.removeAttribute('src');
+      photo.style.display = 'none';
+    }
+  }
+}
 
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';
