@@ -4403,7 +4403,160 @@ async function updateApplicationStatus(id, status) {
     alert(error.message);
   }
 }
+async function loadStudentOnlineForms() {
+  const list = document.getElementById("studentFormsList");
+  const box = document.getElementById("studentFormApplication");
+  const status = document.getElementById("studentFormStatus");
 
+  if (!list || !box || !status) {
+    alert("Student Online Forms section nahi mila.");
+    return;
+  }
+
+  list.textContent = "Loading published forms...";
+  box.style.display = "none";
+  status.textContent = "";
+
+  try {
+    const response = await fetch("/api/forms");
+    const forms = await response.json();
+
+    if (!response.ok) {
+      throw new Error(forms.error || "Forms load nahi huay.");
+    }
+
+    list.replaceChildren();
+
+    if (!Array.isArray(forms) || forms.length === 0) {
+      list.textContent = "Abhi koi published form available nahi hai.";
+      return;
+    }
+
+    forms.forEach(form => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const title = document.createElement("h3");
+      title.textContent = form.title || "School Form";
+
+      const description = document.createElement("p");
+      description.textContent = form.description || "";
+
+      const date = document.createElement("p");
+      date.textContent = "Last date: " + (form.last_date || "Not specified");
+
+      const button = document.createElement("button");
+      button.className = "btn";
+      button.textContent = "Apply Now";
+      button.onclick = () => openStudentOnlineForm(form);
+
+      card.append(title, description, date, button);
+      list.appendChild(card);
+    });
+  } catch (error) {
+    list.textContent = "Error loading forms: " + error.message;
+  }
+}
+
+function openStudentOnlineForm(form) {
+  const box = document.getElementById("studentFormApplication");
+  const status = document.getElementById("studentFormStatus");
+  box.replaceChildren();
+  box.style.display = "block";
+  status.textContent = "";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "Apply: " + (form.title || "School Form");
+  box.appendChild(heading);
+
+  const formElement = document.createElement("form");
+
+  function addField(labelText, name, type, required) {
+    const label = document.createElement("label");
+    label.textContent = labelText;
+
+    const input = document.createElement("input");
+    input.name = name;
+    input.type = type;
+    input.required = required;
+    input.style.display = "block";
+    input.style.width = "100%";
+    input.style.margin = "8px 0 14px";
+
+    label.appendChild(input);
+    formElement.appendChild(label);
+  }
+
+  addField("Full Name *", "applicant_name", "text", true);
+  addField("Email", "applicant_email", "email", false);
+  addField("Phone", "applicant_phone", "tel", false);
+
+  let fields = [];
+  try {
+    fields = Array.isArray(form.fields_json)
+      ? form.fields_json
+      : JSON.parse(form.fields_json || "[]");
+  } catch (error) {
+    fields = [];
+  }
+
+  fields.forEach((field, index) => {
+    const name = String(field).trim();
+    if (name) addField(name, "extra_" + index, "text", false);
+  });
+
+  const submit = document.createElement("button");
+  submit.type = "submit";
+  submit.className = "btn";
+  submit.textContent = "Submit Application";
+  formElement.appendChild(submit);
+
+  formElement.onsubmit = async event => {
+    event.preventDefault();
+    submit.disabled = true;
+    status.textContent = "Submitting application...";
+
+    const values = new FormData(formElement);
+    const answers = {};
+
+    fields.forEach((field, index) => {
+      const name = String(field).trim();
+      if (name) answers[name] = values.get("extra_" + index) || "";
+    });
+
+    try {
+      const response = await fetch(
+        "/api/forms/" + encodeURIComponent(form.id) + "/applications",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            applicant_name: values.get("applicant_name"),
+            applicant_email: values.get("applicant_email"),
+            applicant_phone: values.get("applicant_phone"),
+            answers
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Application submit nahi hui.");
+      }
+
+      status.textContent = "Application successfully submit ho gayi.";
+      formElement.reset();
+    } catch (error) {
+      status.textContent = "Error: " + error.message;
+    } finally {
+      submit.disabled = false;
+    }
+  };
+
+  box.appendChild(formElement);
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 </script>
 </body>
 </html>
