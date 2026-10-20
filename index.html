@@ -3135,20 +3135,45 @@ function toggleMenu() {
   if (overlay) overlay.classList.toggle('open');
 }
 
+
 function home() {
   const user = JSON.parse(localStorage.getItem('micl_user') || '{}');
   const role = String(user.role || '').toLowerCase();
 
   if (role === 'student') {
     show('home', 'Student Dashboard');
+
+    const studentProfile = document.getElementById('studentDashboardProfile');
+    if (studentProfile) {
+      studentProfile.style.display = 'flex';
+    }
+
+    const adminProfile = document.getElementById('adminProfileCard');
+    if (adminProfile) {
+      adminProfile.style.display = 'none';
+    }
+
   } else if (role === 'teacher') {
     show('teacherDashboard', 'Teacher Dashboard');
+
   } else if (role === 'admin') {
     show('home', 'Admin Dashboard');
+
+    const studentProfile = document.getElementById('studentDashboardProfile');
+    if (studentProfile) {
+      studentProfile.style.display = 'none';
+    }
+
+    const adminProfile = document.getElementById('adminProfileCard');
+    if (adminProfile) {
+      adminProfile.style.display = 'block';
+    }
+
   } else {
     alert('Please login again.');
   }
 }
+
 
   function applyRoleMenu(role) {
   const buttons = document.querySelectorAll('#sideMenu button');
