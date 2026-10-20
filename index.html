@@ -3671,8 +3671,11 @@ updateProfileVisibility(user.role);
 
     const academicFields = document.getElementById('academicProfileFields');
     if (academicFields) {
-      academicFields.style.display = user.role === 'admin' ? 'none' : '';
-    }
+  academicFields.style.display =
+    (user.role === 'admin' || user.role === 'teacher')
+      ? 'none'
+      : '';
+}
 const teacherFields =
   document.getElementById('teacherProfileFields');
 
