@@ -3186,8 +3186,11 @@ const homeworkUploadButton =
   document.getElementById('homeworkUploadMenuButton');
 
 if (homeworkUploadButton) {
+  const currentRole = String(role || '').toLowerCase();
   homeworkUploadButton.style.display =
-    role === 'admin' || role === 'teacher' ? 'block' : 'none';
+    (currentRole === 'admin' || currentRole === 'teacher')
+      ? 'block'
+      : 'none';
 }
   const allowed = [
     'home',
