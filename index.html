@@ -3585,19 +3585,33 @@ document.getElementById('login').style.display = 'none';
     if (teacherButton) {
       teacherButton.style.display = user.role === 'admin' ? 'block' : 'none';
     }
+    
+const photo = user.photo;
+const role = String(user.role || '').toLowerCase();
 
-    const photo = user.photo;
-    if (photo) {
-      ['profilePhoto', 'studentProfilePhoto', 'adminPhotoPreview']
-        .forEach(id => {
-          const el = document.getElementById(id);
-          if (el) {
-            el.src = photo;
-            el.style.display = 'block';
-          }
-        });
-    }
+if (photo && role === 'student') {
+  const el = document.getElementById('studentProfilePhoto');
+  if (el) {
+    el.src = photo;
+    el.style.display = 'block';
+  }
+}
 
+if (photo && role === 'admin') {
+  const el = document.getElementById('adminPhotoPreview');
+  if (el) {
+    el.src = photo;
+    el.style.display = 'block';
+  }
+}
+
+if (photo && role === 'teacher') {
+  const el = document.getElementById('profilePhoto');
+  if (el) {
+    el.src = photo;
+    el.style.display = 'block';
+  }
+}
     applyRoleMenu(user.role);
 
     if (user.role === 'admin') {
