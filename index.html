@@ -3325,9 +3325,11 @@ function updateProfileVisibility(role) {
 }
 
 
-updateProfileVisibility(
-  JSON.parse(localStorage.getItem('micl_user') || '{}').role
+const savedProfileUser = JSON.parse(
+  localStorage.getItem('micl_user') || '{}'
 );
+
+updateProfileVisibility(savedProfileUser.role);
 
 
   async function loadAdminFeeRecords() {
