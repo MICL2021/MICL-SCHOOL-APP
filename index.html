@@ -3142,7 +3142,12 @@ function home() {
 
   if (role === 'student') {
     show('home', 'Student Dashboard');
+const homeworkUploadButton =
+  document.getElementById('homeworkUploadMenuButton');
 
+if (homeworkUploadButton) {
+  homeworkUploadButton.style.display = 'none';
+}
     const studentProfile = document.getElementById('studentDashboardProfile');
     if (studentProfile) {
       studentProfile.style.display = 'flex';
