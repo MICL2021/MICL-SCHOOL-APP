@@ -1840,7 +1840,18 @@ document.getElementById('menuOverlay').classList.remove('open');
     const class_name = document.getElementById('teacherClass').value.trim();
 const section = document.getElementById('teacherSection').value.trim();
   const password = document.getElementById('teacherPassword').value;
+const photoFile = document.getElementById('teacherPhoto').files[0];
 
+let photo = '';
+
+if (photoFile) {
+  photo = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(photoFile);
+  });
+}
   if (!name || !email || !phone || !qualification || !class_name || !section || !username || !password) {
     alert('Please fill all teacher details');
     return;
@@ -1864,7 +1875,8 @@ const section = document.getElementById('teacherSection').value.trim();
 section,
         username,
         password,
-        role: 'teacher'
+        role: 'teacher',
+        photo: photo
       })
     });
 
