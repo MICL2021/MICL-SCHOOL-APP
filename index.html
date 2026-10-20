@@ -1692,6 +1692,33 @@ document.getElementById('profileEmail').textContent =
   data.user.email || '-';
 document.getElementById('profilePhone').textContent =
   data.user.phone || '-';
+    
+const teacherProfileFields = document.getElementById('teacherProfileFields');
+const currentRole = String(data.user.role || '').toLowerCase();
+
+if (teacherProfileFields) {
+  teacherProfileFields.style.display =
+    currentRole === 'teacher' ? 'block' : 'none';
+}
+
+const teacherQualification =
+  document.getElementById('teacherProfileQualification');
+if (teacherQualification) {
+  teacherQualification.textContent = data.user.qualification || '-';
+}
+
+const teacherDesignation =
+  document.getElementById('teacherProfileDesignation');
+if (teacherDesignation) {
+  teacherDesignation.textContent = data.user.designation || '-';
+}
+
+const teacherSchoolName =
+  document.getElementById('teacherProfileSchoolName');
+if (teacherSchoolName) {
+  teacherSchoolName.textContent = data.user.school_name || '-';
+}
+
     const adminNameDisplay = document.getElementById('adminDisplayName');
 if (adminNameDisplay) adminNameDisplay.textContent = data.user.name || '-';
 
