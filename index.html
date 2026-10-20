@@ -3290,20 +3290,20 @@ function updateProfileVisibility(role) {
       isAdmin ? 'block' : 'none';
   }
 
-  if (studentProfileInfo) {
-    studentProfileInfo.style.display =
-      isAdmin ? 'none' : 'block';
-  }
+if (studentProfileInfo) {
+  studentProfileInfo.style.display =
+    (!isAdmin) ? 'block' : 'none';
+}
 
-  if (academicFields) {
-    academicFields.style.display =
-      isTeacher ? 'none' : 'block';
-  }
+if (academicFields) {
+  academicFields.style.display =
+    (!isAdmin && !isTeacher) ? 'block' : 'none';
+}
 
-  if (teacherFields) {
-    teacherFields.style.display =
-      isTeacher ? 'block' : 'none';
-  }
+if (teacherFields) {
+  teacherFields.style.display =
+    isTeacher ? 'block' : 'none';
+}
 
   const heading = document.querySelector('#profile h2');
 
