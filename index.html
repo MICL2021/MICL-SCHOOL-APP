@@ -1755,7 +1755,15 @@ if (academicProfileFields) {
 }
 
     const loginRole = String(data.user.role || '').toLowerCase();
+const teacherProfileFields =
+  document.getElementById('teacherProfileFields');
 
+if (teacherProfileFields) {
+  teacherProfileFields.style.display =
+    String(data.user.role || '').toLowerCase() === 'teacher'
+      ? 'block'
+      : 'none';
+}
 if (loginRole === 'admin') {
       alert('Welcome Admin');
       show('home', 'Admin Dashboard');
