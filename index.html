@@ -3266,8 +3266,6 @@ if (homeworkUploadButton) {
     }
   });
 }
-  
-
 
 function updateProfileVisibility(role) {
   role = String(role || '').toLowerCase();
@@ -3277,29 +3275,38 @@ function updateProfileVisibility(role) {
 
   const adminProfileCard =
     document.getElementById('adminProfileCard');
+
   const studentProfileInfo =
     document.getElementById('studentProfileInfo');
+
   const academicFields =
     document.getElementById('academicProfileFields');
-const teacherFields =
-  document.getElementById('teacherProfileFields');
 
-if (teacherFields) {
-  teacherFields.style.display = isTeacher ? 'block' : 'none';
-}
+  const teacherFields =
+    document.getElementById('teacherProfileFields');
+
   if (adminProfileCard) {
-    adminProfileCard.style.display = isAdmin ? 'block' : 'none';
+    adminProfileCard.style.display =
+      isAdmin ? 'block' : 'none';
   }
 
   if (studentProfileInfo) {
-    studentProfileInfo.style.display = isAdmin ? 'none' : 'block';
+    studentProfileInfo.style.display =
+      isAdmin ? 'none' : 'block';
   }
 
   if (academicFields) {
-    academicFields.style.display = isTeacher ? 'none' : '';
+    academicFields.style.display =
+      isTeacher ? 'none' : 'block';
+  }
+
+  if (teacherFields) {
+    teacherFields.style.display =
+      isTeacher ? 'block' : 'none';
   }
 
   const heading = document.querySelector('#profile h2');
+
   if (heading) {
     heading.textContent = isAdmin
       ? '👤 Admin Profile'
@@ -3309,8 +3316,11 @@ if (teacherFields) {
   }
 
   const photo = document.getElementById('profilePhoto');
+
   if (photo) {
-    photo.alt = isTeacher ? 'Teacher Photo' : 'Student Photo';
+    photo.alt = isTeacher
+      ? 'Teacher Photo'
+      : 'Student Photo';
   }
 }
 
