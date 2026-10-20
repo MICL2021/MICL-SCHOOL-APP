@@ -3660,15 +3660,24 @@ setText('teacherProfileSchoolName', user.school_name);
     }
 
     const studentInfo = document.getElementById('studentProfileInfo');
-    if (studentInfo) {
-      studentInfo.style.display = user.role === 'admin' ? 'none' : 'block';
-    }
+if (studentInfo) {
+  studentInfo.style.display =
+    user.role === 'admin' ? 'none' : 'block';
+}
+
+updateProfileVisibility(user.role);
 
     const academicFields = document.getElementById('academicProfileFields');
     if (academicFields) {
       academicFields.style.display = user.role === 'admin' ? 'none' : '';
     }
+const teacherFields =
+  document.getElementById('teacherProfileFields');
 
+if (teacherFields) {
+  teacherFields.style.display =
+    user.role === 'teacher' ? 'block' : 'none';
+}
     const teacherButton = document.getElementById('teacherMenuButton');
     if (teacherButton) {
       teacherButton.style.display = user.role === 'admin' ? 'block' : 'none';
