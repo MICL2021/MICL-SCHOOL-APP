@@ -1524,11 +1524,12 @@ app.get("/api/admin/students", auth, admin, (req,res) => {
 
 app.get("/api/admin/teachers", auth, admin, (req,res) => {
   const teachers = db.prepare(`
-    SELECT id, name, email, phone, qualification
-    FROM users
-    WHERE role = 'teacher'
-    ORDER BY id DESC
-  `).all();
+    const teachers = db.prepare(`
+  SELECT id, name, email, phone, qualification, photo, username, class_name, section
+  FROM users
+  WHERE role = 'teacher'
+  ORDER BY id DESC
+`).all();
   res.json(teachers);
 });
 app.delete("/api/admin/teachers/:id", auth, admin, (req, res) => {
