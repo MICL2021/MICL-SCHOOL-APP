@@ -3273,7 +3273,12 @@ function updateProfileVisibility(role) {
     document.getElementById('studentProfileInfo');
   const academicFields =
     document.getElementById('academicProfileFields');
+const teacherFields =
+  document.getElementById('teacherProfileFields');
 
+if (teacherFields) {
+  teacherFields.style.display = isTeacher ? 'block' : 'none';
+}
   if (adminProfileCard) {
     adminProfileCard.style.display = isAdmin ? 'block' : 'none';
   }
