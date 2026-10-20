@@ -390,6 +390,21 @@ box-sizing:border-box;
     <p><b>Learn • Create • Grow</b></p>
 </div>
   
+<div id="homeProfileCard" class="card" style="display:none; margin:14px 0; padding:18px; border-radius:16px; border:1px solid #d9e5ee; background:#ffffff;">
+  <h3 style="margin:0 0 14px; color:#063b82;">👤 My Profile</h3>
+  <div style="display:flex; align-items:center; gap:14px;">
+    <img id="homeProfilePhoto" alt="Profile Photo"
+      style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid #d9e5ee;display:none;">
+    <div>
+      <h3 id="homeProfileName" style="margin:0 0 6px;">My Account</h3>
+      <p style="margin:4px 0;color:#557085;">Role: <strong id="homeProfileRole">-</strong></p>
+      <p style="margin:4px 0;color:#557085;">Email: <span id="homeProfileEmail">-</span></p>
+    </div>
+  </div>
+  <button class="btn" style="margin-top:14px;"
+    onclick="show('profile','My Profile')">View Full Profile →</button>
+</div>
+
 <div id="studentDashboardProfile" class="card" style="display:none; margin:14px 0;">
   <div style="display:flex; align-items:center; gap:14px;">
     <img id="studentDashboardPhoto"
@@ -3185,6 +3200,31 @@ function toggleMenu() {
 function home() {
   const user = JSON.parse(localStorage.getItem('micl_user') || '{}');
   const role = String(user.role || '').toLowerCase();
+
+const homeProfileCard = document.getElementById('homeProfileCard');
+
+if (homeProfileCard) {
+  homeProfileCard.style.display = 'block';
+
+  document.getElementById('homeProfileName').textContent =
+    user.name || 'My Account';
+
+  document.getElementById('homeProfileRole').textContent =
+    role.charAt(0).toUpperCase() + role.slice(1);
+
+  document.getElementById('homeProfileEmail').textContent =
+    user.email || '-';
+
+  const homePhoto = document.getElementById('homeProfilePhoto');
+
+  if (user.photo) {
+    homePhoto.src = user.photo;
+    homePhoto.style.display = 'block';
+  } else {
+    homePhoto.style.display = 'none';
+    homePhoto.removeAttribute('src');
+  }
+}
 
   if (role === 'student') {
     show('home', 'Student Dashboard');
