@@ -3260,14 +3260,19 @@ if (homeworkUploadButton) {
 }
   
 
+
 function updateProfileVisibility(role) {
-  const isAdmin = String(role || '').toLowerCase() === 'admin';
+  role = String(role || '').toLowerCase();
+
+  const isAdmin = role === 'admin';
+  const isTeacher = role === 'teacher';
 
   const adminProfileCard =
     document.getElementById('adminProfileCard');
-
   const studentProfileInfo =
     document.getElementById('studentProfileInfo');
+  const academicFields =
+    document.getElementById('academicProfileFields');
 
   if (adminProfileCard) {
     adminProfileCard.style.display = isAdmin ? 'block' : 'none';
@@ -3276,7 +3281,26 @@ function updateProfileVisibility(role) {
   if (studentProfileInfo) {
     studentProfileInfo.style.display = isAdmin ? 'none' : 'block';
   }
+
+  if (academicFields) {
+    academicFields.style.display = isTeacher ? 'none' : '';
+  }
+
+  const heading = document.querySelector('#profile h2');
+  if (heading) {
+    heading.textContent = isAdmin
+      ? '👤 Admin Profile'
+      : isTeacher
+      ? '👨‍🏫 Teacher Profile'
+      : '👤 Student Profile';
+  }
+
+  const photo = document.getElementById('profilePhoto');
+  if (photo) {
+    photo.alt = isTeacher ? 'Teacher Photo' : 'Student Photo';
+  }
 }
+
 
 updateProfileVisibility(
   JSON.parse(localStorage.getItem('micl_user') || '{}').role
