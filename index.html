@@ -1887,6 +1887,15 @@ section,
     alert('Server connection error');
   }
 }
+  function previewTeacherPhoto() {
+  const file = document.getElementById('teacherPhoto').files[0];
+  const preview = document.getElementById('teacherPhotoPreview');
+
+  if (file && preview) {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+  }
+}
 async function addStudent() {
   const name = document.getElementById('studentName').value.trim();
   const email = document.getElementById('studentEmail').value.trim();
