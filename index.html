@@ -499,6 +499,20 @@ box-sizing:border-box;
 
 <input id="teacherPassword" type="password" placeholder="Password">
 
+<label for="teacherPhoto">Teacher Photo:</label>
+<input
+  id="teacherPhoto"
+  type="file"
+  accept="image/*"
+  onchange="previewTeacherPhoto()"
+>
+
+<img
+  id="teacherPhotoPreview"
+  alt="Teacher Photo Preview"
+  style="display:none;width:100px;height:100px;object-fit:cover;border-radius:50%;margin:10px 0;"
+>
+
 <button class="btn" onclick="addTeacher()">Add Teacher</button>
 
   </section>
