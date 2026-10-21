@@ -431,6 +431,86 @@ app.delete("/api/admin/id-cards/:id", auth, admin, (req, res) => {
   }
 });
 
+app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
+  try {
+    const settings = db.prepare(
+      "SELECT school_stamp, digital_signature, updated_at FROM id_card_settings WHERE id = 1"
+    ).get();
+
+    res.json(settings || {
+      school_stamp: "",
+      digital_signature: ""
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Could not load ID card settings" });
+  }
+});
+
+app.post(
+  "/api/admin/id-card-settings/:type",
+  auth,
+  admin,
+  noticeUpload.single("image"),
+  async (req, res) => {
+    try {
+      const type = req.params.type;
+
+      if (!["stamp", "signature"].includes(type)) {
+        return res.status(400).json({ error: "Invalid image type" });
+      }
+
+      let imageUrl = "";
+
+      if (req.file) {
+        imageUrl = await uploadIdCardImage(req.file);
+      } else if (
+        typeof req.body.image_data === "string" &&
+        /^data:image\/(png|jpeg|webp);base64,/.test(req.body.image_data)
+      ) {
+        const uploaded = await cloudinary.uploader.upload(
+          req.body.image_data,
+          {
+            folder: "micl-id-card-settings",
+            resource_type: "image"
+          }
+        );
+        imageUrl = uploaded.secure_url;
+      } else {
+        return res.status(400).json({
+          error: "Please upload an image or draw a signature"
+        });
+      }
+
+      const column = type === "stamp"
+        ? "school_stamp"
+        : "digital_signature";
+
+      db.prepare(`
+        INSERT INTO id_card_settings (id, school_stamp, digital_signature)
+        VALUES (1, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          ${column} = excluded.${column},
+          updated_at = CURRENT_TIMESTAMP
+      `).run(
+        type === "stamp" ? imageUrl : "",
+        type === "signature" ? imageUrl : ""
+      );
+
+      res.json({
+        success: true,
+        image_url: imageUrl,
+        message: "ID card image saved successfully"
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        error: "Could not save stamp or signature"
+      });
+    }
+  }
+);
+
 app.post("/api/admin/subjects", auth, admin, (req, res) => {
   const name = String(req.body.name || "").trim();
 
