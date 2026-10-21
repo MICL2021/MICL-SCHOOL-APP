@@ -1199,6 +1199,25 @@ box-sizing:border-box;
   </button>
 
   <p id="idCardSettingsStatus"></p>
+  
+<hr>
+<h3>🔵 Create Digital School Stamp</h3>
+
+<div style="max-width:320px;margin:15px auto;text-align:center;">
+  <canvas id="schoolStampCanvas"
+    width="300" height="300"
+    style="width:100%;max-width:300px;border:1px solid #ccc;border-radius:8px;">
+  </canvas>
+</div>
+
+<button class="btn" type="button" onclick="drawSchoolStamp()">
+  Create Digital Stamp
+</button>
+
+<button class="btn" type="button" onclick="saveDigitalStamp()">
+  Save Digital Stamp
+</button>
+
 </div>
 
 </section>
@@ -5427,6 +5446,68 @@ async function loadIdCardSettings() {
 }
 
 setupSignatureCanvas();
+
+function drawSchoolStamp() {
+  const canvas = document.getElementById("schoolStampCanvas");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#063b82";
+  ctx.fillStyle = "#063b82";
+  ctx.lineWidth = 5;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 125, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 105, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.textAlign = "center";
+  ctx.font = "bold 17px Arial";
+  ctx.fillText("MICL SCHOOL", cx, cy - 35);
+  ctx.font = "bold 14px Arial";
+  ctx.fillText("MODERN INSTITUTE", cx, cy - 8);
+  ctx.fillText("OF CREATIVE LEARNING", cx, cy + 15);
+  ctx.font = "bold 16px Arial";
+  ctx.fillText("OFFICIAL SEAL", cx, cy + 48);
+}
+
+async function saveDigitalStamp() {
+  drawSchoolStamp();
+
+  const canvas = document.getElementById("schoolStampCanvas");
+  const token = localStorage.getItem("micl_token");
+
+  try {
+    const response = await fetch("/api/admin/id-card-settings/stamp", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + token },
+      body: (() => {
+        const form = new FormData();
+        const blobData = canvas.toDataURL("image/png");
+        const byteString = atob(blobData.split(",")[1]);
+        const bytes = new Uint8Array(byteString.length);
+        for (let i = 0; i < byteString.length; i++) {
+          bytes[i] = byteString.charCodeAt(i);
+        }
+        form.append("image", new Blob([bytes], { type: "image/png" }), "micl-stamp.png");
+        return form;
+      })()
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Stamp save nahi hua.");
+    alert("Digital stamp save ho gaya.");
+  } catch (error) {
+    alert(error.message || "Server connection error.");
+  }
+}
 
 </script>
 </body>
