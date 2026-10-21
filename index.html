@@ -1759,10 +1759,10 @@ const teacherProfileFields =
   document.getElementById('teacherProfileFields');
 
 if (teacherProfileFields) {
-  teacherProfileFields.style.display =
-    String(data.user.role || '').toLowerCase() === 'teacher'
-      ? 'block'
-      : 'none';
+    teacherProfileFields.style.display =
+        (loginRole === 'teacher' || loginRole === 'admin')
+            ? 'block'
+            : 'none';
 }
 if (loginRole === 'admin') {
       alert('Welcome Admin');
