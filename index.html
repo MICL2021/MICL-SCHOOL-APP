@@ -5111,6 +5111,59 @@ function printIdCard() {
   window.print();
 }
 
+async function deleteIdCardRecord() {
+  const type = document.getElementById('idCardType').value;
+  const userId = document.getElementById('idCardUser').value;
+  const users = window.miclIdCardUsers || [];
+  const user = users.find(u => String(u.id) === String(userId));
+
+  if (!user) {
+    alert('Pehle student ya teacher select karein.');
+    return;
+  }
+
+  if (!confirm('Kya aap is ID card record ko delete karna chahte hain?')) {
+    return;
+  }
+
+  const token = localStorage.getItem('micl_token');
+
+  try {
+    const response = await fetch('/api/admin/id-cards', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+
+    if (!response.ok) throw new Error('ID cards load nahi hue.');
+
+    const cards = await response.json();
+    const card = cards.find(c =>
+      String(c.user_id) === String(user.id) &&
+      c.user_role === type
+    );
+
+    if (!card) {
+      alert('Is account ka saved ID card record nahi mila.');
+      return;
+    }
+
+    const result = await fetch('/api/admin/id-cards/' + card.id, {
+      method: 'DELETE',
+      headers: { Authorization: 'Bearer ' + token }
+    });
+
+    const data = await result.json();
+
+    if (!result.ok) throw new Error(data.error || 'Delete nahi hua.');
+
+    document.getElementById('idCardPreview').innerHTML =
+      '<p>ID card record delete ho gaya.</p>';
+
+    alert('ID card record delete ho gaya.');
+  } catch (error) {
+    alert(error.message || 'Server error.');
+  }
+}
+
 </script>
 </body>
 </html>
