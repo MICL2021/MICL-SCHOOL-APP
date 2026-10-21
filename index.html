@@ -1018,6 +1018,22 @@ body.teacher-view #teacherMarksheetCard {
     <button class="btn" onclick="loadAdminMarksheet()">
       Generate Marksheet
     </button>
+    <div class="card" id="adminMarksheetTools">
+  <h3>📝 Admin Marksheet Settings</h3>
+
+  <label for="marksheetStamp">Upload School Stamp</label>
+  <input type="file" id="marksheetStamp" accept="image/*">
+
+  <label for="classTeacherSign">Class Teacher Signature</label>
+  <input type="file" id="classTeacherSign" accept="image/*">
+
+  <label for="checkedBySign">Checked By Signature</label>
+  <input type="file" id="checkedBySign" accept="image/*">
+
+  <p style="font-size:12px;color:#607080">
+    Stamp aur signatures image files mein upload karein.
+  </p>
+</div>
   </div>
 
   <div class="card" id="studentMarksheetControls" style="display:none;">
