@@ -4982,6 +4982,117 @@ function openStudentOnlineForm(form) {
   box.appendChild(formElement);
   box.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+  
+async function loadIdCardUsers() {
+  const type = document.getElementById('idCardType').value;
+  const select = document.getElementById('idCardUser');
+  const token = localStorage.getItem('micl_token');
+
+  select.innerHTML = '<option value="">Loading...</option>';
+
+  try {
+    const endpoint = type === 'student'
+      ? '/api/admin/students'
+      : '/api/admin/teachers';
+
+    const response = await fetch(endpoint, {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+
+    const users = await response.json();
+
+    if (!response.ok || !Array.isArray(users)) {
+      throw new Error('Accounts load nahi hue. Admin login check karein.');
+    }
+
+    window.miclIdCardUsers = users;
+    select.innerHTML = '<option value="">Select account</option>';
+
+    users.forEach((user, index) => {
+      const option = document.createElement('option');
+      option.value = String(user.id);
+      option.textContent =
+        (user.name || 'Unnamed') +
+        (type === 'student'
+          ? ' — ' + (user.admission_no || 'No admission number')
+          : ' — ' + (user.username || user.email || 'No username'));
+      select.appendChild(option);
+    });
+  } catch (error) {
+    select.innerHTML = '<option value="">Unable to load accounts</option>';
+    alert(error.message || 'Server connection error');
+  }
+}
+
+function generateIdCard() {
+  const type = document.getElementById('idCardType').value;
+  const id = document.getElementById('idCardUser').value;
+  const users = window.miclIdCardUsers || [];
+  const user = users.find(u => String(u.id) === String(id));
+
+  if (!user) {
+    alert('Pehle account select karein.');
+    return;
+  }
+
+  const esc = value => String(value || '-').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;',
+    '"': '&quot;', "'": '&#39;'
+  })[ch]);
+
+  const details = type === 'student'
+    ? [
+        ['Admission No.', user.admission_no],
+        ['Roll No.', user.roll_no],
+        ['Class', user.class_name],
+        ['Section', user.section],
+        ['Date of Birth', user.dob],
+        ['Phone', user.phone]
+      ]
+    : [
+        ['Teacher ID', user.username || user.id],
+        ['Designation', user.designation],
+        ['Qualification', user.qualification],
+        ['Phone', user.phone],
+        ['Email', user.email]
+      ];
+
+  const photo = user.photo || '';
+  const preview = document.getElementById('idCardPreview');
+
+  preview.innerHTML = `
+    <div class="micl-id-card">
+      <div class="micl-id-header">
+        <img src="/public/micl_logo.png" alt="MICL School Logo"
+             onerror="this.style.display='none'">
+        <h3>MODERN INSTITUTE OF CREATIVE LEARNING</h3>
+        <p>${type === 'student' ? 'STUDENT ID CARD' : 'TEACHER ID CARD'}</p>
+      </div>
+      ${photo ? `<img class="micl-id-photo" src="${esc(photo)}" alt="Profile photo">`
+              : '<div style="padding:20px">Photo not available</div>'}
+      <h3>${esc(user.name)}</h3>
+      <div class="micl-id-details">
+        ${details.map(([label, value]) =>
+          `<div><b>${esc(label)}:</b> ${esc(value)}</div>`
+        ).join('')}
+      </div>
+      <div style="background:#063b82;color:white;padding:10px;font-size:11px">
+        MICL SCHOOL • OFFICIAL ID CARD
+      </div>
+    </div>`;
+}
+
+function printIdCard() {
+  const preview = document.getElementById('idCardPreview');
+
+  if (!preview || !preview.querySelector('.micl-id-card')) {
+    alert('Pehle Generate ID Card dabayein.');
+    return;
+  }
+
+  window.print();
+}
+
 </script>
 </body>
 </html>
