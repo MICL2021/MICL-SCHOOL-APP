@@ -734,6 +734,41 @@ box-sizing:border-box;
     <p id="teacherHomeworkStatus" aria-live="polite"></p>
   </div>
 </section>
+  
+<div class="card" id="teacherMarksheetCard">
+  <h3>📝 Enter Student Marks</h3>
+
+  <label for="marksheetStudent">Select Student</label>
+  <select id="marksheetStudent" required>
+    <option value="">Loading students...</option>
+  </select>
+
+  <label for="marksheetTerm">Exam / Term</label>
+  <select id="marksheetTerm">
+    <option value="Term 1">Term 1</option>
+    <option value="Term 2">Term 2</option>
+    <option value="Annual">Annual</option>
+  </select>
+
+  <label for="marksheetSubject">Subject</label>
+  <input id="marksheetSubject" type="text"
+         placeholder="e.g. English" required>
+
+  <label for="marksObtained">Obtained Marks</label>
+  <input id="marksObtained" type="number"
+         min="0" step="0.5" required>
+
+  <label for="marksMaximum">Maximum Marks</label>
+  <input id="marksMaximum" type="number"
+         min="1" step="0.5" value="100" required>
+
+  <button class="btn" onclick="saveTeacherMarks()">
+    Save Marks
+  </button>
+
+  <p id="teacherMarksheetStatus" aria-live="polite"></p>
+</div>
+
 <section id="notices" class="screen">
   <h2>Notice Board</h2>
 
@@ -5510,6 +5545,81 @@ async function saveDigitalStamp() {
     alert("Digital stamp save ho gaya.");
   } catch (error) {
     alert(error.message || "Server connection error.");
+  }
+}
+
+async function loadTeacherMarksheetStudents() {
+  const select = document.getElementById("marksheetStudent");
+  const status = document.getElementById("teacherMarksheetStatus");
+  if (!select) return;
+
+  const token = localStorage.getItem("micl_token");
+
+  try {
+    const response = await fetch("/api/teacher/marksheet/students", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Students load nahi hue.");
+
+    select.innerHTML = '<option value="">Select Student</option>';
+
+    data.forEach(student => {
+      const option = document.createElement("option");
+      option.value = student.id;
+      option.textContent =
+        student.name + " — " +
+        (student.admission_no || "No admission number");
+      select.appendChild(option);
+    });
+
+    if (status) {
+      status.textContent = data.length
+        ? "Students loaded successfully."
+        : "Is teacher ki assigned class mein students nahi mile.";
+    }
+  } catch (error) {
+    if (status) status.textContent = error.message;
+  }
+}
+
+async function saveTeacherMarks() {
+  const status = document.getElementById("teacherMarksheetStatus");
+  const token = localStorage.getItem("micl_token");
+
+  const payload = {
+    student_id: document.getElementById("marksheetStudent").value,
+    exam: document.getElementById("marksheetTerm").value,
+    subject: document.getElementById("marksheetSubject").value.trim(),
+    marks: document.getElementById("marksObtained").value,
+    max_marks: document.getElementById("marksMaximum").value
+  };
+
+  if (!payload.student_id || !payload.subject ||
+      payload.marks === "" || payload.max_marks === "") {
+    status.textContent = "Student, subject aur marks fill karein.";
+    return;
+  }
+
+  status.textContent = "Saving marks...";
+
+  try {
+    const response = await fetch("/api/teacher/marksheet/marks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Marks save nahi hue.");
+
+    status.textContent = "Marks saved successfully.";
+  } catch (error) {
+    status.textContent = error.message;
   }
 }
 
