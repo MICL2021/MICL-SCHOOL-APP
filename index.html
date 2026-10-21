@@ -5803,10 +5803,22 @@ function showMarksheet(data) {
       <h3>Total: ${total} / ${maximum}</h3>
       <h3>Percentage: ${percentage.toFixed(2)}%</h3>
       <h3>Grade: ${grade} | Result: ${result}</h3>
-      <div style="display:flex;justify-content:space-between;margin-top:55px">
-        <span>Class Teacher Signature</span>
-        <span>Checked By Signature</span>
-      </div>
+      
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:55px;gap:20px">
+  <div style="text-align:center;width:40%">
+    <img id="printClassTeacherSign" style="max-width:130px;max-height:55px;display:none;margin:auto">
+    <div style="border-top:1px solid #333;padding-top:6px">Class Teacher Signature</div>
+  </div>
+  <div style="text-align:center;width:40%">
+    <img id="printCheckedBySign" style="max-width:130px;max-height:55px;display:none;margin:auto">
+    <div style="border-top:1px solid #333;padding-top:6px">Checked By Signature</div>
+  </div>
+</div>
+<div style="text-align:center;margin-top:20px">
+  <img id="printSchoolStamp" style="max-width:100px;max-height:100px;display:none;margin:auto">
+  <div>School Stamp</div>
+</div>
+
       <button class="btn" onclick="printMarksheet()">Print / Save PDF</button>
     </div>`;
   status.textContent = "";
