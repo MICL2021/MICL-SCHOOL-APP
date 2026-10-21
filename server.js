@@ -321,6 +321,82 @@ function seed(){
 }
 seed();
 
+app.get("/api/admin/id-cards", auth, admin, (req, res) => {
+  try {
+    const cards = db.prepare(`
+      SELECT c.id, c.user_id, c.user_role,
+             c.created_at, c.updated_at,
+             u.name, u.email, u.phone, u.photo,
+             u.admission_no, u.roll_no, u.class_name,
+             u.section, u.dob, u.username, u.qualification,
+             u.designation, u.school_name
+      FROM id_cards c
+      JOIN users u ON u.id = c.user_id
+      WHERE u.role = c.user_role
+      ORDER BY c.updated_at DESC
+    `).all();
+
+    res.json(cards);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Could not load ID cards" });
+  }
+});
+
+app.post("/api/admin/id-cards", auth, admin, (req, res) => {
+  const userId = Number(req.body.user_id);
+  const role = req.body.user_role;
+
+  if (!Number.isInteger(userId) || userId < 1 ||
+      !["student", "teacher"].includes(role)) {
+    return res.status(400).json({ error: "Invalid account or role" });
+  }
+
+  try {
+    const user = db.prepare(
+      "SELECT id FROM users WHERE id = ? AND role = ?"
+    ).get(userId, role);
+
+    if (!user) {
+      return res.status(404).json({ error: "Account not found" });
+    }
+
+    db.prepare(`
+      INSERT INTO id_cards (user_id, user_role)
+      VALUES (?, ?)
+      ON CONFLICT(user_id, user_role)
+      DO UPDATE SET updated_at = CURRENT_TIMESTAMP
+    `).run(userId, role);
+
+    const card = db.prepare(`
+      SELECT id, user_id, user_role, created_at, updated_at
+      FROM id_cards WHERE user_id = ? AND user_role = ?
+    `).get(userId, role);
+
+    res.json({ success: true, card });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Could not save ID card record" });
+  }
+});
+
+app.delete("/api/admin/id-cards/:id", auth, admin, (req, res) => {
+  try {
+    const result = db.prepare(
+      "DELETE FROM id_cards WHERE id = ?"
+    ).run(Number(req.params.id));
+
+    if (!result.changes) {
+      return res.status(404).json({ error: "ID card record not found" });
+    }
+
+    res.json({ success: true, message: "ID card record deleted" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Could not delete ID card record" });
+  }
+});
+
 app.post("/api/admin/subjects", auth, admin, (req, res) => {
   const name = String(req.body.name || "").trim();
 
