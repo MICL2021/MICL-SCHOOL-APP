@@ -1144,7 +1144,13 @@ box-sizing:border-box;
     onclick="generateIdCard()">
     👁️ View / Regenerate ID Card
   </button>
+<button class="btn" type="button" onclick="saveIdCardRecord()">
+  💾 Save ID Card
+</button>
 
+<button class="btn" type="button" onclick="editIdCardRecord()">
+  ✏️ Edit ID Card
+</button>
   <button class="btn" type="button"
     onclick="printIdCard()">
     🖨️ Print ID Card
@@ -5163,7 +5169,44 @@ async function deleteIdCardRecord() {
     alert(error.message || 'Server error.');
   }
 }
+async function saveIdCardRecord() {
+  const type = document.getElementById('idCardType').value;
+  const userId = document.getElementById('idCardUser').value;
+  const token = localStorage.getItem('micl_token');
 
+  if (!userId) {
+    alert('Pehle Student ya Teacher select karein.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/admin/id-cards', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        user_id: Number(userId),
+        user_role: type
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'ID Card save nahi hua.');
+    }
+
+    alert('ID Card record save ho gaya.');
+  } catch (error) {
+    alert(error.message || 'Server error.');
+  }
+}
+
+async function editIdCardRecord() {
+  await saveIdCardRecord();
+}
 </script>
 </body>
 </html>
