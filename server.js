@@ -552,8 +552,8 @@ app.patch("/api/admin/applications/:id/status", auth, admin, (req, res) => {
 });
 
 app.post("/api/login",(req,res)=>{
-const {email,password,role}=req.body;
-const login=String(email||"").trim();
+const {email,username,password,role}=req.body;
+const login=String(username || email || "").trim();
 const u=db.prepare("SELECT * FROM users WHERE email=? OR admission_no=? OR username=?").get(login,login,login);
 if (!u || !bcrypt.compareSync(password || "", u.password)) {
   return res.status(401).json({ error: "Invalid username/email or password" });
