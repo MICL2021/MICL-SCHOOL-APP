@@ -3471,6 +3471,33 @@ if (id === 'teacherDashboard') {
   loadTeacherMarksheetStudents();
 }
 
+if (id === 'marksheet') {
+  const user = JSON.parse(localStorage.getItem('micl_user') || '{}');
+
+  const adminControls = document.getElementById('adminMarksheetControls');
+  const studentControls = document.getElementById('studentMarksheetControls');
+
+  if (adminControls) {
+    adminControls.style.display =
+      user.role === 'admin' ? 'block' : 'none';
+  }
+
+  if (studentControls) {
+    studentControls.style.display =
+      user.role === 'student' ? 'block' : 'none';
+  }
+
+  if (user.role === 'admin') {
+    loadAdminMarksheetStudents();
+  }
+
+  const output = document.getElementById('marksheetOutput');
+  const status = document.getElementById('marksheetStatus');
+
+  if (output) output.innerHTML = '';
+  if (status) status.textContent = '';
+}
+
 if (id === 'teacherList') {
   loadTeachers();
 }
