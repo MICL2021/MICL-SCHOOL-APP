@@ -5757,6 +5757,22 @@ async function showMarksheet(data) {
   const student = data.student;
   const records = data.records || [];
 
+const token = localStorage.getItem("micl_token");
+
+let marksheetSettings = {};
+
+try {
+  const settingsResponse = await fetch("/api/admin/id-card-settings", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  if (settingsResponse.ok) {
+    marksheetSettings = await settingsResponse.json();
+  }
+} catch (error) {
+  console.log("Marksheet settings load nahi hui.");
+}
+
   if (!records.length) {
     output.innerHTML = "";
     status.textContent = "Is term ke marks abhi enter nahi hue.";
@@ -5821,6 +5837,30 @@ async function showMarksheet(data) {
 
       <button class="btn" onclick="printMarksheet()">Print / Save PDF</button>
     </div>`;
+  
+const stamp = marksheetSettings.school_stamp;
+const teacherSign = marksheetSettings.class_teacher_signature;
+const checkedSign = marksheetSettings.checked_by_signature;
+
+const stampImg = document.getElementById("printSchoolStamp");
+const teacherImg = document.getElementById("printClassTeacherSign");
+const checkedImg = document.getElementById("printCheckedBySign");
+
+if (stampImg && stamp) {
+  stampImg.src = stamp;
+  stampImg.style.display = "block";
+}
+
+if (teacherImg && teacherSign) {
+  teacherImg.src = teacherSign;
+  teacherImg.style.display = "block";
+}
+
+if (checkedImg && checkedSign) {
+  checkedImg.src = checkedSign;
+  checkedImg.style.display = "block";
+}
+
   status.textContent = "";
 }
 
