@@ -2210,7 +2210,6 @@ app.get("/api/marksheet", auth, (req, res) => {
       error: "Student account required."
     });
   }
-
   const records = db.prepare(`
     SELECT subject, marks, max_marks
     FROM results
