@@ -987,6 +987,46 @@ box-sizing:border-box;
 
 <section id="results" class="screen"><h2>Exams & Results</h2><div class="card"><b>Unit Test 1</b><p>Result available</p><button class="btn">View Result</button></div><div class="card"><b>Mid Term Exam</b><p>Result will appear here.</p></div><div class="card"><b>Final Examination</b><p>Academic session result.</p></div></section>
 
+<section id="marksheet" class="screen">
+  <h2>📄 Student Marksheet</h2>
+
+  <div class="card" id="adminMarksheetControls" style="display:none;">
+    <h3>Admin: Generate Marksheet</h3>
+
+    <label for="adminMarksheetStudent">Select Student</label>
+    <select id="adminMarksheetStudent">
+      <option value="">Loading students...</option>
+    </select>
+
+    <label for="adminMarksheetTerm">Select Term</label>
+    <select id="adminMarksheetTerm">
+      <option value="Term 1">Term 1</option>
+      <option value="Term 2">Term 2</option>
+      <option value="Annual">Annual</option>
+    </select>
+
+    <button class="btn" onclick="loadAdminMarksheet()">
+      Generate Marksheet
+    </button>
+  </div>
+
+  <div class="card" id="studentMarksheetControls" style="display:none;">
+    <label for="studentMarksheetTerm">Select Term</label>
+    <select id="studentMarksheetTerm">
+      <option value="Term 1">Term 1</option>
+      <option value="Term 2">Term 2</option>
+      <option value="Annual">Annual</option>
+    </select>
+
+    <button class="btn" onclick="loadStudentMarksheet()">
+      View My Marksheet
+    </button>
+  </div>
+
+  <div id="marksheetStatus" aria-live="polite"></div>
+  <div id="marksheetOutput"></div>
+</section>
+
 <section id="study" class="screen"><h2>Study Material</h2><div class="card">📘 English Notes <button class="btn" style="float:right">Open</button></div><div class="card">📗 Mathematics Notes <button class="btn" style="float:right">Open</button></div><div class="card">📙 Science Notes <button class="btn" style="float:right">Open</button></div></section>
 
 <section id="gallery" class="screen"><h2>School Gallery</h2><div class="gallery"><div class="photo">🏫</div><div class="photo">👨‍🎓</div><div class="photo">🏆</div><div class="photo">🎨</div><div class="photo">🌳</div><div class="photo">🎉</div></div></section>
@@ -5625,6 +5665,153 @@ async function saveTeacherMarks() {
   } catch (error) {
     status.textContent = error.message;
   }
+}
+
+async function loadAdminMarksheetStudents() {
+  const select = document.getElementById("adminMarksheetStudent");
+  const token = localStorage.getItem("micl_token");
+  const status = document.getElementById("marksheetStatus");
+
+  try {
+    const response = await fetch("/api/admin/marksheet/students", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const students = await response.json();
+    if (!response.ok) throw new Error(students.error || "Students load nahi hue.");
+
+    select.innerHTML = '<option value="">Select Student</option>';
+    students.forEach(student => {
+      const option = document.createElement("option");
+      option.value = student.id;
+      option.textContent = `${student.name} — ${student.admission_no || "No admission number"}`;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    if (status) status.textContent = error.message;
+  }
+}
+
+function showMarksheet(data) {
+  const output = document.getElementById("marksheetOutput");
+  const status = document.getElementById("marksheetStatus");
+  const student = data.student;
+  const records = data.records || [];
+
+  if (!records.length) {
+    output.innerHTML = "";
+    status.textContent = "Is term ke marks abhi enter nahi hue.";
+    return;
+  }
+
+  const total = records.reduce((sum, r) => sum + Number(r.marks || 0), 0);
+  const maximum = records.reduce((sum, r) => sum + Number(r.max_marks || 0), 0);
+  const percentage = maximum > 0 ? total / maximum * 100 : 0;
+  const grade = percentage >= 90 ? "A+" :
+    percentage >= 80 ? "A" :
+    percentage >= 70 ? "B" :
+    percentage >= 60 ? "C" :
+    percentage >= 50 ? "D" : "F";
+  const result = percentage >= 33 ? "PASS" : "NEEDS IMPROVEMENT";
+
+  output.innerHTML = `
+    <div class="card" id="printMarksheet">
+      <div style="text-align:center">
+        <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
+        <h3>STUDENT MARKSHEET — ${data.exam}</h3>
+      </div>
+      <p><b>Student:</b> ${escapeMarksheet(student.name)}</p>
+      <p><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</p>
+      <p><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}
+         <b>Section:</b> ${escapeMarksheet(student.section || "-")}</p>
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="border:1px solid;padding:8px">Subject</th>
+            <th style="border:1px solid;padding:8px">Obtained</th>
+            <th style="border:1px solid;padding:8px">Maximum</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${records.map(r => `
+            <tr>
+              <td style="border:1px solid;padding:8px">${escapeMarksheet(r.subject)}</td>
+              <td style="border:1px solid;padding:8px;text-align:center">${Number(r.marks)}</td>
+              <td style="border:1px solid;padding:8px;text-align:center">${Number(r.max_marks)}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+      <h3>Total: ${total} / ${maximum}</h3>
+      <h3>Percentage: ${percentage.toFixed(2)}%</h3>
+      <h3>Grade: ${grade} | Result: ${result}</h3>
+      <div style="display:flex;justify-content:space-between;margin-top:55px">
+        <span>Class Teacher Signature</span>
+        <span>Checked By Signature</span>
+      </div>
+      <button class="btn" onclick="printMarksheet()">Print / Save PDF</button>
+    </div>`;
+  status.textContent = "";
+}
+
+function escapeMarksheet(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+async function loadAdminMarksheet() {
+  const studentId = document.getElementById("adminMarksheetStudent").value;
+  const exam = document.getElementById("adminMarksheetTerm").value;
+  const status = document.getElementById("marksheetStatus");
+  if (!studentId) {
+    status.textContent = "Pehle student select karein.";
+    return;
+  }
+  await fetchMarksheet(`/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}`);
+}
+
+async function loadStudentMarksheet() {
+  const exam = document.getElementById("studentMarksheetTerm").value;
+  await fetchMarksheet(`/api/marksheet?exam=${encodeURIComponent(exam)}`);
+}
+
+async function fetchMarksheet(url) {
+  const status = document.getElementById("marksheetStatus");
+  const token = localStorage.getItem("micl_token");
+  status.textContent = "Loading marksheet...";
+
+  try {
+    const response = await fetch(url, {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Marksheet load nahi hui.");
+    showMarksheet(data);
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+function printMarksheet() {
+  const content = document.getElementById("printMarksheet");
+  if (!content) return;
+  const win = window.open("", "_blank");
+  if (!win) {
+    alert("Print window blocked. Browser mein pop-ups allow karein.");
+    return;
+  }
+  win.document.write(`
+    <!doctype html><html><head><title>MICL Marksheet</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:25px;color:#111}
+      table{border-collapse:collapse;width:100%}
+      th,td{border:1px solid #333;padding:8px}
+      button{display:none}
+      @media print{body{-webkit-print-color-adjust:exact}}
+    </style></head><body>${content.innerHTML}</body></html>`);
+  win.document.close();
+  win.focus();
+  win.print();
 }
 
 </script>
