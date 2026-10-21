@@ -1137,11 +1137,25 @@ box-sizing:border-box;
     <p>Selected account ka ID card yahan nazar aayega.</p>
   </div>
 
-  <div class="card">
-    <button class="btn" type="button" onclick="printIdCard()">
-      🖨️ Print ID Card
-    </button>
-  </div>
+<div class="card">
+  <h3>📋 ID Card Actions</h3>
+
+  <button class="btn" type="button"
+    onclick="generateIdCard()">
+    👁️ View / Regenerate ID Card
+  </button>
+
+  <button class="btn" type="button"
+    onclick="printIdCard()">
+    🖨️ Print ID Card
+  </button>
+
+  <button class="btn" type="button"
+    onclick="deleteIdCardRecord()">
+    🗑️ Delete ID Card Record
+  </button>
+</div>
+
 </section>
 
 <section id="profile" class="screen">
