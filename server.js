@@ -503,20 +503,35 @@ app.post(
         });
       }
 
-      const column = type === "stamp"
-        ? "school_stamp"
-        : "digital_signature";
+      
+const allowedColumns = {
+  stamp: "school_stamp",
+  signature: "digital_signature",
+  "class-teacher-signature": "class_teacher_signature",
+  "checked-by-signature": "checked_by_signature"
+};
 
-      db.prepare(`
-        INSERT INTO id_card_settings (id, school_stamp, digital_signature)
-        VALUES (1, ?, ?)
-        ON CONFLICT(id) DO UPDATE SET
-          ${column} = excluded.${column},
-          updated_at = CURRENT_TIMESTAMP
-      `).run(
-        type === "stamp" ? imageUrl : "",
-        type === "signature" ? imageUrl : ""
-      );
+const column = allowedColumns[type];
+
+if (!column) {
+  return res.status(400).json({ error: "Invalid image type" });
+}
+
+db.prepare(`
+  INSERT INTO id_card_settings (
+    id, school_stamp, digital_signature,
+    class_teacher_signature, checked_by_signature
+  )
+  VALUES (1, '', '', '', '')
+  ON CONFLICT(id) DO NOTHING
+`).run();
+
+db.prepare(`
+  UPDATE id_card_settings
+  SET ${column} = ?, updated_at = CURRENT_TIMESTAMP
+  WHERE id = 1
+`).run(imageUrl);
+
 
       res.json({
         success: true,
