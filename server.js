@@ -2072,5 +2072,154 @@ app.patch("/api/admin/fee-payment-requests/:id", auth, admin, (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+app.get("/api/teacher/marksheet/students", auth, teacherOnly, (req, res) => {
+  const teacher = db.prepare(
+    "SELECT class_name, section FROM users WHERE id=? AND role='teacher'"
+  ).get(req.user.id);
+
+  if (!teacher || !teacher.class_name || !teacher.section) {
+    return res.status(400).json({
+      error: "No class assigned to this teacher"
+    });
+  }
+
+  const students = db.prepare(`
+    SELECT id, name, admission_no, class_name, section, roll_no, exam_roll_no
+    FROM users
+    WHERE role='student' AND class_name=? AND section=?
+    ORDER BY name
+  `).all(teacher.class_name, teacher.section);
+
+  res.json(students);
+});
+
+app.post("/api/teacher/marksheet/marks", auth, teacherOnly, (req, res) => {
+  const { student_id, exam, subject, marks, max_marks } = req.body;
+  const studentId = Number(student_id);
+  const mark = Number(marks);
+  const max = Number(max_marks);
+  const term = String(exam || "");
+  const sub = String(subject || "").trim();
+
+  if (
+    !Number.isInteger(studentId) || studentId < 1 ||
+    !["Term 1", "Term 2", "Annual"].includes(term) ||
+    !sub || !Number.isFinite(mark) || !Number.isFinite(max) ||
+    max <= 0 || mark < 0 || mark > max
+  ) {
+    return res.status(400).json({
+      error: "Please enter valid subject and marks."
+    });
+  }
+
+  const teacher = db.prepare(
+    "SELECT class_name, section FROM users WHERE id=? AND role='teacher'"
+  ).get(req.user.id);
+
+  const student = db.prepare(
+    "SELECT id FROM users WHERE id=? AND role='student' AND class_name=? AND section=?"
+  ).get(studentId, teacher?.class_name, teacher?.section);
+
+  if (!student) {
+    return res.status(403).json({
+      error: "Student is not in your assigned class."
+    });
+  }
+
+  const existing = db.prepare(
+    "SELECT id FROM results WHERE student_id=? AND exam=? AND subject=?"
+  ).get(studentId, term, sub);
+
+  if (existing) {
+    db.prepare(
+      "UPDATE results SET marks=?, max_marks=? WHERE id=?"
+    ).run(mark, max, existing.id);
+  } else {
+    db.prepare(
+      "INSERT INTO results(student_id,exam,subject,marks,max_marks) VALUES(?,?,?,?,?)"
+    ).run(studentId, term, sub, mark, max);
+  }
+
+  res.json({ success: true, message: "Marks saved successfully." });
+});
+
+app.get("/api/admin/marksheet/students", auth, admin, (req, res) => {
+  const students = db.prepare(`
+    SELECT id, name, admission_no, class_name, section, roll_no, exam_roll_no
+    FROM users
+    WHERE role='student'
+    ORDER BY class_name, section, name
+  `).all();
+
+  res.json(students);
+});
+
+app.get("/api/admin/marksheet", auth, admin, (req, res) => {
+  const studentId = Number(req.query.student_id);
+  const exam = String(req.query.exam || "");
+
+  if (
+    !Number.isInteger(studentId) || studentId < 1 ||
+    !["Term 1", "Term 2", "Annual"].includes(exam)
+  ) {
+    return res.status(400).json({
+      error: "Select a student and term."
+    });
+  }
+
+  const student = db.prepare(`
+    SELECT id, name, admission_no, class_name, section, roll_no,
+           exam_roll_no, father_name, photo
+    FROM users
+    WHERE id=? AND role='student'
+  `).get(studentId);
+
+  if (!student) {
+    return res.status(404).json({ error: "Student not found." });
+  }
+
+  const records = db.prepare(`
+    SELECT subject, marks, max_marks
+    FROM results
+    WHERE student_id=? AND exam=?
+    ORDER BY subject
+  `).all(studentId, exam);
+
+  res.json({ student, exam, records });
+});
+
+app.get("/api/marksheet", auth, (req, res) => {
+  const exam = String(req.query.exam || "");
+
+  if (!["Term 1", "Term 2", "Annual"].includes(exam)) {
+    return res.status(400).json({
+      error: "Select a valid term."
+    });
+  }
+
+  const student = db.prepare(`
+    SELECT id, name, admission_no, class_name, section, roll_no,
+           exam_roll_no, father_name, photo
+    FROM users
+    WHERE id=? AND role='student'
+  `).get(req.user.id);
+
+  if (!student) {
+    return res.status(403).json({
+      error: "Student account required."
+    });
+  }
+
+  const records = db.prepare(`
+    SELECT subject, marks, max_marks
+    FROM results
+    WHERE student_id=? AND exam=?
+    ORDER BY subject
+  `).all(student.id, exam);
+
+  res.json({ student, exam, records });
+});
+
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"index.html")));
 app.listen(process.env.PORT||3000,()=>console.log("MICL running on http://localhost:"+ (process.env.PORT||3000)));
