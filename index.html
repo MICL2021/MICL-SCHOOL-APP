@@ -3480,7 +3480,14 @@ if (id === 'profile') {
 if (id === 'teacherDashboard') {
   loadTeacherMarksheetStudents();
 }
+const marksCard = document.getElementById('teacherMarksheetCard');
 
+if (marksCard) {
+  marksCard.style.display =
+    currentUser.role === 'teacher' && id === 'teacherDashboard'
+      ? 'block'
+      : 'none';
+}
 if (id === 'marksheet') {
   const user = JSON.parse(localStorage.getItem('micl_user') || '{}');
 
