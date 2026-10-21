@@ -5087,7 +5087,7 @@ async function loadIdCardUsers() {
   }
 }
 
-function generateIdCard() {
+async function generateIdCard() {
   const type = document.getElementById('idCardType').value;
   const id = document.getElementById('idCardUser').value;
   const users = window.miclIdCardUsers || [];
@@ -5122,7 +5122,18 @@ function generateIdCard() {
 
   const photo = user.photo || '';
   const preview = document.getElementById('idCardPreview');
+const token = localStorage.getItem('micl_token');
 
+const settingsResponse = await fetch('/api/admin/id-card-settings', {
+  headers: { Authorization: 'Bearer ' + token }
+});
+
+const idCardSettings = settingsResponse.ok
+  ? await settingsResponse.json()
+  : {};
+
+const schoolStamp = idCardSettings.school_stamp || '';
+const schoolSignature = idCardSettings.digital_signature || '';
   preview.innerHTML = `
     <div class="micl-id-card">
       <div class="micl-id-header">
