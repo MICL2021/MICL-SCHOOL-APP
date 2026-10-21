@@ -5150,6 +5150,16 @@ const schoolSignature = idCardSettings.digital_signature || '';
           `<div><b>${esc(label)}:</b> ${esc(value)}</div>`
         ).join('')}
       </div>
+          <div style="display:flex;justify-content:space-between;align-items:end;margin:18px 10px;gap:15px;">
+      <div style="text-align:center;width:45%;">
+        ${schoolStamp ? `<img src="${esc(schoolStamp)}" alt="School Stamp" style="max-width:100px;max-height:65px;object-fit:contain;">` : ''}
+        <div style="border-top:1px solid #333;margin-top:5px;font-size:10px;">School Stamp</div>
+      </div>
+      <div style="text-align:center;width:45%;">
+        ${schoolSignature ? `<img src="${esc(schoolSignature)}" alt="Digital Signature" style="max-width:120px;max-height:55px;object-fit:contain;">` : ''}
+        <div style="border-top:1px solid #333;margin-top:5px;font-size:10px;">Principal's Signature</div>
+      </div>
+    </div>
       <div style="background:#063b82;color:white;padding:10px;font-size:11px">
         MICL SCHOOL • OFFICIAL ID CARD
       </div>
