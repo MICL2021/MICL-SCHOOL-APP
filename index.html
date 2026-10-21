@@ -279,6 +279,91 @@ box-sizing:border-box;
   overflow-wrap: anywhere;
 }
 
+.micl-id-card {
+  width: 100%;
+  max-width: 340px;
+  margin: 18px auto;
+  overflow: hidden;
+  border: 2px solid #063b82;
+  border-radius: 18px;
+  background: #fff;
+  color: #17324d;
+  box-shadow: 0 8px 22px rgba(6, 59, 130, .16);
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.micl-id-header {
+  padding: 16px 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #063b82, #1769aa);
+}
+
+.micl-id-header img {
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+  padding: 4px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.micl-id-header h3 {
+  margin: 7px 0 4px;
+  color: #fff;
+}
+
+.micl-id-header p {
+  margin: 0;
+  font-size: 11px;
+}
+
+.micl-id-photo {
+  width: 105px;
+  height: 120px;
+  margin: 18px auto 10px;
+  object-fit: cover;
+  border: 3px solid #d7e7f6;
+  border-radius: 10px;
+}
+
+.micl-id-details {
+  padding: 8px 18px 20px;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.micl-id-details b {
+  color: #063b82;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #idCardPreview,
+  #idCardPreview * {
+    visibility: visible !important;
+  }
+
+  #idCardPreview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .micl-id-card {
+    box-shadow: none;
+    break-inside: avoid;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
 </style>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
@@ -1017,6 +1102,44 @@ box-sizing:border-box;
     </div>
   </div>
 </section>
+  
+<section id="idCardManagement" class="screen">
+  <h2>🎓 ID Card Management</h2>
+
+  <div class="card">
+    <p>Student ya Teacher select karke professional ID card banayein.</p>
+
+    <label for="idCardType">Card Type</label>
+    <select id="idCardType" onchange="loadIdCardUsers()">
+      <option value="student">Student ID Card</option>
+      <option value="teacher">Teacher ID Card</option>
+    </select>
+
+    <label for="idCardUser">Select Student / Teacher</label>
+    <select id="idCardUser">
+      <option value="">Pehle accounts load karein</option>
+    </select>
+
+    <button class="btn" type="button" onclick="loadIdCardUsers()">
+      Load Accounts
+    </button>
+
+    <button class="btn" type="button" onclick="generateIdCard()">
+      Generate ID Card
+    </button>
+  </div>
+
+  <div id="idCardPreview" class="micl-id-card-area">
+    <p>Selected account ka ID card yahan nazar aayega.</p>
+  </div>
+
+  <div class="card">
+    <button class="btn" type="button" onclick="printIdCard()">
+      🖨️ Print ID Card
+    </button>
+  </div>
+</section>
+
 <section id="profile" class="screen">
 
 <h2>👤 My Profile</h2>
