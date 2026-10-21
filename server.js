@@ -292,6 +292,20 @@ db.exec(`
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
 `);
+
+const idCardSettingsColumns = [
+  ["class_teacher_signature", "TEXT DEFAULT ''"],
+  ["checked_by_signature", "TEXT DEFAULT ''"]
+];
+
+for (const [column, definition] of idCardSettingsColumns) {
+  const columns = db.prepare("PRAGMA table_info(id_card_settings)").all();
+
+  if (!columns.some(item => item.name === column)) {
+    db.exec(`ALTER TABLE id_card_settings ADD COLUMN ${column} ${definition}`);
+  }
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS subjects (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
