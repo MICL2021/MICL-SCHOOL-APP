@@ -693,7 +693,7 @@ app.get("/api/teacher/results", auth, teacherOnly, (req, res) => {
 app.get("/api/admin/students",auth,admin,(req,res)=>{
   try{
     const students=db.prepare(`
-     SELECT id,name,email,admission_no,class_name,section,roll_no,exam_roll_no,father_name,mother_name,dob,address,caste,aadhaar_no,udise_pen,apaar_no,phone
+     SELECT id,name,email,admission_no,class_name,section,roll_no,exam_roll_no,father_name,mother_name,dob,address,caste,aadhaar_no,udise_pen,apaar_no,phone,photo
 FROM users
       WHERE role='student'
       ORDER BY name ASC
