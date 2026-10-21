@@ -445,21 +445,28 @@ app.delete("/api/admin/id-cards/:id", auth, admin, (req, res) => {
   }
 });
 
+
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
     const settings = db.prepare(
-      "SELECT school_stamp, digital_signature, updated_at FROM id_card_settings WHERE id = 1"
+      `SELECT school_stamp, digital_signature,
+              class_teacher_signature, checked_by_signature,
+              updated_at
+       FROM id_card_settings WHERE id = 1`
     ).get();
 
     res.json(settings || {
       school_stamp: "",
-      digital_signature: ""
+      digital_signature: "",
+      class_teacher_signature: "",
+      checked_by_signature: ""
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Could not load ID card settings" });
   }
 });
+
 
 app.post(
   "/api/admin/id-card-settings/:type",
