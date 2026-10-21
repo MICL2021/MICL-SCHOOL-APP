@@ -257,7 +257,14 @@ db.exec(`
     UNIQUE(user_id, user_role)
   );
 `);
-
+db.exec(`
+  CREATE TABLE IF NOT EXISTS id_card_settings (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    school_stamp TEXT DEFAULT '',
+    digital_signature TEXT DEFAULT '',
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+`);
 db.exec(`
   CREATE TABLE IF NOT EXISTS subjects (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
