@@ -5834,6 +5834,10 @@ try {
     <img id="printCheckedBySign" style="max-width:130px;max-height:55px;display:none;margin:auto">
     <div style="border-top:1px solid #333;padding-top:6px">Checked By Signature</div>
   </div>
+  <div style="text-align:center;width:40%">
+  <img id="printDigitalSign" style="max-width:130px;max-height:55px;display:none;margin:auto">
+<div style="border-top:1px solid #333;padding-top:6px">Digital Signature</div>
+</div>
 </div>
 <div style="text-align:center;margin-top:20px">
   <img id="printSchoolStamp" style="max-width:100px;max-height:100px;display:none;margin:auto">
@@ -5846,11 +5850,17 @@ try {
 const stamp = marksheetSettings.school_stamp;
 const teacherSign = marksheetSettings.class_teacher_signature;
 const checkedSign = marksheetSettings.checked_by_signature;
-
+const digitalSign = marksheetSettings.digital_signature;
 const stampImg = document.getElementById("printSchoolStamp");
 const teacherImg = document.getElementById("printClassTeacherSign");
 const checkedImg = document.getElementById("printCheckedBySign");
-
+const principalSign = marksheetSettings.principal_signature;
+const principalImg = document.getElementById("printPrincipalSign");
+  const digitalImg = document.getElementById("printDigitalSign");
+  if (digitalImg && digitalSign) {
+  digitalImg.src = digitalSign;
+  digitalImg.style.display = "block";
+}
 if (stampImg && stamp) {
   stampImg.src = stamp;
   stampImg.style.display = "block";
@@ -5865,7 +5875,10 @@ if (checkedImg && checkedSign) {
   checkedImg.src = checkedSign;
   checkedImg.style.display = "block";
 }
-
+if (principalImg && principalSign) {
+  principalImg.src = principalSign;
+  principalImg.style.display = "block";
+}
   status.textContent = "";
 }
 
