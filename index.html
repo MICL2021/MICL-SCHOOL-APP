@@ -1021,13 +1021,21 @@ body.teacher-view #teacherMarksheetCard {
     
 <div class="card" id="adminMarksheetTools">
   <h3>📝 Admin Marksheet Settings</h3>
+  
+<div class="card">
+  <h3>🏫 School Stamp</h3>
+  <label for="marksheetStamp">Upload School Stamp</label>
+  <input type="file" id="marksheetStamp" accept="image/png,image/jpeg,image/webp">
+  <button class="btn" type="button" onclick="uploadMarksheetAsset('stamp','marksheetStamp')">Upload &amp; Save Stamp</button>
 
-  <div class="card">
-    <h3>🏫 School Stamp</h3>
-    <label for="marksheetStamp">Upload School Stamp</label>
-    <input type="file" id="marksheetStamp" accept="image/png,image/jpeg,image/webp">
-    <button class="btn" type="button" onclick="uploadMarksheetAsset('stamp','marksheetStamp')">Upload &amp; Save Stamp</button>
-  </div>
+  <hr>
+  <h3>🔵 Create Digital School Stamp</h3>
+  <canvas id="marksheetStampCanvas" width="300" height="300" style="width:100%;max-width:300px;border:1px solid #ccc;border-radius:8px;touch-action:none;"></canvas>
+  <p>
+    <button class="btn" type="button" onclick="drawMarksheetStamp()">Create Digital Stamp</button>
+    <button class="btn" type="button" onclick="saveMarksheetStamp()">Save Digital Stamp</button>
+  </p>
+</div>
 
   <div class="card">
     <h3>✍️ Principal Signature</h3>
