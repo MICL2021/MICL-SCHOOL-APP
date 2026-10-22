@@ -295,7 +295,8 @@ db.exec(`
 
 const idCardSettingsColumns = [
   ["class_teacher_signature", "TEXT DEFAULT ''"],
-  ["checked_by_signature", "TEXT DEFAULT ''"]
+  ["checked_by_signature", "TEXT DEFAULT ''"],
+  ["principal_signature", "TEXT DEFAULT ''"]
 ];
 
 for (const [column, definition] of idCardSettingsColumns) {
