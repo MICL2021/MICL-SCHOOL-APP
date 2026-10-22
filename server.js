@@ -508,6 +508,7 @@ app.post(
 const allowedColumns = {
   stamp: "school_stamp",
   signature: "digital_signature",
+  "principal-signature": "principal_signature",
   "class-teacher-signature": "class_teacher_signature",
   "checked-by-signature": "checked_by_signature"
 };
