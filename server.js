@@ -477,7 +477,7 @@ app.post(
     try {
       const type = req.params.type;
 
-      if (!["stamp", "signature"].includes(type)) {
+      if (!["stamp", "signature", "class-teacher-signature", "checked-by-signature"].includes(type)) {
         return res.status(400).json({ error: "Invalid image type" });
       }
 
