@@ -1018,28 +1018,50 @@ body.teacher-view #teacherMarksheetCard {
     <button class="btn" onclick="loadAdminMarksheet()">
       Generate Marksheet
     </button>
-    <div class="card" id="adminMarksheetTools">
+    
+<div class="card" id="adminMarksheetTools">
   <h3>📝 Admin Marksheet Settings</h3>
 
-  <label for="marksheetStamp">Upload School Stamp</label>
-  <input type="file" id="marksheetStamp" accept="image/*">
+  <div class="card">
+    <h3>🏫 School Stamp</h3>
+    <label for="marksheetStamp">Upload School Stamp</label>
+    <input type="file" id="marksheetStamp" accept="image/png,image/jpeg,image/webp">
+    <button class="btn" type="button" onclick="uploadMarksheetAsset('stamp','marksheetStamp')">Upload &amp; Save Stamp</button>
+  </div>
 
-  <label for="classTeacherSign">Class Teacher Signature</label>
-  <input type="file" id="classTeacherSign" accept="image/*">
+  <div class="card">
+    <h3>✍️ Principal Signature</h3>
+    <label for="principalSign">Upload Principal Signature</label>
+    <input type="file" id="principalSign" accept="image/png,image/jpeg,image/webp">
+    <button class="btn" type="button" onclick="uploadMarksheetAsset('principal-signature','principalSign')">Upload &amp; Save Principal Signature</button>
+  </div>
 
-      <label for="principalSign">Principal Signature</label>
-<input type="file" id="principalSign" accept="image/*">
-<label for="checkedBySign">Checked By Signature</label>
-<input type="file" id="checkedBySign" accept="image/*">
+  <div class="card">
+    <h3>👨‍🏫 Class Teacher Signature</h3>
+    <label for="classTeacherSign">Upload Class Teacher Signature</label>
+    <input type="file" id="classTeacherSign" accept="image/png,image/jpeg,image/webp">
+    <button class="btn" type="button" onclick="uploadMarksheetAsset('class-teacher-signature','classTeacherSign')">Upload &amp; Save Teacher Signature</button>
+  </div>
+
+  <div class="card">
+    <h3>✅ Checked By Signature</h3>
+    <label for="checkedBySign">Upload Checked By Signature</label>
+    <input type="file" id="checkedBySign" accept="image/png,image/jpeg,image/webp">
+    <button class="btn" type="button" onclick="uploadMarksheetAsset('checked-by-signature','checkedBySign')">Upload &amp; Save Checked By Signature</button>
+  </div>
+
+  <div class="card">
+    <h3>💻 Digital Signature</h3>
+    <label for="digitalSignature">Upload Digital Signature</label>
+    <input type="file" id="digitalSignature" accept="image/png,image/jpeg,image/webp">
+    <button class="btn" type="button" onclick="uploadMarksheetAsset('signature','digitalSignature')">Upload &amp; Save Digital Signature</button>
+  </div>
+
   <p style="font-size:12px;color:#607080">
-    
-<label for="digitalSignature">Digital Signature</label>
-<input type="file" id="digitalSignature" accept="image/*">
-
-    Stamp aur signatures image files mein upload karein.
+    Admin hi school stamp aur signatures upload ya update kar sakta hai.
   </p>
 </div>
-  </div>
+
 
   <div class="card" id="studentMarksheetControls" style="display:none;">
     <label for="studentMarksheetTerm">Select Term</label>
