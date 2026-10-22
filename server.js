@@ -521,10 +521,12 @@ if (!column) {
 
 db.prepare(`
   INSERT INTO id_card_settings (
-    id, school_stamp, digital_signature,
-    class_teacher_signature, checked_by_signature
-  )
-  VALUES (1, '', '', '', '')
+  id, school_stamp, digital_signature,
+  class_teacher_signature, checked_by_signature,
+  principal_signature
+)
+VALUES (1, '', '', '', '', '')
+    
   ON CONFLICT(id) DO NOTHING
 `).run();
 
