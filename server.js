@@ -2230,6 +2230,61 @@ app.get("/api/admin/marksheet", auth, admin, (req, res) => {
   res.json({ student, exam, records });
 });
 
+app.post("/api/admin/marksheet/marks", auth, admin, (req, res) => {
+  const studentId = Number(req.body.student_id);
+  const exam = String(req.body.exam || "");
+  const subject = String(req.body.subject || "").trim();
+  const marks = Number(req.body.marks);
+  const maxMarks = Number(req.body.max_marks);
+
+  if (
+    !Number.isInteger(studentId) ||
+    studentId < 1 ||
+    !["Term 1", "Term 2", "Annual"].includes(exam) ||
+    !subject ||
+    req.body.marks === "" ||
+    req.body.max_marks === "" ||
+    !Number.isFinite(marks) ||
+    !Number.isFinite(maxMarks) ||
+    maxMarks <= 0 ||
+    marks < 0 ||
+    marks > maxMarks
+  ) {
+    return res.status(400).json({
+      error: "Student, term, subject aur valid marks enter karein."
+    });
+  }
+
+  const student = db.prepare(
+    "SELECT id FROM users WHERE id=? AND role='student'"
+  ).get(studentId);
+
+  if (!student) {
+    return res.status(404).json({
+      error: "Student nahi mila."
+    });
+  }
+
+  const existing = db.prepare(
+    "SELECT id FROM results WHERE student_id=? AND exam=? AND subject=?"
+  ).get(studentId, exam, subject);
+
+  if (existing) {
+    db.prepare(
+      "UPDATE results SET marks=?, max_marks=? WHERE id=?"
+    ).run(marks, maxMarks, existing.id);
+  } else {
+    db.prepare(
+      "INSERT INTO results (student_id, exam, subject, marks, max_marks) VALUES (?, ?, ?, ?, ?)"
+    ).run(studentId, exam, subject, marks, maxMarks);
+  }
+
+  res.json({
+    success: true,
+    message: "Marks save/update ho gaye."
+  });
+});
+
 app.get("/api/marksheet", auth, (req, res) => {
   const exam = String(req.query.exam || "");
 
