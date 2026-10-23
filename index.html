@@ -2535,6 +2535,59 @@ async function addClass() {
     }
 }
 
+async function promoteStudents() {
+  const fromClass = document.getElementById("promoteFromClass").value.trim();
+  const fromSection = document.getElementById("promoteFromSection").value.trim();
+  const toClass = document.getElementById("promoteToClass").value.trim();
+  const toSection = document.getElementById("promoteToSection").value.trim();
+  const message = document.getElementById("promotionMessage");
+  const token = localStorage.getItem("micl_token");
+
+  if (!fromClass || !fromSection || !toClass || !toSection) {
+    alert("Please fill all four fields.");
+    return;
+  }
+
+  if (!confirm(
+    `Promote ALL students from ${fromClass}-${fromSection} to ${toClass}-${toSection}?`
+  )) return;
+
+  message.textContent = "Promoting students...";
+
+  try {
+    const response = await fetch("/api/admin/classes/promote", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        fromClass,
+        fromSection,
+        toClass,
+        toSection
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      message.textContent = result.error || "Promotion failed.";
+      return;
+    }
+
+    message.textContent = result.message;
+    alert(result.message);
+
+    if (typeof loadClasses === "function") loadClasses();
+    if (typeof loadStudents === "function") loadStudents();
+
+  } catch (error) {
+    console.error("Promotion error:", error);
+    message.textContent = "Network error. Please try again.";
+  }
+}
+
 async function loadClasses() {
     const box = document.getElementById('classListBox');
     const token = localStorage.getItem('micl_token');
