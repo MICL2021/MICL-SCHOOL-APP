@@ -5690,40 +5690,59 @@ async function loadIdCardSettings() {
 
 setupSignatureCanvas();
 
+
 function drawSchoolStamp() {
   const canvas = document.getElementById("schoolStampCanvas");
-  if (!canvas) return;
+  if (!canvas) {
+    alert("Stamp canvas nahi mila.");
+    return;
+  }
 
   const ctx = canvas.getContext("2d");
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
+  const w = canvas.width;
+  const h = canvas.height;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = "#063b82";
-  ctx.fillStyle = "#063b82";
-  ctx.lineWidth = 5;
+  // Transparent background
+  ctx.clearRect(0, 0, w, h);
+
+  // Professional blue rectangular stamp
+  ctx.strokeStyle = "#172D78";
+  ctx.fillStyle = "#172D78";
+  ctx.lineWidth = 4;
 
   ctx.beginPath();
-  ctx.arc(cx, cy, 125, 0, Math.PI * 2);
+  ctx.roundRect(12, 12, w - 24, h - 24, 12);
   ctx.stroke();
 
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.arc(cx, cy, 105, 0, Math.PI * 2);
+  ctx.roundRect(20, 20, w - 40, h - 40, 8);
   ctx.stroke();
 
-ctx.textAlign = "center";
-ctx.fillStyle = "#063b82";
-ctx.font = "bold 15px Arial";
-ctx.fillText("PRINCIPAL", cx, cy - 45);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#172D78";
 
-ctx.font = "bold 12px Arial";
-ctx.fillText("MODERN INSTITUTE", cx, cy - 18);
-ctx.fillText("OF CREATIVE LEARNING", cx, cy + 2);
+  ctx.font = "bold 23px Arial";
+  ctx.fillText("PRINCIPAL", w / 2, h / 2 - 39);
 
-ctx.font = "bold 13px Arial";
-ctx.fillText("DHARANA, (MENDHAR)", cx, cy + 32);
+  ctx.font = "bold 15px Arial";
+  ctx.fillText("MODERN INSTITUTE OF", w / 2, h / 2 - 10);
+  ctx.fillText("CREATIVE LEARNING", w / 2, h / 2 + 12);
 
+  ctx.font = "bold 16px Arial";
+  ctx.fillText("DHARANA (MENDHAR)", w / 2, h / 2 + 39);
+
+  // Decorative lines
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.25, h / 2 - 57);
+  ctx.lineTo(w * 0.75, h / 2 - 57);
+  ctx.moveTo(w * 0.25, h / 2 + 57);
+  ctx.lineTo(w * 0.75, h / 2 + 57);
+  ctx.stroke();
 }
+
 
 async function saveDigitalStamp() {
   drawSchoolStamp();
