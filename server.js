@@ -1784,6 +1784,65 @@ app.put("/api/admin/classes/:id", auth, admin, (req, res) => {
     message: "Class updated successfully"
   });
 });
+
+app.post("/api/admin/classes/promote", auth, admin, (req, res) => {
+  try {
+    const { fromClass, fromSection, toClass, toSection } = req.body;
+
+    if (!fromClass || !fromSection || !toClass || !toSection) {
+      return res.status(400).json({
+        error: "Please select source and destination class/section"
+      });
+    }
+
+    if (
+      fromClass.trim() === toClass.trim() &&
+      fromSection.trim() === toSection.trim()
+    ) {
+      return res.status(400).json({
+        error: "Source and destination must be different"
+      });
+    }
+
+    const destination = db.prepare(`
+      SELECT id FROM classes
+      WHERE TRIM(name) = TRIM(?)
+      AND TRIM(section) = TRIM(?)
+    `).get(toClass, toSection);
+
+    if (!destination) {
+      return res.status(400).json({
+        error: "Please add the destination class/section first"
+      });
+    }
+
+    const result = db.prepare(`
+      UPDATE users
+      SET class_name = ?, section = ?
+      WHERE role = 'student'
+      AND TRIM(class_name) = TRIM(?)
+      AND TRIM(section) = TRIM(?)
+    `).run(
+      toClass.trim(),
+      toSection.trim(),
+      fromClass.trim(),
+      fromSection.trim()
+    );
+
+    return res.json({
+      success: true,
+      promoted: result.changes,
+      message: `${result.changes} student(s) promoted successfully`
+    });
+
+  } catch (error) {
+    console.error("Class promotion error:", error);
+    return res.status(500).json({
+      error: "Could not promote students"
+    });
+  }
+});
+
 app.post("/api/admin/attendance",auth,admin,(req,res)=>{const {student_id,date,status,subject}=req.body;const r=db.prepare("INSERT INTO attendance(student_id,date,status,subject) VALUES(?,?,?,?)").run(student_id,date,status,subject);res.json({id:r.lastInsertRowid})});
 app.post("/api/admin/results",auth,admin,(req,res)=>{const {student_id,exam,subject,marks,max_marks}=req.body;const r=db.prepare("INSERT INTO results(student_id,exam,subject,marks,max_marks) VALUES(?,?,?,?,?)").run(student_id,exam,subject,marks,max_marks);res.json({id:r.lastInsertRowid})});
 app.get("/api/admin/students", auth, admin, (req,res) => {
