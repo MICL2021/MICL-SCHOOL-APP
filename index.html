@@ -6243,6 +6243,69 @@ async function uploadMarksheetAsset(type, inputId) {
   }
 }
 
+async function loadAdminMarksClassOptions() {
+  const classSelect = document.getElementById("adminMarksClass");
+  const sectionSelect = document.getElementById("adminMarksSection");
+  const token = localStorage.getItem("micl_token");
+
+  classSelect.innerHTML = '<option value="">Loading classes...</option>';
+  sectionSelect.innerHTML = '<option value="">Select Section</option>';
+
+  try {
+    const response = await fetch("/api/admin/classes", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const classes = await response.json();
+
+    if (!response.ok) {
+      throw new Error(classes.error || "Classes load nahi hui.");
+    }
+
+    classSelect.innerHTML = '<option value="">Select Class</option>';
+
+    const classNames = [...new Set(
+      classes.map(c => String(c.name || "").trim()).filter(Boolean)
+    )];
+
+    classNames.forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      classSelect.appendChild(option);
+    });
+
+    classSelect.onchange = function () {
+      const selectedClass = classSelect.value;
+
+      sectionSelect.innerHTML = '<option value="">Select Section</option>';
+
+      classes
+        .filter(c => String(c.name || "").trim() === selectedClass)
+        .forEach(c => {
+          const section = String(c.section || "").trim();
+          if (!section) return;
+
+          if ([...sectionSelect.options].some(o => o.value === section)) return;
+
+          const option = document.createElement("option");
+          option.value = section;
+          option.textContent = section;
+          sectionSelect.appendChild(option);
+        });
+
+      document.getElementById("adminMarksStudent").innerHTML =
+        '<option value="">Select Student</option>';
+    };
+
+    sectionSelect.onchange = loadAdminMarksStudents;
+
+  } catch (error) {
+    classSelect.innerHTML = '<option value="">Could not load classes</option>';
+    document.getElementById("adminMarksEntryStatus").textContent = error.message;
+  }
+}
+
 async function loadAdminMarksStudents() {
   const className = document.getElementById("adminMarksClass").value;
   const section = document.getElementById("adminMarksSection").value;
