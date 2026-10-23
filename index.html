@@ -2688,6 +2688,19 @@ async function viewClass(name, section) {
       item.style.cssText =
         'padding:12px 0;border-bottom:1px solid #ddd;';
 
+const photo = document.createElement('img');
+photo.alt = 'Student Photo';
+photo.style.cssText =
+  'width:65px;height:65px;object-fit:cover;border-radius:50%;margin-right:12px;vertical-align:middle;';
+
+if (s.photo) {
+  photo.src = s.photo;
+} else {
+  photo.src = 'https://placehold.co/65x65?text=Student';
+}
+
+item.appendChild(photo);
+
       const info = document.createElement('div');
       info.textContent =
         s.name + ' | Admission No: ' + (s.admission_no || 'N/A');
