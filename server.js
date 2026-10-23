@@ -1701,11 +1701,30 @@ app.post("/api/admin/classes", auth, admin, (req, res) => {
 });
 
 app.get("/api/admin/classes", auth, admin, (req, res) => {
-  const classes = db.prepare(
-    "SELECT id, name, section FROM classes ORDER BY id DESC"
-  ).all();
+  try {
+    const classes = db.prepare(`
+      SELECT
+        c.id,
+        c.name,
+        c.section,
+        (
+          SELECT COUNT(*)
+          FROM users u
+          WHERE u.role = 'student'
+            AND TRIM(u.class_name) = TRIM(c.name)
+            AND TRIM(u.section) = TRIM(c.section)
+        ) AS student_count
+      FROM classes c
+      ORDER BY c.id DESC
+    `).all();
 
-  res.json(classes);
+    res.json(classes);
+  } catch (error) {
+    console.error("Load classes error:", error);
+    res.status(500).json({
+      error: "Could not load classes"
+    });
+  }
 });
 
 app.delete("/api/admin/classes/:id", auth, admin, (req, res) => {
