@@ -2415,6 +2415,86 @@ app.post("/api/admin/marksheet/marks", auth, admin, (req, res) => {
   });
 });
 
+app.post("/api/admin/formative-summative-marks", auth, admin, (req, res) => {
+  const {
+    student_id,
+    subject,
+    f1, f2, f3, f4, f5, f6,
+    co_curricular,
+    summative,
+    academic_year
+  } = req.body;
+
+  const studentId = Number(student_id);
+  const subjectName = String(subject || "").trim();
+  const year = String(academic_year || "2026-2027").trim();
+
+  const values = [
+    f1, f2, f3, f4, f5, f6,
+    co_curricular, summative
+  ].map(Number);
+
+  if (!Number.isInteger(studentId) || studentId < 1 || !subjectName || !year) {
+    return res.status(400).json({
+      error: "Student, subject aur academic year select karein."
+    });
+  }
+
+  if (values.some(v => !Number.isFinite(v) || v < 0)) {
+    return res.status(400).json({
+      error: "Marks valid aur zero ya us se zyada hone chahiye."
+    });
+  }
+
+  const [a, b, c, d, e, f, co, sum] = values;
+
+  if (
+    a > 5 || b > 5 || c > 5 || d > 5 || e > 5 || f > 5 ||
+    co > 20 || sum > 50
+  ) {
+    return res.status(400).json({
+      error: "F1-F6 har ek 5, Co-curricular 20 aur Summative 50 marks tak hain."
+    });
+  }
+
+  const student = db.prepare(
+    "SELECT id FROM users WHERE id = ? AND role = 'student'"
+  ).get(studentId);
+
+  if (!student) {
+    return res.status(404).json({ error: "Student nahi mila." });
+  }
+
+  try {
+    db.prepare(`
+      INSERT INTO formative_summative_marks
+      (student_id, subject, f1, f2, f3, f4, f5, f6,
+       co_curricular, summative, academic_year)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(student_id, subject, academic_year)
+      DO UPDATE SET
+        f1=excluded.f1,
+        f2=excluded.f2,
+        f3=excluded.f3,
+        f4=excluded.f4,
+        f5=excluded.f5,
+        f6=excluded.f6,
+        co_curricular=excluded.co_curricular,
+        summative=excluded.summative
+    `).run(studentId, subjectName, a, b, c, d, e, f, co, sum, year);
+
+    res.json({
+      success: true,
+      message: "Formative aur Summative marks save ho gaye.",
+      formative_total: a + b + c + d + e + f,
+      total: a + b + c + d + e + f + co + sum,
+      maximum: 100
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Marks save nahi ho sake." });
+  }
+});
+
 app.get("/api/marksheet", auth, (req, res) => {
   const exam = String(req.query.exam || "");
 
