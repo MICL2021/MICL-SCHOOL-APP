@@ -6835,6 +6835,45 @@ document.addEventListener("input", function(event) {
 
 updateFormativeTotal();
 
+async function loadFormativeStudents() {
+  const select = document.getElementById("fsStudent");
+  const status = document.getElementById("fsStatus");
+  const token = localStorage.getItem("micl_token");
+
+  select.innerHTML = '<option value="">Loading students...</option>';
+
+  try {
+    const response = await fetch("/api/admin/marksheet/students", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Students load nahi hue.");
+    }
+
+    select.innerHTML = '<option value="">Select Student</option>';
+
+    data.forEach(student => {
+      const option = document.createElement("option");
+      option.value = student.id;
+      option.textContent =
+        student.name + " - " + (student.admission_no || "No admission number");
+      select.appendChild(option);
+    });
+
+    if (data.length === 0) {
+      status.textContent = "Koi student nahi mila.";
+    }
+  } catch (error) {
+    select.innerHTML = '<option value="">Students load nahi hue</option>';
+    status.textContent = error.message;
+  }
+}
+
 </script>
 </body>
 </html>
