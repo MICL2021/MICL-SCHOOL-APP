@@ -7,6 +7,34 @@
 <title>MICL School App</title>
 <link rel="manifest" href="manifest.json">
 <style>
+ 
+/* MICL Professional Common Buttons */
+button {
+  border: none;
+  border-radius: 9px;
+  padding: 10px 16px;
+  background: #063b82;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:focus-visible {
+  outline: 2px solid #3987e8;
+  outline-offset: 2px;
+}
+ 
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef5fb;color:#123}
 .app{max-width:480px;margin:auto;min-height:100vh;background:#fff;box-shadow:0 0 30px #0002;position:relative;padding-bottom:74px}
 header{background:linear-gradient(135deg,#063b82,#1264bd);color:#fff;padding:18px 18px 14px;position:sticky;top:0;z-index:5}
