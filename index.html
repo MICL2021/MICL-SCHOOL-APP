@@ -2589,63 +2589,107 @@ async function promoteStudents() {
 }
 
 async function loadClasses() {
-    const box = document.getElementById('classListBox');
-    const token = localStorage.getItem('micl_token');
+  const box = document.getElementById('classListBox');
+  const token = localStorage.getItem('micl_token');
 
-    box.innerHTML = 'Loading...';
+  box.innerHTML = 'Loading...';
 
-    try {
-        const response = await fetch('/api/admin/classes', {
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
-        });
+  try {
+    const response = await fetch('/api/admin/classes', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
 
-        const classes = await response.json();
+    const classes = await response.json();
 
-        if (!response.ok) {
-            box.innerHTML = 'Could not load classes';
-            return;
-        }
+    if (!response.ok) {
+      box.innerHTML = 'Could not load classes';
+      return;
+    }
 
-        if (!classes.length) {
-            box.innerHTML = 'No classes added yet.';
-            return;
-        }
+    if (!classes.length) {
+      box.innerHTML = 'No classes added yet.';
+      return;
+    }
 
-       box.innerHTML = classes.map(c => `
-    <div style="padding:10px; border-bottom:1px solid #ddd;">
+    box.innerHTML = classes.map(c => `
+      <div style="padding:12px;border-bottom:1px solid #ddd;">
         <b>${c.name}</b><br>
-        Section: ${c.section}
+        Section: ${c.section}<br>
+        Total Students: <b>${Number(c.student_count) || 0}</b>
         <br><br>
 
-        <button onclick='viewClass(${JSON.stringify(c.name)}, ${JSON.stringify(c.section)})'
-                style="margin-right:6px; padding:6px 12px;">
-            View
+        <button onclick='viewClass(${JSON.stringify(c.name)}, ${JSON.stringify(c.section)})'>
+          View Students
         </button>
 
-        <button onclick='editClass(${c.id}, ${JSON.stringify(c.name)}, ${JSON.stringify(c.section)})'
-                style="margin-right:6px; background:#063b82; color:white; border:none; padding:6px 12px; border-radius:5px;">
-            Edit
+        <button onclick='editClass(${c.id}, ${JSON.stringify(c.name)}, ${JSON.stringify(c.section)})'>
+          Edit
         </button>
 
-        <button onclick="deleteClass(${c.id})"
-                style="background:#dc3545; color:white; border:none; padding:6px 12px; border-radius:5px;">
-            Delete
+        <button onclick='deleteClass(${c.id})'>
+          Delete
         </button>
-    </div>
-`).join(''); 
+      </div>
+    `).join('');
 
-    } catch (e) {
-        box.innerHTML = 'Server connection error';
+  } catch (error) {
+    console.error('Load classes error:', error);
+    box.innerHTML = 'Server connection error';
+  }
+}
+
+  
+async function viewClass(name, section) {
+  const token = localStorage.getItem('micl_token');
+
+  try {
+    const response = await fetch('/api/admin/students', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const students = await response.json();
+
+    if (!response.ok) {
+      alert('Could not load students');
+      return;
     }
-}
-  function viewClass(name, section) {
-    alert(
-        "Class Name: " + name +
-        "\nSection: " + section
+
+    const classStudents = students.filter(s =>
+      (s.class_name || '').trim() === name.trim() &&
+      (s.section || '').trim() === section.trim()
     );
+
+    if (!classStudents.length) {
+      alert(
+        'Class: ' + name +
+        '\nSection: ' + section +
+        '\nTotal Students: 0\nNo students found.'
+      );
+      return;
+    }
+
+    const list = classStudents.map((s, i) =>
+      (i + 1) + '. ' + s.name +
+      ' | Admission No: ' + (s.admission_no || 'N/A')
+    ).join('\n');
+
+    alert(
+      'Class: ' + name +
+      '\nSection: ' + section +
+      '\nTotal Students: ' + classStudents.length +
+      '\n\n' + list
+    );
+
+  } catch (error) {
+    console.error('View class error:', error);
+    alert('Server connection error');
+  }
 }
+
 
 async function editClass(id, oldName, oldSection) {
     const name = prompt("Enter class name:", oldName);
