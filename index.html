@@ -2643,9 +2643,15 @@ async function loadClasses() {
   }
 }
 
-  
 async function viewClass(name, section) {
   const token = localStorage.getItem('micl_token');
+  const panel = document.getElementById('classStudentsViewBox');
+  const title = document.getElementById('classStudentsTitle');
+  const list = document.getElementById('classStudentsList');
+
+  panel.style.display = 'block';
+  title.textContent = name + ' - Section ' + section;
+  list.textContent = 'Loading students...';
 
   try {
     const response = await fetch('/api/admin/students', {
@@ -2657,42 +2663,62 @@ async function viewClass(name, section) {
     const students = await response.json();
 
     if (!response.ok) {
-      alert('Could not load students');
+      list.textContent = 'Could not load students.';
       return;
     }
 
-    const classStudents = students.filter(s =>
+    const matched = students.filter(s =>
       (s.class_name || '').trim() === name.trim() &&
       (s.section || '').trim() === section.trim()
     );
 
-    if (!classStudents.length) {
-      alert(
-        'Class: ' + name +
-        '\nSection: ' + section +
-        '\nTotal Students: 0\nNo students found.'
-      );
+    title.textContent =
+      name + ' - Section ' + section +
+      ' | Total Students: ' + matched.length;
+
+    if (!matched.length) {
+      list.textContent = 'No students found in this class/section.';
       return;
     }
 
-    const list = classStudents.map((s, i) =>
-      (i + 1) + '. ' + s.name +
-      ' | Admission No: ' + (s.admission_no || 'N/A')
-    ).join('\n');
+    list.innerHTML = '';
 
-    alert(
-      'Class: ' + name +
-      '\nSection: ' + section +
-      '\nTotal Students: ' + classStudents.length +
-      '\n\n' + list
-    );
+    matched.forEach(s => {
+      const item = document.createElement('div');
+      item.style.cssText =
+        'padding:12px 0;border-bottom:1px solid #ddd;';
+
+      const info = document.createElement('div');
+      info.textContent =
+        s.name + ' | Admission No: ' + (s.admission_no || 'N/A');
+
+      item.appendChild(info);
+
+      const viewBtn = document.createElement('button');
+      viewBtn.textContent = 'View';
+      viewBtn.onclick = () => viewStudent(s.id);
+      item.appendChild(viewBtn);
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => editStudent(s.id);
+      item.appendChild(editBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.onclick = () => deleteStudent(s.id);
+      item.appendChild(deleteBtn);
+
+      list.appendChild(item);
+    });
+
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   } catch (error) {
     console.error('View class error:', error);
-    alert('Server connection error');
+    list.textContent = 'Server connection error.';
   }
 }
-
 
 async function editClass(id, oldName, oldSection) {
     const name = prompt("Enter class name:", oldName);
