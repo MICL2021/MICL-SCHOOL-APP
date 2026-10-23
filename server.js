@@ -1707,26 +1707,58 @@ app.get("/api/admin/classes", auth, admin, (req, res) => {
 
   res.json(classes);
 });
+
 app.delete("/api/admin/classes/:id", auth, admin, (req, res) => {
-  const id = Number(req.params.id);
+  try {
+    const id = Number(req.params.id);
 
-  if (!id) {
-    return res.status(400).json({ error: "Invalid class ID" });
+    if (!id) {
+      return res.status(400).json({
+        error: "Invalid class ID"
+      });
+    }
+
+    const cls = db.prepare(
+      "SELECT name, section FROM classes WHERE id = ?"
+    ).get(id);
+
+    if (!cls) {
+      return res.status(404).json({
+        error: "Class not found"
+      });
+    }
+
+    const students = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM users
+      WHERE role = 'student'
+        AND TRIM(class_name) = TRIM(?)
+        AND TRIM(section) = TRIM(?)
+    `).get(cls.name, cls.section);
+
+    if (students.total > 0) {
+      return res.status(409).json({
+        error: `This class has ${students.total} student(s). Move students to another class/section before deleting. Student records are safe.`
+      });
+    }
+
+    db.prepare(
+      "DELETE FROM classes WHERE id = ?"
+    ).run(id);
+
+    return res.json({
+      success: true,
+      message: "Class deleted successfully"
+    });
+
+  } catch (error) {
+    console.error("Delete class error:", error);
+    return res.status(500).json({
+      error: "Could not delete class"
+    });
   }
-
-  const result = db.prepare(
-    "DELETE FROM classes WHERE id=?"
-  ).run(id);
-
-  if (result.changes === 0) {
-    return res.status(404).json({ error: "Class not found" });
-  }
-
-  res.json({
-    success: true,
-    message: "Class deleted successfully"
-  });
 });
+
 app.put("/api/admin/classes/:id", auth, admin, (req, res) => {
   const id = Number(req.params.id);
   const { name, section } = req.body;
