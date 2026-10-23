@@ -642,7 +642,6 @@ body.teacher-view #teacherMarksheetCard {
   </div>
 </section>
 
-
 <section id="classManagement" class="screen">
     <h2>Class Management</h2>
 
@@ -655,6 +654,29 @@ body.teacher-view #teacherMarksheetCard {
     <div id="classListBox" class="card">
         No classes added yet.
     </div>
+  
+<hr>
+<h3>🎓 Promote Students</h3>
+<p>Select the current class and the new class. All students in the selected source class and section will be promoted together.</p>
+
+<label for="promoteFromClass">Current Class</label>
+<input id="promoteFromClass" placeholder="e.g. 3rd">
+
+<label for="promoteFromSection">Current Section</label>
+<input id="promoteFromSection" placeholder="e.g. A">
+
+<label for="promoteToClass">Promote To Class</label>
+<input id="promoteToClass" placeholder="e.g. 4th">
+
+<label for="promoteToSection">Destination Section</label>
+<input id="promoteToSection" placeholder="e.g. A">
+
+<button class="btn" onclick="promoteStudents()">
+  Promote All Students
+</button>
+
+<div id="promotionMessage" class="card"></div>
+
 </section>
 <section id="addStudent" class="screen">
 <h2>Add Student</h2>
