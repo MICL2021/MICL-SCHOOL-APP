@@ -2644,93 +2644,122 @@ async function loadClasses() {
 }
 
 async function viewClass(name, section) {
-  const token = localStorage.getItem('micl_token');
-  const panel = document.getElementById('classStudentsViewBox');
-  const title = document.getElementById('classStudentsTitle');
-  const list = document.getElementById('classStudentsList');
+    const token = localStorage.getItem('micl_token');
+    const panel = document.getElementById('classStudentsViewBox');
+    const title = document.getElementById('classStudentsTitle');
+    const list = document.getElementById('classStudentsList');
 
-  panel.style.display = 'block';
-  title.textContent = name + ' - Section ' + section;
-  list.textContent = 'Loading students...';
+    panel.style.display = 'block';
+    title.textContent = name + ' - Section ' + section;
+    list.innerHTML = '<p>Loading students...</p>';
 
-  try {
-    const response = await fetch('/api/admin/students', {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    });
+    try {
+        const response = await fetch('/api/admin/students', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
 
-    const students = await response.json();
+        const students = await response.json();
 
-    if (!response.ok) {
-      list.textContent = 'Could not load students.';
-      return;
+        if (!response.ok) {
+            list.textContent = 'Could not load students.';
+            return;
+        }
+
+        const matched = students.filter(s =>
+            (s.class_name || '').trim() === name.trim() &&
+            (s.section || '').trim() === section.trim()
+        );
+
+        title.textContent =
+            name + ' - Section ' + section +
+            ' | Total Students: ' + matched.length;
+
+        list.innerHTML = '';
+
+        if (!matched.length) {
+            list.innerHTML =
+                '<p style="padding:15px;color:#64748b;">No students found in this class/section.</p>';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+        }
+
+        matched.forEach(s => {
+            const card = document.createElement('div');
+
+            card.style.cssText =
+                'display:flex;align-items:center;gap:14px;' +
+                'padding:16px;margin:12px 0;background:#fff;' +
+                'border:1px solid #dbe5f0;border-radius:14px;' +
+                'box-shadow:0 3px 10px rgba(0,40,90,0.08);' +
+                'flex-wrap:wrap;';
+
+            const photo = document.createElement('img');
+            photo.alt = 'Student Photo';
+            photo.src = s.photo ||
+                'https://placehold.co/80x80?text=Student';
+
+            photo.style.cssText =
+                'width:75px;height:75px;object-fit:cover;' +
+                'border-radius:50%;border:3px solid #dbeafe;';
+
+            photo.onerror = function () {
+                this.onerror = null;
+                this.src = 'https://placehold.co/80x80?text=Student';
+            };
+
+            const details = document.createElement('div');
+            details.style.cssText = 'flex:1;min-width:150px;';
+
+            const studentName = document.createElement('div');
+            studentName.textContent = s.name || 'Student';
+            studentName.style.cssText =
+                'font-size:17px;font-weight:700;color:#123b70;';
+
+            const admission = document.createElement('div');
+            admission.textContent =
+                'Admission No: ' + (s.admission_no || 'N/A');
+            admission.style.cssText =
+                'font-size:13px;color:#64748b;margin-top:5px;';
+
+            const classInfo = document.createElement('div');
+            classInfo.textContent =
+                'Class: ' + name + ' | Section: ' + section;
+            classInfo.style.cssText =
+                'font-size:13px;color:#475569;margin-top:4px;';
+
+            details.append(studentName, admission, classInfo);
+
+            const actions = document.createElement('div');
+            actions.style.cssText =
+                'display:flex;gap:6px;flex-wrap:wrap;width:100%;';
+
+            [
+                ['View', '#0b4788', () => viewStudent(s.id)],
+                ['Edit', '#16804a', () => editStudent(s.id)],
+                ['Delete', '#c93636', () => deleteStudent(s.id)]
+            ].forEach(([label, color, action]) => {
+                const button = document.createElement('button');
+                button.textContent = label;
+                button.style.cssText =
+                    'background:' + color + ';color:white;border:0;' +
+                    'border-radius:7px;padding:9px 15px;' +
+                    'font-weight:600;cursor:pointer;';
+                button.onclick = action;
+                actions.appendChild(button);
+            });
+
+            card.append(photo, details, actions);
+            list.appendChild(card);
+        });
+
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (error) {
+        console.error('View class error:', error);
+        list.textContent = 'Server connection error.';
     }
-
-    const matched = students.filter(s =>
-      (s.class_name || '').trim() === name.trim() &&
-      (s.section || '').trim() === section.trim()
-    );
-
-    title.textContent =
-      name + ' - Section ' + section +
-      ' | Total Students: ' + matched.length;
-
-    if (!matched.length) {
-      list.textContent = 'No students found in this class/section.';
-      return;
-    }
-
-    list.innerHTML = '';
-
-    matched.forEach(s => {
-      const item = document.createElement('div');
-      item.style.cssText =
-        'padding:12px 0;border-bottom:1px solid #ddd;';
-
-const photo = document.createElement('img');
-photo.alt = 'Student Photo';
-photo.style.cssText =
-  'width:65px;height:65px;object-fit:cover;border-radius:50%;margin-right:12px;vertical-align:middle;';
-
-if (s.photo) {
-  photo.src = s.photo;
-} else {
-  photo.src = 'https://placehold.co/65x65?text=Student';
-}
-
-item.appendChild(photo);
-
-      const info = document.createElement('div');
-      info.textContent =
-        s.name + ' | Admission No: ' + (s.admission_no || 'N/A');
-
-      item.appendChild(info);
-
-      const viewBtn = document.createElement('button');
-      viewBtn.textContent = 'View';
-      viewBtn.onclick = () => viewStudent(s.id);
-      item.appendChild(viewBtn);
-
-      const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edit';
-      editBtn.onclick = () => editStudent(s.id);
-      item.appendChild(editBtn);
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.onclick = () => deleteStudent(s.id);
-      item.appendChild(deleteBtn);
-
-      list.appendChild(item);
-    });
-
-    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  } catch (error) {
-    console.error('View class error:', error);
-    list.textContent = 'Server connection error.';
-  }
 }
 
 async function editClass(id, oldName, oldSection) {
