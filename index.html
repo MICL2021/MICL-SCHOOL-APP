@@ -1088,6 +1088,67 @@ body.teacher-view #teacherMarksheetCard {
 
 <section id="results" class="screen"><h2>Exams & Results</h2><div class="card"><b>Unit Test 1</b><p>Result available</p><button class="btn">View Result</button></div><div class="card"><b>Mid Term Exam</b><p>Result will appear here.</p></div><div class="card"><b>Final Examination</b><p>Academic session result.</p></div></section>
 
+<div class="card">
+  <b>Formative &amp; Summative Result</b>
+  <p>F1–F6: 30 marks | Co-curricular: 20 marks | Summative: 50 marks</p>
+  <button class="btn" onclick="showScreen('formativeResults')">
+    Open Formative &amp; Summative
+  </button>
+</div>
+
+<section id="formativeResults" class="screen">
+  <h2>Formative &amp; Summative Result</h2>
+
+  <div class="card">
+    <h3>Student Result Entry</h3>
+
+    <label for="fsStudent">Select Student</label>
+    <select id="fsStudent">
+      <option value="">Select Student</option>
+    </select>
+
+    <label for="fsSubject">Subject</label>
+    <input id="fsSubject" type="text" placeholder="e.g. English">
+
+    <label for="fsYear">Academic Year</label>
+    <input id="fsYear" type="text" value="2026-2027">
+
+    <h3>Formative Assessment (30 Marks)</h3>
+
+    <label for="fsF1">F1 (5 marks)</label>
+    <input id="fsF1" type="number" min="0" max="5" value="0">
+
+    <label for="fsF2">F2 (5 marks)</label>
+    <input id="fsF2" type="number" min="0" max="5" value="0">
+
+    <label for="fsF3">F3 (5 marks)</label>
+    <input id="fsF3" type="number" min="0" max="5" value="0">
+
+    <label for="fsF4">F4 (5 marks)</label>
+    <input id="fsF4" type="number" min="0" max="5" value="0">
+
+    <label for="fsF5">F5 (5 marks)</label>
+    <input id="fsF5" type="number" min="0" max="5" value="0">
+
+    <label for="fsF6">F6 (5 marks)</label>
+    <input id="fsF6" type="number" min="0" max="5" value="0">
+
+    <h3>Co-curricular (20 Marks)</h3>
+    <input id="fsCo" type="number" min="0" max="20" value="0">
+
+    <h3>Summative Assessment (50 Marks)</h3>
+    <input id="fsSummative" type="number" min="0" max="50" value="0">
+
+    <p id="fsTotal">Total: 0 / 100</p>
+
+    <button class="btn" type="button" onclick="saveFormativeSummativeMarks()">
+      Save Marks
+    </button>
+
+    <p id="fsStatus"></p>
+  </div>
+</section>
+
 <section id="marksheet" class="screen">
   <h2>📄 Student Marksheet</h2>
 
@@ -6685,6 +6746,94 @@ async function saveAdminStudentMarks() {
     status.textContent = error.message;
   }
 }
+
+function updateFormativeTotal() {
+  const ids = ["fsF1", "fsF2", "fsF3", "fsF4", "fsF5", "fsF6", "fsCo", "fsSummative"];
+  const limits = [5, 5, 5, 5, 5, 5, 20, 50];
+
+  let total = 0;
+
+  ids.forEach((id, index) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    let value = Number(input.value) || 0;
+    value = Math.max(0, Math.min(value, limits[index]));
+    total += value;
+  });
+
+  const totalElement = document.getElementById("fsTotal");
+  if (totalElement) {
+    totalElement.textContent = `Total: ${total} / 100`;
+  }
+}
+
+async function saveFormativeSummativeMarks() {
+  const status = document.getElementById("fsStatus");
+  const token = localStorage.getItem("micl_token");
+
+  const studentId = document.getElementById("fsStudent").value;
+  const subject = document.getElementById("fsSubject").value.trim();
+  const academicYear = document.getElementById("fsYear").value.trim();
+
+  const ids = ["fsF1", "fsF2", "fsF3", "fsF4", "fsF5", "fsF6", "fsCo", "fsSummative"];
+  const limits = [5, 5, 5, 5, 5, 5, 20, 50];
+  const values = ids.map(id => Number(document.getElementById(id).value));
+
+  if (!studentId || !subject || !academicYear) {
+    status.textContent = "Student, subject aur academic year select karein.";
+    return;
+  }
+
+  if (values.some((v, i) => !Number.isFinite(v) || v < 0 || v > limits[i])) {
+    status.textContent = "Marks ki maximum limit check karein.";
+    return;
+  }
+
+  try {
+    status.textContent = "Marks save ho rahe hain...";
+
+    const response = await fetch("/api/admin/formative-summative-marks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        student_id: Number(studentId),
+        subject,
+        f1: values[0],
+        f2: values[1],
+        f3: values[2],
+        f4: values[3],
+        f5: values[4],
+        f6: values[5],
+        co_curricular: values[6],
+        summative: values[7],
+        academic_year: academicYear
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Marks save nahi hue.");
+
+    status.textContent = `Marks save ho gaye. Total: ${data.total} / 100`;
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+document.addEventListener("input", function(event) {
+  if (event.target && event.target.id.startsWith("fsF")) {
+    updateFormativeTotal();
+  }
+
+  if (event.target && ["fsCo", "fsSummative"].includes(event.target.id)) {
+    updateFormativeTotal();
+  }
+});
+
+updateFormativeTotal();
 
 </script>
 </body>
