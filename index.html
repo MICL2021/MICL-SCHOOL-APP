@@ -1023,6 +1023,47 @@ body.teacher-view #teacherMarksheetCard {
   <h3>📝 Admin Marksheet Settings</h3>
   
 <div class="card">
+  <h3>📚 Admin Marks Entry / Update</h3>
+
+  <label for="adminMarksClass">Select Class</label>
+  <select id="adminMarksClass" onchange="loadAdminMarksStudents()">
+    <option value="">Select Class</option>
+  </select>
+
+  <label for="adminMarksSection">Select Section</label>
+  <select id="adminMarksSection" onchange="loadAdminMarksStudents()">
+    <option value="">Select Section</option>
+  </select>
+
+  <label for="adminMarksStudent">Select Student</label>
+  <select id="adminMarksStudent">
+    <option value="">Select Student</option>
+  </select>
+
+  <label for="adminMarksTerm">Select Term</label>
+  <select id="adminMarksTerm">
+    <option value="Term 1">Term 1</option>
+    <option value="Term 2">Term 2</option>
+    <option value="Annual">Annual</option>
+  </select>
+
+  <label for="adminMarksSubject">Subject</label>
+  <input id="adminMarksSubject" type="text" placeholder="e.g. English">
+
+  <label for="adminMarksObtained">Obtained Marks</label>
+  <input id="adminMarksObtained" type="number" min="0" placeholder="Obtained marks">
+
+  <label for="adminMarksMaximum">Maximum Marks</label>
+  <input id="adminMarksMaximum" type="number" min="1" placeholder="Maximum marks">
+
+  <button class="btn" type="button" onclick="saveAdminStudentMarks()">
+    Save / Update Marks
+  </button>
+
+  <p id="adminMarksEntryStatus"></p>
+</div>
+
+<div class="card">
   <h3>🏫 School Stamp</h3>
   <label for="marksheetStamp">Upload School Stamp</label>
   <input type="file" id="marksheetStamp" accept="image/png,image/jpeg,image/webp">
