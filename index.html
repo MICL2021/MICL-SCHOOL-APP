@@ -176,19 +176,24 @@ box-sizing:border-box;
 #sideMenu.open{
   left:0;
 }
-#sideMenu button{
-  display:block;
-  width:100%;
-  padding:14px;
-  margin-bottom:10px;
-  border:0;
-  border-radius:10px;
-  background:#eef5fb;
-  color:#063b82;
-  font-size:15px;
-  font-weight:700;
-  text-align:left;
-  cursor:pointer;
+#sideMenu button {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid #dbe5f0;
+    border-radius: 12px;
+    background: #f4f8ff;
+    color: #063b82;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#sideMenu button:hover {
+    background: #e2edff;
 }
 #menuOverlay{
   display:none;
