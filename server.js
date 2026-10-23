@@ -140,6 +140,26 @@ CREATE TABLE IF NOT EXISTS homework(
   created_by INTEGER
 );
 `);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS formative_summative_marks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    subject TEXT NOT NULL,
+    f1 REAL NOT NULL DEFAULT 0,
+    f2 REAL NOT NULL DEFAULT 0,
+    f3 REAL NOT NULL DEFAULT 0,
+    f4 REAL NOT NULL DEFAULT 0,
+    f5 REAL NOT NULL DEFAULT 0,
+    f6 REAL NOT NULL DEFAULT 0,
+    co_curricular REAL NOT NULL DEFAULT 0,
+    summative REAL NOT NULL DEFAULT 0,
+    academic_year TEXT NOT NULL,
+    UNIQUE(student_id, subject, academic_year),
+    FOREIGN KEY(student_id) REFERENCES users(id)
+  );
+`);
+
 const timetableColumns = db
   .prepare("PRAGMA table_info(timetable)")
   .all()
