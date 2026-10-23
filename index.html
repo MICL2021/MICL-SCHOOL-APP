@@ -6243,6 +6243,90 @@ async function uploadMarksheetAsset(type, inputId) {
   }
 }
 
+async function loadAdminMarksStudents() {
+  const className = document.getElementById("adminMarksClass").value;
+  const section = document.getElementById("adminMarksSection").value;
+  const studentSelect = document.getElementById("adminMarksStudent");
+  const status = document.getElementById("adminMarksEntryStatus");
+  const token = localStorage.getItem("micl_token");
+
+  studentSelect.innerHTML = '<option value="">Loading students...</option>';
+
+  try {
+    const response = await fetch("/api/admin/marksheet/students", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Students load nahi hue.");
+
+    const students = data.filter(student =>
+      (!className || String(student.class_name || "") === className) &&
+      (!section || String(student.section || "") === section)
+    );
+
+    studentSelect.innerHTML = '<option value="">Select Student</option>';
+
+    students.forEach(student => {
+      const option = document.createElement("option");
+      option.value = student.id;
+      option.textContent =
+        student.name + " - " + (student.admission_no || "No admission number");
+      studentSelect.appendChild(option);
+    });
+
+    if (status) {
+      status.textContent = students.length
+        ? students.length + " students found."
+        : "Is class/section mein student nahi mila.";
+    }
+  } catch (error) {
+    studentSelect.innerHTML = '<option value="">Select Student</option>';
+    if (status) status.textContent = error.message;
+  }
+}
+
+async function saveAdminStudentMarks() {
+  const studentId = document.getElementById("adminMarksStudent").value;
+  const exam = document.getElementById("adminMarksTerm").value;
+  const subject = document.getElementById("adminMarksSubject").value.trim();
+  const marks = document.getElementById("adminMarksObtained").value;
+  const maxMarks = document.getElementById("adminMarksMaximum").value;
+  const status = document.getElementById("adminMarksEntryStatus");
+  const token = localStorage.getItem("micl_token");
+
+  if (!studentId || !exam || !subject || marks === "" || maxMarks === "") {
+    status.textContent = "Student, term, subject aur marks bharein.";
+    return;
+  }
+
+  try {
+    status.textContent = "Saving marks...";
+
+    const response = await fetch("/api/admin/marksheet/marks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({
+        student_id: Number(studentId),
+        exam: exam,
+        subject: subject,
+        marks: Number(marks),
+        max_marks: Number(maxMarks)
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Marks save nahi hue.");
+
+    status.textContent = data.message || "Marks save/update ho gaye.";
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
 </script>
 </body>
 </html>
