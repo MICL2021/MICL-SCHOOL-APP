@@ -6320,25 +6320,24 @@ function escapeMarksheet(value) {
 async function loadAdminMarksheet() {
   const studentId = document.getElementById("adminMarksheetStudent").value;
   const exam = document.getElementById("adminMarksheetTerm").value;
-if (exam === "Formative Summative") {
-    const studentId = document.getElementById("adminMarksheetStudent").value;
-
-    if (!studentId) {
-        document.getElementById("marksheetStatus").textContent =
-            "Pehle student select karein.";
-        return;
-    }
-
-    document.getElementById("fsStudent").value = studentId;
-    await showFormativeMarksheet();
-    return;
-}
   const status = document.getElementById("marksheetStatus");
+
   if (!studentId) {
     status.textContent = "Pehle student select karein.";
     return;
   }
-  await fetchMarksheet(`/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}`);
+
+  if (exam === "Formative & Summative") {
+    await loadFormativeStudents();
+    document.getElementById("fsStudent").value = studentId;
+    document.getElementById("fsYear").value = "2026-2027";
+    await showFormativeMarksheet();
+    return;
+  }
+
+  await fetchMarksheet(
+    `/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}`
+  );
 }
 
 async function loadStudentMarksheet() {
