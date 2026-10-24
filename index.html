@@ -6320,7 +6320,7 @@ function escapeMarksheet(value) {
 async function loadAdminMarksheet() {
   const studentId = document.getElementById("adminMarksheetStudent").value;
   const exam = document.getElementById("adminMarksheetTerm").value;
-if (exam === "Formative Summative") {
+if (exam === "Formative & Summative") {
     await loadFormativeMarksheet();
     return;
 }
