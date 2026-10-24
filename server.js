@@ -2494,7 +2494,41 @@ app.post("/api/admin/formative-summative-marks", auth, admin, (req, res) => {
     res.status(500).json({ error: "Marks save nahi ho sake." });
   }
 });
+// GET Formative & Summative marks for Admin
+app.get("/api/admin/formative-summative-marks", auth, admin, (req, res) => {
+  const studentId = Number(req.query.student_id);
+  const year = String(req.query.academic_year || "2026-2027").trim();
 
+  if (!Number.isInteger(studentId) || studentId < 1) {
+    return res.status(400).json({ error: "Please select a student." });
+  }
+
+  try {
+    const student = db.prepare(`
+      SELECT id, name, admission_no, class_name, section, roll_no,
+             father_name, photo
+      FROM users
+      WHERE id = ? AND role = 'student'
+    `).get(studentId);
+
+    if (!student) {
+      return res.status(404).json({ error: "Student not found." });
+    }
+
+    const records = db.prepare(`
+      SELECT subject, f1, f2, f3, f4, f5, f6,
+             co_curricular, summative, academic_year
+      FROM formative_summative_marks
+      WHERE student_id = ? AND academic_year = ?
+      ORDER BY subject
+    `).all(studentId, year);
+
+    res.json({ student, academic_year: year, records });
+  } catch (error) {
+    console.error("Formative marks load error:", error);
+    res.status(500).json({ error: "Marks load nahi ho sake." });
+  }
+});
 app.get("/api/marksheet", auth, (req, res) => {
   const exam = String(req.query.exam || "");
 
