@@ -6873,7 +6873,13 @@ async function loadFormativeStudents() {
     status.textContent = error.message;
   }
 }
-
+document.querySelectorAll(
+  'button[onclick*="formativeResults"]'
+).forEach(button => {
+  button.addEventListener("click", function () {
+    loadFormativeStudents();
+  });
+});
 </script>
 </body>
 </html>
