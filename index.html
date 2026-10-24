@@ -1161,12 +1161,12 @@ body.teacher-view #teacherMarksheetCard {
     </select>
 
     <label for="adminMarksheetTerm">Select Term</label>
-    <select id="adminMarksheetTerm">
-      <option value="Term 1">Term 1</option>
-      <option value="Term 2">Term 2</option>
-      <option value="Annual">Annual</option>
-    </select>
-
+<select id="adminMarksheetTerm" onchange="toggleFormativeMarksheet()">
+  <option value="Term 1">Term 1</option>
+  <option value="Term 2">Term 2</option>
+  <option value="Annual">Annual</option>
+  <option value="Formative Summative">Formative &amp; Summative</option>
+</select>
     <button class="btn" onclick="loadAdminMarksheet()">
       Generate Marksheet
     </button>
