@@ -6872,6 +6872,99 @@ document.querySelectorAll(
     loadFormativeStudents();
   });
 });
+ 
+async function showFormativeMarksheet() {
+  const studentId = document.getElementById("fsStudent").value;
+  const year = document.getElementById("fsYear").value.trim();
+  const status = document.getElementById("fsStatus");
+
+  if (!studentId) {
+    status.textContent = "Pehle student select karein.";
+    return;
+  }
+
+  status.textContent = "Marksheet load ho rahi hai...";
+
+  try {
+    const token = localStorage.getItem("micl_token");
+    const response = await fetch(
+      `/api/admin/formative-summative-marks?student_id=${encodeURIComponent(studentId)}&academic_year=${encodeURIComponent(year)}`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Marksheet load nahi hui.");
+
+    const student = data.student;
+    const records = data.records || [];
+
+    if (!records.length) {
+      status.textContent = "Is student ke marks abhi save nahi hue.";
+      return;
+    }
+
+    const rows = records.map(r => {
+      const formative = ["f1", "f2", "f3", "f4", "f5", "f6"]
+        .reduce((sum, k) => sum + Number(r[k] || 0), 0);
+      const total = formative + Number(r.co_curricular || 0) +
+        Number(r.summative || 0);
+
+      return `<tr>
+        <td>${escapeMarksheet(r.subject)}</td>
+        <td>${r.f1} + ${r.f2} + ${r.f3} + ${r.f4} + ${r.f5} + ${r.f6}</td>
+        <td>${formative}/30</td>
+        <td>${Number(r.co_curricular)}/20</td>
+        <td>${Number(r.summative)}/50</td>
+        <td>${total}/100</td>
+      </tr>`;
+    }).join("");
+
+    const win = window.open("", "_blank");
+    if (!win) {
+      status.textContent = "Print ke liye browser pop-ups allow karein.";
+      return;
+    }
+
+    win.document.write(`
+      <!doctype html>
+      <html><head><title>Formative & Summative Marksheet</title>
+      <style>
+        body{font-family:Arial,sans-serif;padding:20px;color:#123}
+        h2,h3{text-align:center}
+        table{width:100%;border-collapse:collapse}
+        th,td{border:1px solid #555;padding:8px;text-align:center}
+        th{background:#eaf1fa}
+        @media print{button{display:none}}
+      </style></head><body>
+      <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
+      <h3>FORMATIVE & SUMMATIVE MARKSHEET</h3>
+      <p><b>Student:</b> ${escapeMarksheet(student.name || "")}</p>
+      <p><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</p>
+      <p><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}
+      &nbsp; <b>Section:</b> ${escapeMarksheet(student.section || "-")}</p>
+      <p><b>Academic Year:</b> ${escapeMarksheet(data.academic_year || year)}</p>
+      <table><thead><tr>
+      <th>Subject</th><th>F1–F6</th><th>Formative /30</th>
+      <th>Co-curricular /20</th><th>Summative /50</th><th>Total /100</th>
+      </tr></thead><tbody>${rows}</tbody></table>
+      <p>Formative Assessment: 30 marks | Co-curricular: 20 marks |
+      Summative Assessment: 50 marks</p>
+      <button onclick="window.print()">Print Marksheet</button>
+      </body></html>`);
+    win.document.close();
+    status.textContent = "Marksheet khul gayi hai.";
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+function escapeMarksheet(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[ch]);
+}
+
 </script>
 </body>
 </html>
