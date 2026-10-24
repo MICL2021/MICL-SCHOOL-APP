@@ -6320,8 +6320,17 @@ function escapeMarksheet(value) {
 async function loadAdminMarksheet() {
   const studentId = document.getElementById("adminMarksheetStudent").value;
   const exam = document.getElementById("adminMarksheetTerm").value;
-if (exam === "Formative & Summative") {
-    await loadFormativeMarksheet();
+if (exam === "Formative Summative") {
+    const studentId = document.getElementById("adminMarksheetStudent").value;
+
+    if (!studentId) {
+        document.getElementById("marksheetStatus").textContent =
+            "Pehle student select karein.";
+        return;
+    }
+
+    document.getElementById("fsStudent").value = studentId;
+    await showFormativeMarksheet();
     return;
 }
   const status = document.getElementById("marksheetStatus");
