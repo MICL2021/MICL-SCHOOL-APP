@@ -6970,9 +6970,13 @@ async function loadFormativeStudents() {
     data.forEach(student => {
       const option = document.createElement("option");
       option.value = student.id;
-      option.textContent =
-        student.name + " - " + (student.admission_no || "No admission number");
-      select.appendChild(option);
+option.textContent =
+  student.name + " - " + (student.admission_no || "No admission number");
+
+option.dataset.className = student.class_name || "";
+option.dataset.section = student.section || "";
+
+select.appendChild(option);
     });
 
     if (data.length === 0) {
@@ -6983,6 +6987,7 @@ async function loadFormativeStudents() {
     status.textContent = error.message;
   }
 }
+ document.getElementById("fsStudent").onchange = loadFormativeSubjects;
  async function loadFormativeSubjects() {
   const studentSelect = document.getElementById("fsStudent");
   const subjectSelect = document.getElementById("fsSubject");
