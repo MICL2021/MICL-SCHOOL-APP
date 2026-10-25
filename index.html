@@ -6983,6 +6983,78 @@ async function loadFormativeStudents() {
     status.textContent = error.message;
   }
 }
+ async function loadFormativeSubjects() {
+  const studentSelect = document.getElementById("fsStudent");
+  const subjectSelect = document.getElementById("fsSubject");
+  const status = document.getElementById("fsStatus");
+  const token = localStorage.getItem("micl_token");
+
+  const selectedOption =
+    studentSelect.options[studentSelect.selectedIndex];
+
+  const className = selectedOption?.dataset.className || "";
+  const section = selectedOption?.dataset.section || "";
+
+  subjectSelect.innerHTML =
+    '<option value="">Loading subjects...</option>';
+
+  if (!studentSelect.value) {
+    subjectSelect.innerHTML =
+      '<option value="">Pehle student select karein</option>';
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/timetable", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const timetable = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Timetable load nahi hui.");
+    }
+
+    const subjects = [
+      ...new Set(
+        timetable
+          .filter(item =>
+            String(item.class_name || "").trim() === className &&
+            String(item.section || "").trim() === section
+          )
+          .map(item => String(item.subject || "").trim())
+          .filter(Boolean)
+      )
+    ].sort();
+
+    subjectSelect.innerHTML =
+      '<option value="">Select Subject</option>';
+
+    subjects.forEach(subject => {
+      const option = document.createElement("option");
+      option.value = subject;
+      option.textContent = subject;
+      subjectSelect.appendChild(option);
+    });
+
+    if (subjects.length === 0) {
+      subjectSelect.innerHTML =
+        '<option value="">Is class/section ka subject timetable mein nahi hai</option>';
+
+      status.textContent =
+        "Pehle School Timetable mein is class aur section ke subjects add karein.";
+    } else {
+      status.textContent =
+        subjects.length + " allotted subjects found.";
+    }
+  } catch (error) {
+    subjectSelect.innerHTML =
+      '<option value="">Subjects load nahi hue</option>';
+    status.textContent = error.message;
+  }
+}
 document.querySelectorAll(
   'button[onclick*="formativeResults"]'
 ).forEach(button => {
