@@ -614,6 +614,75 @@ app.get("/api/admin/subjects", auth, admin, (req, res) => {
   res.json(subjects);
 });
 
+app.put("/api/admin/subjects/:id", auth, admin, (req, res) => {
+  const id = Number(req.params.id);
+  const name = String(req.body.name || "").trim();
+
+  if (!Number.isInteger(id) || id < 1 || !name) {
+    return res.status(400).json({
+      error: "Valid subject ID aur name enter karein."
+    });
+  }
+
+  try {
+    const result = db.prepare(
+      "UPDATE subjects SET name = ? WHERE id = ?"
+    ).run(name, id);
+
+    if (!result.changes) {
+      return res.status(404).json({
+        error: "Subject nahi mila."
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Subject update ho gaya."
+    });
+  } catch (error) {
+    if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+      return res.status(409).json({
+        error: "Yeh subject pehle se maujood hai."
+      });
+    }
+
+    res.status(500).json({
+      error: "Subject update nahi ho saka."
+    });
+  }
+});
+
+app.delete("/api/admin/subjects/:id", auth, admin, (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id < 1) {
+    return res.status(400).json({
+      error: "Invalid subject ID."
+    });
+  }
+
+  try {
+    const result = db.prepare(
+      "DELETE FROM subjects WHERE id = ?"
+    ).run(id);
+
+    if (!result.changes) {
+      return res.status(404).json({
+        error: "Subject nahi mila."
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Subject delete ho gaya."
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Subject delete nahi ho saka."
+    });
+  }
+});
+
 /* MICL ONLINE FORM MANAGEMENT */
 
 // List all forms for Admin
