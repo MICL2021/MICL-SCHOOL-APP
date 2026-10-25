@@ -7022,38 +7022,42 @@ select.appendChild(option);
       throw new Error("Timetable load nahi hui.");
     }
 
-    const subjects = [
-      ...new Set(
-        timetable
-          .filter(item =>
-            String(item.class_name || "").trim() === className &&
-            String(item.section || "").trim() === section
-          )
-          .map(item => String(item.subject || "").trim())
-          .filter(Boolean)
-      )
-    ].sort();
-
-    subjectSelect.innerHTML =
-      '<option value="">Select Subject</option>';
-
-    subjects.forEach(subject => {
-      const option = document.createElement("option");
-      option.value = subject;
-      option.textContent = subject;
-      subjectSelect.appendChild(option);
-    });
-
-    if (subjects.length === 0) {
-      subjectSelect.innerHTML =
-        '<option value="">Is class/section ka subject timetable mein nahi hai</option>';
-
-      status.textContent =
-        "Pehle School Timetable mein is class aur section ke subjects add karein.";
-    } else {
-      status.textContent =
-        subjects.length + " allotted subjects found.";
+const subjects = await (async () => {
+  const response = await fetch("/api/admin/subjects", {
+    headers: {
+      Authorization: "Bearer " + token
     }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Subjects load nahi hue.");
+  }
+
+  return data
+    .map(item => String(item.name || "").trim())
+    .filter(Boolean)
+    .sort();
+})();
+
+subjectSelect.innerHTML =
+  '<option value="">Select Subject</option>';
+
+subjects.forEach(subject => {
+  const option = document.createElement("option");
+  option.value = subject;
+  option.textContent = subject;
+  subjectSelect.appendChild(option);
+});
+
+if (subjects.length === 0) {
+  subjectSelect.innerHTML =
+    '<option value="">Pehle subjects add karein</option>';
+  status.textContent = "Subject Manager mein subjects add karein.";
+} else {
+  status.textContent = subjects.length + " subjects available.";
+}
   } catch (error) {
     subjectSelect.innerHTML =
       '<option value="">Subjects load nahi hue</option>';
@@ -7078,7 +7082,7 @@ async function showFormativeMarksheet() {
     return;
   }
 
-  status.textContent = "Marksheet load ho rahi hai...";
+  status.tetxtContent = "Marksheet load ho rahi hai...";
 
   try {
     const token = localStorage.getItem("micl_token");
