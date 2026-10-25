@@ -6198,12 +6198,14 @@ async function loadTeacherMarksheetStudents() {
 
     data.forEach(student => {
       const option = document.createElement("option");
-      option.value = student.id;
-      option.textContent =
-        student.name + " — " +
-        (student.admission_no || "No admission number");
-      select.appendChild(option);
-    });
+option.value = student.id;
+option.textContent =
+  student.name + " - " + (student.admission_no || "No admission number");
+
+option.dataset.className = student.class_name || "";
+option.dataset.section = student.section || "";
+
+select.appendChild(option);
 
     if (status) {
       status.textContent = data.length
