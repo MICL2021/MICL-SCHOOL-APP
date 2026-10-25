@@ -6327,10 +6327,19 @@ async function loadAdminMarksheet() {
     return;
   }
 
-  if (exam === "Formative & Summative") {
+  if (exam === "Formative Summative") {
     await loadFormativeStudents();
-    document.getElementById("fsStudent").value = studentId;
+
+    const fsStudent = document.getElementById("fsStudent");
+    fsStudent.value = studentId;
     document.getElementById("fsYear").value = "2026-2027";
+
+    if (fsStudent.value !== studentId) {
+      document.getElementById("fsStatus").textContent =
+        "Selected student list mein nahi mila. Student list dobara load karein.";
+      return;
+    }
+
     await showFormativeMarksheet();
     return;
   }
