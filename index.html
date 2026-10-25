@@ -5071,10 +5071,9 @@ async function loadSchoolTimetable() {
 }
 
 async function loadTimetableSubjects() {
-  const token = localStorage.getItem("micl_token");
   const dropdown = document.getElementById("ttSubject");
-
-  if (!dropdown) return;
+  const list = document.getElementById("timetableSubjectList");
+  const token = localStorage.getItem("micl_token");
 
   try {
     const response = await fetch("/api/admin/subjects", {
@@ -5083,21 +5082,111 @@ async function loadTimetableSubjects() {
       }
     });
 
-    const data = await response.json();
+    const subjects = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "Could not load subjects");
+      throw new Error(subjects.error || "Subjects load nahi hue.");
     }
 
-    dropdown.innerHTML =
-      '<option value="">Select Subject</option>';
+    if (dropdown) {
+      dropdown.innerHTML = '<option value="">Select Subject</option>';
 
-    data.forEach(subject => {
-      const option = document.createElement("option");
-      option.value = subject.name;
-      option.textContent = subject.name;
-      dropdown.appendChild(option);
+      subjects.forEach(subject => {
+        const option = document.createElement("option");
+        option.value = subject.name;
+        option.textContent = subject.name;
+        dropdown.appendChild(option);
+      });
+    }
+
+    if (list) {
+      list.replaceChildren();
+
+      if (subjects.length === 0) {
+        list.textContent = "Abhi koi subject add nahi hai.";
+      }
+
+      subjects.forEach(subject => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const title = document.createElement("b");
+        title.textContent = subject.name;
+
+        const edit = document.createElement("button");
+        edit.className = "btn";
+        edit.textContent = "Edit";
+        edit.type = "button";
+        edit.onclick = () =>
+          editSchoolSubject(subject.id, subject.name);
+
+        const del = document.createElement("button");
+        del.className = "btn";
+        del.textContent = "Delete";
+        del.type = "button";
+        del.style.background = "#b42318";
+        del.onclick = () =>
+          deleteSchoolSubject(subject.id, subject.name);
+
+        card.append(title, document.createElement("br"), edit, del);
+        list.appendChild(card);
+      });
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function editSchoolSubject(id, oldName) {
+  const name = prompt("Subject ka naya naam likhein:", oldName);
+  if (name === null) return;
+
+  const cleanName = name.trim();
+  if (!cleanName) {
+    alert("Subject ka naam khaali nahi ho sakta.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/admin/subjects/" + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("micl_token")
+      },
+      body: JSON.stringify({ name: cleanName })
     });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Subject update nahi hua.");
+    }
+
+    alert("Subject update ho gaya.");
+    await loadTimetableSubjects();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function deleteSchoolSubject(id, name) {
+  if (!confirm('Kya "' + name + '" subject delete karna hai?')) return;
+
+  try {
+    const response = await fetch("/api/admin/subjects/" + id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("micl_token")
+      }
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Subject delete nahi hua.");
+    }
+
+    alert("Subject delete ho gaya.");
+    await loadTimetableSubjects();
   } catch (error) {
     alert(error.message);
   }
