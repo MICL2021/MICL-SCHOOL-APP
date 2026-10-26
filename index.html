@@ -3941,10 +3941,11 @@ if (id === 'marksheet') {
     studentControls.style.display =
       user.role === 'student' ? 'block' : 'none';
   }
-if (user.role === 'admin') {
-  loadAdminMarksheetStudents();
-  loadAdminMarksSubjects();
-}
+
+  if (user.role === 'admin') {
+    loadAdminMarksheetStudents();
+  }
+
   const output = document.getElementById('marksheetOutput');
   const status = document.getElementById('marksheetStatus');
 
@@ -6321,6 +6322,15 @@ try {
   const result = percentage >= 33 ? "PASS" : "NEEDS IMPROVEMENT";
 
   output.innerHTML = `
+    <div class="card" id="marksheetSignatureChoices" style="margin-bottom:12px">
+      <h3>Choose Signatures for This Marksheet</h3>
+      <p>Select only the signatures you want printed. Saved signatures will remain available.</p>
+      <label style="display:block;margin:7px 0"><input type="checkbox" id="choosePrincipalSign" onchange="toggleMarksheetSignature('principal',this.checked)"> Principal Signature</label>
+      <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseClassTeacherSign" onchange="toggleMarksheetSignature('teacher',this.checked)"> Class Teacher Signature</label>
+      <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseCheckedBySign" onchange="toggleMarksheetSignature('checked',this.checked)"> Checked By Signature</label>
+      <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseCounterSign" onchange="toggleMarksheetSignature('counter',this.checked)"> Counter Signature</label>
+      <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseSchoolStamp" onchange="toggleMarksheetSignature('stamp',this.checked)"> School Stamp</label>
+    </div>
     <div class="card" id="printMarksheet">
       <div style="text-align:center">
         <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
@@ -6351,21 +6361,25 @@ try {
       <h3>Percentage: ${percentage.toFixed(2)}%</h3>
       <h3>Grade: ${grade} | Result: ${result}</h3>
       
-<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:55px;gap:20px">
-  <div style="text-align:center;width:40%">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:35px;gap:12px;flex-wrap:wrap">
+  <div id="principalSignBlock" style="text-align:center;width:30%;display:none">
+    <img id="printPrincipalSign" style="max-width:130px;max-height:55px;display:none;margin:auto">
+    <div style="border-top:1px solid #333;padding-top:6px">Principal Signature</div>
+  </div>
+  <div id="classTeacherSignBlock" style="text-align:center;width:30%;display:none">
     <img id="printClassTeacherSign" style="max-width:130px;max-height:55px;display:none;margin:auto">
     <div style="border-top:1px solid #333;padding-top:6px">Class Teacher Signature</div>
   </div>
-  <div style="text-align:center;width:40%">
+  <div id="checkedBySignBlock" style="text-align:center;width:30%;display:none">
     <img id="printCheckedBySign" style="max-width:130px;max-height:55px;display:none;margin:auto">
     <div style="border-top:1px solid #333;padding-top:6px">Checked By Signature</div>
   </div>
-  <div style="text-align:center;width:40%">
-  <img id="printDigitalSign" style="max-width:130px;max-height:55px;display:none;margin:auto">
-<div style="border-top:1px solid #333;padding-top:6px">Digital Signature</div>
+  <div id="counterSignBlock" style="text-align:center;width:30%;display:none">
+    <img id="printDigitalSign" style="max-width:130px;max-height:55px;display:none;margin:auto">
+    <div style="border-top:1px solid #333;padding-top:6px">Counter Signature</div>
+  </div>
 </div>
-</div>
-<div style="text-align:center;margin-top:20px">
+<div id="schoolStampBlock" style="text-align:center;margin-top:20px;display:none">
   <img id="printSchoolStamp" style="max-width:100px;max-height:100px;display:none;margin:auto">
   <div>School Stamp</div>
 </div>
@@ -6376,36 +6390,49 @@ try {
 const stamp = marksheetSettings.school_stamp;
 const teacherSign = marksheetSettings.class_teacher_signature;
 const checkedSign = marksheetSettings.checked_by_signature;
-const digitalSign = marksheetSettings.digital_signature;
-const stampImg = document.getElementById("printSchoolStamp");
-const teacherImg = document.getElementById("printClassTeacherSign");
-const checkedImg = document.getElementById("printCheckedBySign");
+const counterSign = marksheetSettings.digital_signature;
 const principalSign = marksheetSettings.principal_signature;
-const principalImg = document.getElementById("printPrincipalSign");
-  const digitalImg = document.getElementById("printDigitalSign");
-  if (digitalImg && digitalSign) {
-  digitalImg.src = digitalSign;
-  digitalImg.style.display = "block";
-}
-if (stampImg && stamp) {
-  stampImg.src = stamp;
-  stampImg.style.display = "block";
+
+// Load saved assets into the preview, but keep every signature hidden until selected.
+const assetMap = [
+  ["printPrincipalSign", principalSign],
+  ["printClassTeacherSign", teacherSign],
+  ["printCheckedBySign", checkedSign],
+  ["printDigitalSign", counterSign],
+  ["printSchoolStamp", stamp]
+];
+assetMap.forEach(([id, src]) => {
+  const img = document.getElementById(id);
+  if (img && src) img.src = src;
+});
+
+// Reset selections every time a new marksheet is generated.
+["choosePrincipalSign", "chooseClassTeacherSign", "chooseCheckedBySign", "chooseCounterSign", "chooseSchoolStamp"]
+  .forEach(id => { const checkbox = document.getElementById(id); if (checkbox) checkbox.checked = false; });
+["principal", "teacher", "checked", "counter", "stamp"].forEach(type => toggleMarksheetSignature(type, false));
+status.textContent = "Marksheet ready. Select the signatures you want, then Print / Save PDF.";
 }
 
-if (teacherImg && teacherSign) {
-  teacherImg.src = teacherSign;
-  teacherImg.style.display = "block";
-}
-
-if (checkedImg && checkedSign) {
-  checkedImg.src = checkedSign;
-  checkedImg.style.display = "block";
-}
-if (principalImg && principalSign) {
-  principalImg.src = principalSign;
-  principalImg.style.display = "block";
-}
-  status.textContent = "";
+function toggleMarksheetSignature(type, selected) {
+  const config = {
+    principal: { checkbox: "choosePrincipalSign", image: "printPrincipalSign", block: "principalSignBlock" },
+    teacher: { checkbox: "chooseClassTeacherSign", image: "printClassTeacherSign", block: "classTeacherSignBlock" },
+    checked: { checkbox: "chooseCheckedBySign", image: "printCheckedBySign", block: "checkedBySignBlock" },
+    counter: { checkbox: "chooseCounterSign", image: "printDigitalSign", block: "counterSignBlock" },
+    stamp: { checkbox: "chooseSchoolStamp", image: "printSchoolStamp", block: "schoolStampBlock" }
+  }[type];
+  if (!config) return;
+  const checkbox = document.getElementById(config.checkbox);
+  const image = document.getElementById(config.image);
+  const block = document.getElementById(config.block);
+  const hasImage = !!(image && image.getAttribute("src"));
+  const show = !!selected && hasImage;
+  if (block) block.style.display = show ? (type === "stamp" ? "block" : "block") : "none";
+  if (image) image.style.display = show ? "block" : "none";
+  if (checkbox && selected && !hasImage) {
+    checkbox.checked = false;
+    alert("Is signature/stamp ko pehle Marksheets Settings mein upload aur save karein.");
+  }
 }
 
 function escapeMarksheet(value) {
@@ -6915,6 +6942,46 @@ async function loadAdminMarksSubjects() {
     );
 
     if (status) status.textContent = error.message;
+  }
+}
+
+  const studentId = document.getElementById("adminMarksStudent").value;
+  const exam = document.getElementById("adminMarksTerm").value;
+  const subject = document.getElementById("adminMarksSubject").value.trim();
+  const marks = document.getElementById("adminMarksObtained").value;
+  const maxMarks = document.getElementById("adminMarksMaximum").value;
+  const status = document.getElementById("adminMarksEntryStatus");
+  const token = localStorage.getItem("micl_token");
+
+  if (!studentId || !exam || !subject || marks === "" || maxMarks === "") {
+    status.textContent = "Student, term, subject aur marks bharein.";
+    return;
+  }
+
+  try {
+    status.textContent = "Saving marks...";
+
+    const response = await fetch("/api/admin/marksheet/marks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({
+        student_id: Number(studentId),
+        exam: exam,
+        subject: subject,
+        marks: Number(marks),
+        max_marks: Number(maxMarks)
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Marks save nahi hue.");
+
+    status.textContent = data.message || "Marks save/update ho gaye.";
+  } catch (error) {
+    status.textContent = error.message;
   }
 }
 
