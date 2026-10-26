@@ -41,7 +41,7 @@ header{background:linear-gradient(135deg,#063b82,#1264bd);color:#fff;padding:18p
 header .top{display:flex;align-items:center;justify-content:space-between}.brand{font-weight:800;font-size:22px}.menu{font-size:25px}
 .hero{margin:14px;border-radius:16px;padding:20px;background:linear-gradient(135deg,#eaf5ff,#fff);border:1px solid #d7e7f6}
 .hero h1{font-size:22px;margin:0 0 8px;color:#073e84}.hero p{margin:4px 0;color:#49657c}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px}..tile {
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px}.tile {
   border: 1px solid #e2eaf3;
   border-radius: 14px;
   padding: 14px 6px;
@@ -1265,7 +1265,7 @@ body.teacher-view #teacherMarksheetCard {
 </div>
 
 <div class="card">
-  <h3>💻 Counter Signature</h3>
+  <h3>✍️ Counter Signature</h3>
   <label for="digitalSignature">Upload Counter Signature</label>
   <input type="file" id="digitalSignature" accept="image/png,image/jpeg,image/webp">
   <button class="btn" type="button" onclick="uploadMarksheetAsset('signature','digitalSignature')">Upload &amp; Save</button>
@@ -6332,14 +6332,27 @@ try {
       <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseSchoolStamp" onchange="toggleMarksheetSignature('stamp',this.checked)"> School Stamp</label>
     </div>
     <div class="card" id="printMarksheet">
-      <div style="text-align:center">
-        <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
-        <h3>STUDENT MARKSHEET — ${data.exam}</h3>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;text-align:center;border-bottom:3px double #063b82;padding:8px 0 14px;margin-bottom:16px">
+        <img src="/public/micl_logo.png" alt="MICL School Logo" style="width:88px;height:88px;object-fit:contain" onerror="this.style.display='none'">
+        <div>
+          <h2 style="margin:0;color:#063b82;font-size:22px">MODERN INSTITUTE OF CREATIVE LEARNING</h2>
+          <p style="margin:5px 0;font-size:12px">Channi Dharana, Mendhar | Recognised by Government of Jammu &amp; Kashmir</p>
+          <h3 style="margin:8px 0 0;letter-spacing:1px">STUDENT MARKSHEET — ${escapeMarksheet(data.exam || "")}</h3>
+        </div>
       </div>
-      <p><b>Student:</b> ${escapeMarksheet(student.name)}</p>
-      <p><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</p>
-      <p><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}
-         <b>Section:</b> ${escapeMarksheet(student.section || "-")}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;border:1px solid #b9cbe0;border-radius:8px;padding:12px;margin-bottom:16px;background:#f7fbff">
+        <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
+        <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
+        <div><b>Father Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
+        <div><b>Mother Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
+        <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
+        <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
+        <div><b>Class Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
+        <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
+        <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
+        <div><b>Academic Session:</b> ${escapeMarksheet(data.academic_year || data.academicYear || "2026-2027")}</div>
+        <div style="grid-column:1/-1"><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
+      </div>
       <table style="width:100%;border-collapse:collapse">
         <thead>
           <tr>
@@ -6507,11 +6520,15 @@ function printMarksheet() {
   win.document.write(`
     <!doctype html><html><head><title>MICL Marksheet</title>
     <style>
-      body{font-family:Arial,sans-serif;padding:25px;color:#111}
-      table{border-collapse:collapse;width:100%}
-      th,td{border:1px solid #333;padding:8px}
-      button{display:none}
-      @media print{body{-webkit-print-color-adjust:exact}}
+      @page{size:A4 portrait;margin:12mm}
+      body{font-family:Arial,sans-serif;padding:8px;color:#172b43;font-size:12px}
+      #printMarksheet{border:2px solid #063b82;border-radius:10px;padding:16px;box-shadow:none}
+      table{border-collapse:collapse;width:100%;margin-top:12px}
+      th,td{border:1px solid #9fb4cc;padding:8px}
+      th{background:#eaf3ff;color:#063b82}
+      button,#marksheetSignatureChoices{display:none!important}
+      img{object-fit:contain}
+      @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
     </style></head><body>${content.innerHTML}</body></html>`);
   win.document.close();
   win.focus();
@@ -6945,45 +6962,7 @@ async function loadAdminMarksSubjects() {
   }
 }
 
-  const studentId = document.getElementById("adminMarksStudent").value;
-  const exam = document.getElementById("adminMarksTerm").value;
-  const subject = document.getElementById("adminMarksSubject").value.trim();
-  const marks = document.getElementById("adminMarksObtained").value;
-  const maxMarks = document.getElementById("adminMarksMaximum").value;
-  const status = document.getElementById("adminMarksEntryStatus");
-  const token = localStorage.getItem("micl_token");
 
-  if (!studentId || !exam || !subject || marks === "" || maxMarks === "") {
-    status.textContent = "Student, term, subject aur marks bharein.";
-    return;
-  }
-
-  try {
-    status.textContent = "Saving marks...";
-
-    const response = await fetch("/api/admin/marksheet/marks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
-      },
-      body: JSON.stringify({
-        student_id: Number(studentId),
-        exam: exam,
-        subject: subject,
-        marks: Number(marks),
-        max_marks: Number(maxMarks)
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Marks save nahi hue.");
-
-    status.textContent = data.message || "Marks save/update ho gaye.";
-  } catch (error) {
-    status.textContent = error.message;
-  }
-}
 
 function updateFormativeTotal() {
   const ids = ["fsF1", "fsF2", "fsF3", "fsF4", "fsF5", "fsF6", "fsCo", "fsSummative"];
