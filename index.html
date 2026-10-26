@@ -1198,8 +1198,10 @@ body.teacher-view #teacherMarksheetCard {
     <option value="Annual">Annual</option>
   </select>
 
-  <label for="adminMarksSubject">Subject</label>
-  <input id="adminMarksSubject" type="text" placeholder="e.g. English">
+<label for="adminMarksSubject">Subject</label>
+<select id="adminMarksSubject" required>
+  <option value="">Loading subjects...</option>
+</select>
 
   <label for="adminMarksObtained">Obtained Marks</label>
   <input id="adminMarksObtained" type="number" min="0" placeholder="Obtained marks">
