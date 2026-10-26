@@ -6820,6 +6820,57 @@ async function loadAdminMarksStudents() {
 }
 
 async function saveAdminStudentMarks() {
+}
+async function loadAdminMarksSubjects() {
+  const dropdown = document.getElementById("adminMarksSubject");
+  const token = localStorage.getItem("micl_token");
+
+  if (!dropdown) return;
+
+  dropdown.innerHTML =
+    '<option value="">Loading subjects...</option>';
+
+  try {
+    const response = await fetch("/api/admin/subjects", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const subjects = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        subjects.error || "Subjects load nahi hue."
+      );
+    }
+
+    dropdown.innerHTML =
+      '<option value="">Select Subject</option>';
+
+    subjects.forEach(subject => {
+      const option = document.createElement("option");
+      option.value = subject.name;
+      option.textContent = subject.name;
+      dropdown.appendChild(option);
+    });
+
+    if (subjects.length === 0) {
+      dropdown.innerHTML =
+        '<option value="">Pehle Subject Manager mein subjects add karein</option>';
+    }
+  } catch (error) {
+    dropdown.innerHTML =
+      '<option value="">Subjects load nahi hue</option>';
+
+    const status = document.getElementById(
+      "adminMarksEntryStatus"
+    );
+
+    if (status) status.textContent = error.message;
+  }
+}
+
   const studentId = document.getElementById("adminMarksStudent").value;
   const exam = document.getElementById("adminMarksTerm").value;
   const subject = document.getElementById("adminMarksSubject").value.trim();
