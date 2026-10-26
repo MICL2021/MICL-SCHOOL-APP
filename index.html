@@ -6919,46 +6919,6 @@ async function loadAdminMarksSubjects() {
   }
 }
 
-  const studentId = document.getElementById("adminMarksStudent").value;
-  const exam = document.getElementById("adminMarksTerm").value;
-  const subject = document.getElementById("adminMarksSubject").value.trim();
-  const marks = document.getElementById("adminMarksObtained").value;
-  const maxMarks = document.getElementById("adminMarksMaximum").value;
-  const status = document.getElementById("adminMarksEntryStatus");
-  const token = localStorage.getItem("micl_token");
-
-  if (!studentId || !exam || !subject || marks === "" || maxMarks === "") {
-    status.textContent = "Student, term, subject aur marks bharein.";
-    return;
-  }
-
-  try {
-    status.textContent = "Saving marks...";
-
-    const response = await fetch("/api/admin/marksheet/marks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
-      },
-      body: JSON.stringify({
-        student_id: Number(studentId),
-        exam: exam,
-        subject: subject,
-        marks: Number(marks),
-        max_marks: Number(maxMarks)
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Marks save nahi hue.");
-
-    status.textContent = data.message || "Marks save/update ho gaye.";
-  } catch (error) {
-    status.textContent = error.message;
-  }
-}
-
 function updateFormativeTotal() {
   const ids = ["fsF1", "fsF2", "fsF3", "fsF4", "fsF5", "fsF6", "fsCo", "fsSummative"];
   const limits = [5, 5, 5, 5, 5, 5, 20, 50];
