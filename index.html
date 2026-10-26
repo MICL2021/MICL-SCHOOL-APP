@@ -3941,11 +3941,10 @@ if (id === 'marksheet') {
     studentControls.style.display =
       user.role === 'student' ? 'block' : 'none';
   }
-
-  if (user.role === 'admin') {
-    loadAdminMarksheetStudents();
-  }
-
+if (user.role === 'admin') {
+  loadAdminMarksheetStudents();
+  loadAdminMarksSubjects();
+}
   const output = document.getElementById('marksheetOutput');
   const status = document.getElementById('marksheetStatus');
 
