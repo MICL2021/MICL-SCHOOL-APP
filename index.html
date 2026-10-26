@@ -6767,15 +6767,12 @@ async function loadAdminMarksClassOptions() {
       document.getElementById("adminMarksStudent").innerHTML =
         '<option value="">Select Student</option>';
     };
-
     sectionSelect.onchange = loadAdminMarksStudents;
-
   } catch (error) {
     classSelect.innerHTML = '<option value="">Could not load classes</option>';
     document.getElementById("adminMarksEntryStatus").textContent = error.message;
   }
 }
-
 async function loadAdminMarksStudents() {
   const className = document.getElementById("adminMarksClass").value;
   const section = document.getElementById("adminMarksSection").value;
