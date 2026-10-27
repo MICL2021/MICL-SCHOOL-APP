@@ -664,16 +664,13 @@ app.post("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
     }
 
     const saveAnswers = db.transaction(() => {
-      db.prepare(
-        "DELETE FROM omr_answer_keys WHERE exam_id = ?"
-      ).run(examId);
-
       const insert = db.prepare(`
-        INSERT INTO omr_answer_keys
-        (exam_id, question_no, correct_answer)
-        VALUES (?, ?, ?)
-      `);
-
+  INSERT INTO omr_answer_keys
+  (exam_id, question_no, correct_answer)
+  VALUES (?, ?, ?)
+  ON CONFLICT(exam_id, question_no)
+  DO UPDATE SET correct_answer = excluded.correct_answer
+`);
       answers.forEach(item => {
         insert.run(
           examId,
