@@ -2398,7 +2398,13 @@ app.get("/api/admin/marksheet/students", auth, admin, (req, res) => {
 app.get("/api/admin/marksheet", auth, admin, (req, res) => {
   const studentId = Number(req.query.student_id);
   const exam = String(req.query.exam || "");
+const subject = String(req.query.subject || "").trim();
 
+if (!subject) {
+  return res.status(400).json({
+    error: "Pehle subject select karein."
+  });
+}
   if (
     !Number.isInteger(studentId) || studentId < 1 ||
     !["Term 1", "Term 2", "Annual"].includes(exam)
@@ -2418,17 +2424,12 @@ app.get("/api/admin/marksheet", auth, admin, (req, res) => {
   if (!student) {
     return res.status(404).json({ error: "Student not found." });
   }
-
-  const records = db.prepare(`
-    SELECT subject, marks, max_marks
-    FROM results
-    WHERE student_id=? AND exam=?
-    ORDER BY subject
-  `).all(studentId, exam);
-
-  res.json({ student, exam, records });
-});
-
+const records = db.prepare(`
+  SELECT subject, marks, max_marks
+  FROM results
+  WHERE student_id=? AND exam=? AND subject=?
+  ORDER BY subject
+`).all(studentId, exam, subject);
 app.post("/api/admin/marksheet/marks", auth, admin, (req, res) => {
   const studentId = Number(req.body.student_id);
   const exam = String(req.body.exam || "");
