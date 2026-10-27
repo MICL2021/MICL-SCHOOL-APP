@@ -488,6 +488,60 @@ app.delete("/api/admin/id-cards/:id", auth, admin, (req, res) => {
   }
 });
 
+app.post("/api/admin/omr/exams", auth, admin, (req, res) => {
+  try {
+    const {
+      exam_name,
+      class_name,
+      subject,
+      total_questions,
+      marks_per_question,
+      negative_marks
+    } = req.body;
+
+    if (
+      !exam_name ||
+      !class_name ||
+      !subject ||
+      !Number.isInteger(Number(total_questions)) ||
+      Number(total_questions) < 1 ||
+      !Number.isFinite(Number(marks_per_question)) ||
+      Number(marks_per_question) <= 0 ||
+      !Number.isFinite(Number(negative_marks)) ||
+      Number(negative_marks) < 0
+    ) {
+      return res.status(400).json({
+        error: "Please enter valid exam details"
+      });
+    }
+
+    const result = db.prepare(`
+      INSERT INTO omr_exams
+      (exam_name, class_name, subject, total_questions,
+       marks_per_question, negative_marks)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(
+      String(exam_name).trim(),
+      String(class_name).trim(),
+      String(subject).trim(),
+      Number(total_questions),
+      Number(marks_per_question),
+      Number(negative_marks)
+    );
+
+    res.status(201).json({
+      success: true,
+      exam_id: result.lastInsertRowid,
+      message: "OMR exam created successfully"
+    });
+  } catch (error) {
+    console.error("OMR exam creation error:", error);
+    res.status(500).json({
+      error: "Could not create OMR exam"
+    });
+  }
+});
+
 
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
