@@ -780,6 +780,94 @@ app.get("/api/admin/omr/exams/:id/submissions", auth, admin, (req, res) => {
   }
 });
 
+app.put("/api/admin/omr/submissions/:id/review", auth, admin, (req, res) => {
+  try {
+    const submissionId = Number(req.params.id);
+    const answers = req.body.answers;
+
+    if (!Number.isInteger(submissionId) || submissionId < 1) {
+      return res.status(400).json({ error: "Invalid submission ID" });
+    }
+
+    if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
+      return res.status(400).json({ error: "Answers must be an object" });
+    }
+
+    const submission = db.prepare(`
+      SELECT s.id, s.exam_id, s.student_id, e.total_questions,
+             e.marks_per_question, e.negative_marks
+      FROM omr_submissions s
+      JOIN omr_exams e ON e.id = s.exam_id
+      WHERE s.id = ?
+    `).get(submissionId);
+
+    if (!submission) {
+      return res.status(404).json({ error: "Submission not found" });
+    }
+
+    const answerKey = db.prepare(`
+      SELECT question_no, correct_answer
+      FROM omr_answer_keys
+      WHERE exam_id = ?
+    `).all(submission.exam_id);
+
+    if (answerKey.length !== submission.total_questions) {
+      return res.status(400).json({
+        error: "Complete the answer key before reviewing"
+      });
+    }
+
+    let score = 0;
+    let correct = 0;
+    let wrong = 0;
+    let unanswered = 0;
+
+    for (let q = 1; q <= submission.total_questions; q++) {
+      const given = String(answers[q] || "").trim().toUpperCase();
+      const key = answerKey.find(a => a.question_no === q);
+
+      if (!["A", "B", "C", "D"].includes(given)) {
+        unanswered++;
+      } else if (given === key.correct_answer) {
+        correct++;
+        score += submission.marks_per_question;
+      } else {
+        wrong++;
+        score -= submission.negative_marks;
+      }
+    }
+
+    score = Math.max(0, Number(score.toFixed(2)));
+
+    db.prepare(`
+      UPDATE omr_submissions
+      SET answers_json = ?, score = ?, status = 'Reviewed', reviewed_by = ?
+      WHERE id = ?
+    `).run(
+      JSON.stringify(answers),
+      score,
+      req.user.id,
+      submissionId
+    );
+
+    res.json({
+      success: true,
+      submission_id: submissionId,
+      correct,
+      wrong,
+      unanswered,
+      score,
+      max_marks: submission.total_questions * submission.marks_per_question,
+      status: "Reviewed"
+    });
+  } catch (error) {
+    console.error("OMR review error:", error);
+    res.status(500).json({
+      error: "Could not review OMR submission"
+    });
+  }
+});
+
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
     const settings = db.prepare(`
