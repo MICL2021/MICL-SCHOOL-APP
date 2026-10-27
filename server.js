@@ -542,6 +542,24 @@ app.post("/api/admin/omr/exams", auth, admin, (req, res) => {
   }
 });
 
+app.get("/api/admin/omr/exams", auth, admin, (req, res) => {
+  try {
+    const exams = db.prepare(`
+      SELECT id, exam_name, class_name, subject,
+             total_questions, marks_per_question,
+             negative_marks, created_at
+      FROM omr_exams
+      ORDER BY id DESC
+    `).all();
+
+    res.json(exams);
+  } catch (error) {
+    console.error("OMR exam list error:", error);
+    res.status(500).json({
+      error: "Could not load OMR exams"
+    });
+  }
+});
 
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
