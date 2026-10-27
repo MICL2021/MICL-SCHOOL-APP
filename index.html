@@ -6929,7 +6929,7 @@ async function loadAdminMarksSubjects() {
     });
 
     const subjects = await response.json();
-
+console.log("Admin subjects response:", subjects);
     if (!response.ok) {
       throw new Error(
         subjects.error || "Subjects load nahi hue."
