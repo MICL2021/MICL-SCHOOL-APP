@@ -6928,16 +6928,20 @@ async function loadAdminMarksSubjects() {
       }
     });
 
-    const subjects = await response.json();
-   if (!Array.isArray(subjects)) {
+let subjects;
+
+if (!response.ok) {
+  const errorData = await response.json();
+  throw new Error(errorData.error || "Subjects load nahi hue.");
+}
+
+subjects = await response.json();
+
+if (!Array.isArray(subjects)) {
   throw new Error("Subjects API array return nahi kar rahi.");
 }
+
 console.log("Admin subjects response:", subjects);
-    if (!response.ok) {
-      throw new Error(
-        subjects.error || "Subjects load nahi hue."
-      );
-    }
 
     dropdown.innerHTML =
       '<option value="">Select Subject</option>';
