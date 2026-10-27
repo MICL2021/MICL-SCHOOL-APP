@@ -684,6 +684,59 @@ app.get("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
   }
 });
 
+app.post("/api/admin/omr/exams/:id/submissions", auth, admin, (req, res) => {
+  try {
+    const examId = Number(req.params.id);
+    const studentId = Number(req.body.student_id);
+    const answers = req.body.answers;
+
+    if (!Number.isInteger(examId) || examId < 1) {
+      return res.status(400).json({ error: "Invalid exam ID" });
+    }
+
+    if (!Number.isInteger(studentId) || studentId < 1) {
+      return res.status(400).json({ error: "Invalid student ID" });
+    }
+
+    const exam = db.prepare(
+      "SELECT id, total_questions FROM omr_exams WHERE id = ?"
+    ).get(examId);
+
+    if (!exam) {
+      return res.status(404).json({ error: "OMR exam not found" });
+    }
+
+    const student = db.prepare(
+      "SELECT id FROM users WHERE id = ? AND role = 'student'"
+    ).get(studentId);
+
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
+      return res.status(400).json({ error: "Answers must be an object" });
+    }
+
+    const result = db.prepare(`
+      INSERT INTO omr_submissions
+      (exam_id, student_id, answers_json, status)
+      VALUES (?, ?, ?, 'Pending Review')
+    `).run(examId, studentId, JSON.stringify(answers));
+
+    res.status(201).json({
+      success: true,
+      submission_id: result.lastInsertRowid,
+      status: "Pending Review"
+    });
+  } catch (error) {
+    console.error("OMR submission error:", error);
+    res.status(500).json({
+      error: "Could not save OMR submission"
+    });
+  }
+});
+
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
     const settings = db.prepare(`
