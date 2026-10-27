@@ -2430,6 +2430,8 @@ const records = db.prepare(`
   WHERE student_id=? AND exam=? AND subject=?
   ORDER BY subject
 `).all(studentId, exam, subject);
+  res.json({ student, exam, records });
+});
 app.post("/api/admin/marksheet/marks", auth, admin, (req, res) => {
   const studentId = Number(req.body.student_id);
   const exam = String(req.body.exam || "");
