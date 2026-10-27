@@ -7423,7 +7423,42 @@ async function createOMRExam() {
     status.textContent = 'Error: ' + error.message;
   }
 }
+async function saveOMRAnswer() {
+  const status = document.getElementById('omrExamStatus');
+  const token = localStorage.getItem('micl_token');
+  const examId = document.getElementById('omrAnswerKeyExam').value;
+  const questionNo = Number(document.getElementById('omrQuestionNo').value);
+  const correctAnswer = document.getElementById('omrCorrectAnswer').value;
 
+  if (!examId || !questionNo || !correctAnswer) {
+    status.textContent = 'Please select exam, question number and correct answer.';
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/admin/omr/exams/' + examId + '/answer-key', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        answers: [{
+          question_no: questionNo,
+          correct_answer: correctAnswer
+        }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.error || 'Could not save answer.');
+
+    status.textContent = 'Answer saved successfully.';
+  } catch (error) {
+    status.textContent = 'Error: ' + error.message;
+  }
+}
 async function loadOMRExams() {
   const status = document.getElementById('omrExamStatus');
   const token = localStorage.getItem('micl_token');
