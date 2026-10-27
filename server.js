@@ -36,6 +36,55 @@ const noticeUpload = multer({
     }
   }
 });
+
+const omrUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+    files: 1
+  },
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF, JPG, PNG or WEBP files are allowed"));
+    }
+  }
+});
+
+async function uploadOMRFile(file) {
+  if (!file) return null;
+
+  const isPdf = file.mimetype === "application/pdf";
+
+  const uploaded = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "micl-omr-scans",
+        resource_type: isPdf ? "raw" : "image"
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+
+    stream.end(file.buffer);
+  });
+
+  return {
+    url: uploaded.secure_url,
+    name: file.originalname
+  };
+}
+
 async function uploadHomeworkFile(file) {
   if (!file) return null;
 
