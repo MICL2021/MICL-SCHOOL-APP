@@ -7356,6 +7356,95 @@ function escapeMarksheet(value) {
   })[ch]);
 }
 
+async function createOMRExam() {
+  const status = document.getElementById('omrExamStatus');
+  const token = localStorage.getItem('micl_token');
+
+  const exam_name = document.getElementById('omrExamName').value.trim();
+  const class_name = document.getElementById('omrExamClass').value.trim();
+  const subject = document.getElementById('omrExamSubject').value.trim();
+  const total_questions = Number(document.getElementById('omrTotalQuestions').value);
+  const marks_per_question = Number(document.getElementById('omrMarksPerQuestion').value);
+  const negative_marks = Number(document.getElementById('omrNegativeMarks').value);
+
+  if (!exam_name || !class_name || !subject || !Number.isInteger(total_questions) || total_questions < 1 || !Number.isFinite(marks_per_question) || marks_per_question < 0 || !Number.isFinite(negative_marks) || negative_marks < 0) {
+    status.textContent = 'Please enter valid exam details.';
+    return;
+  }
+
+  try {
+    status.textContent = 'Saving exam...';
+
+    const response = await fetch('/api/admin/omr/exams', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        exam_name,
+        class_name,
+        subject,
+        total_questions,
+        marks_per_question,
+        negative_marks
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Could not create exam.');
+    }
+
+    status.textContent = 'Exam created successfully. Exam ID: ' + data.exam_id;
+    await loadOMRExams();
+  } catch (error) {
+    status.textContent = 'Error: ' + error.message;
+  }
+}
+
+async function loadOMRExams() {
+  const status = document.getElementById('omrExamStatus');
+  const token = localStorage.getItem('micl_token');
+
+  try {
+    const response = await fetch('/api/admin/omr/exams', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const exams = await response.json();
+
+    if (!response.ok) {
+      throw new Error(exams.error || 'Exams load nahi hue.');
+    }
+
+    const list = document.getElementById('omrExamList');
+
+    if (!list) {
+      status.textContent = 'Exam create ho gaya. Exam ID: ' +
+        (exams.length ? exams[0].id : 'available');
+      return;
+    }
+
+    list.innerHTML = '';
+
+    exams.forEach(exam => {
+      const item = document.createElement('p');
+      item.textContent = exam.exam_name + ' | Class: ' +
+        exam.class_name + ' | Subject: ' + exam.subject +
+        ' | ID: ' + exam.id;
+      list.appendChild(item);
+    });
+
+    if (status) status.textContent = 'Exams loaded: ' + exams.length;
+  } catch (error) {
+    if (status) status.textContent = 'Error: ' + error.message;
+  }
+}
+
 </script>
 </body>
 </html>
