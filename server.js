@@ -737,6 +737,49 @@ app.post("/api/admin/omr/exams/:id/submissions", auth, admin, (req, res) => {
   }
 });
 
+app.get("/api/admin/omr/exams/:id/submissions", auth, admin, (req, res) => {
+  try {
+    const examId = Number(req.params.id);
+
+    if (!Number.isInteger(examId) || examId < 1) {
+      return res.status(400).json({ error: "Invalid exam ID" });
+    }
+
+    const exam = db.prepare(
+      "SELECT id FROM omr_exams WHERE id = ?"
+    ).get(examId);
+
+    if (!exam) {
+      return res.status(404).json({ error: "OMR exam not found" });
+    }
+
+    const submissions = db.prepare(`
+      SELECT
+        s.id,
+        s.exam_id,
+        s.student_id,
+        u.name AS student_name,
+        u.admission_no,
+        s.file_url,
+        s.answers_json,
+        s.score,
+        s.status,
+        s.created_at
+      FROM omr_submissions s
+      JOIN users u ON u.id = s.student_id
+      WHERE s.exam_id = ?
+      ORDER BY s.id DESC
+    `).all(examId);
+
+    res.json(submissions);
+  } catch (error) {
+    console.error("OMR submissions list error:", error);
+    res.status(500).json({
+      error: "Could not load OMR submissions"
+    });
+  }
+});
+
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
     const settings = db.prepare(`
