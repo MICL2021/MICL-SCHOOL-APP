@@ -6495,9 +6495,8 @@ async function loadAdminMarksheet() {
 
   const subject =
     document.getElementById("adminMarksheetSubjectSelect").value;
-
-  const status =
-    document.getElementById("marksheetStatus");
+const subject =
+  document.getElementById("adminMarksSubject").value;
 
   if (!studentId) {
     status.textContent = "Pehle student select karein.";
