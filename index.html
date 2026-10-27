@@ -6929,6 +6929,9 @@ async function loadAdminMarksSubjects() {
     });
 
     const subjects = await response.json();
+   if (!Array.isArray(subjects)) {
+  throw new Error("Subjects API array return nahi kar rahi.");
+}
 console.log("Admin subjects response:", subjects);
     if (!response.ok) {
       throw new Error(
