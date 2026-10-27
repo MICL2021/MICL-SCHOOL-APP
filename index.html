@@ -7471,7 +7471,16 @@ async function loadOMRExams() {
     });
 
     const exams = await response.json();
-
+const answerKeyExam = document.getElementById('omrAnswerKeyExam');
+if (answerKeyExam) {
+  answerKeyExam.innerHTML = '<option value="">Select Exam</option>';
+  exams.forEach(exam => {
+    const option = document.createElement('option');
+    option.value = exam.id;
+    option.textContent = exam.exam_name + ' | Class: ' + exam.class_name + ' | ID: ' + exam.id;
+    answerKeyExam.appendChild(option);
+  });
+}
     if (!response.ok) {
       throw new Error(exams.error || 'Exams load nahi hue.');
     }
