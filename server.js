@@ -400,6 +400,22 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS omr_submissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam_id INTEGER NOT NULL,
+    student_id INTEGER NOT NULL,
+    file_url TEXT DEFAULT '',
+    answers_json TEXT NOT NULL DEFAULT '{}',
+    score REAL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'Pending Review',
+    reviewed_by INTEGER,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (exam_id) REFERENCES omr_exams(id),
+    FOREIGN KEY (student_id) REFERENCES users(id)
+  );
+`);
+
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
