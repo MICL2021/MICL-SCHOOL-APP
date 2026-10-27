@@ -2333,6 +2333,8 @@ if (loginRole === 'admin') {
       alert('Welcome Admin');
       show('home', 'Admin Dashboard');
       document.getElementById('teacherMenuButton').style.display = 'block';
+ const omrButton = document.getElementById('omrExamMenuButton');
+if (omrButton) omrButton.style.display = 'block';
     } else if (loginRole === 'teacher') {
       alert('Welcome Teacher');
       show('teacherDashboard', 'Teacher Dashboard');
