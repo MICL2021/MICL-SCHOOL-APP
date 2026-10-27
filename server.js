@@ -632,6 +632,42 @@ app.post("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
   }
 });
 
+app.get("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
+  try {
+    const examId = Number(req.params.id);
+
+    if (!Number.isInteger(examId) || examId < 1) {
+      return res.status(400).json({ error: "Invalid exam ID" });
+    }
+
+    const exam = db.prepare(
+      "SELECT id, total_questions FROM omr_exams WHERE id = ?"
+    ).get(examId);
+
+    if (!exam) {
+      return res.status(404).json({ error: "OMR exam not found" });
+    }
+
+    const answers = db.prepare(`
+      SELECT question_no, correct_answer
+      FROM omr_answer_keys
+      WHERE exam_id = ?
+      ORDER BY question_no
+    `).all(examId);
+
+    res.json({
+      exam_id: exam.id,
+      total_questions: exam.total_questions,
+      answers
+    });
+  } catch (error) {
+    console.error("OMR answer key read error:", error);
+    res.status(500).json({
+      error: "Could not load OMR answer key"
+    });
+  }
+});
+
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
     const settings = db.prepare(`
