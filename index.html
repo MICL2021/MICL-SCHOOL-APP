@@ -1343,6 +1343,24 @@ body.teacher-view #teacherMarksheetCard {
     <p id="omrExamStatus"></p>
    <div id="omrExamList"></div>
    <hr>
+   <h3>Answer Key</h3
+              <label>Select Exam</label>
+<select id="omrAnswerKeyExam">
+  <option value="">Select Exam</option>
+</select>   
+   
+<label>Question Number</label>
+<input id="omrQuestionNo" type="number" min="1" placeholder="Enter question number">
+
+<label>Correct Answer</label>
+<select id="omrCorrectAnswer">
+  <option value="">Select Answer</option>
+  <option value="A">A</option>
+  <option value="B">B</option>
+  <option value="C">C</option>
+  <option value="D">D</option>
+</select>
+<button class="btn" type="button" onclick="saveOMRAnswer()">Save Answer</button>
   </div>
 </section>
 
