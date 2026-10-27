@@ -1317,6 +1317,28 @@ body.teacher-view #teacherMarksheetCard {
   <h2>📝 OMR Examination</h2>
   <div class="card">
     <p>OMR Examination Management</p>
+   
+<h3>Create New Exam</h3>
+<label>Exam Name</label>
+<input id="omrExamName" type="text" placeholder="Enter Exam Name">
+
+<label>Class</label>
+<input id="omrExamClass" type="text" placeholder="Enter Class">
+
+<label>Subject</label>
+<input id="omrExamSubject" type="text" placeholder="Enter Subject">
+
+<label>Total Questions</label>
+<input id="omrTotalQuestions" type="number" min="1" placeholder="e.g. 50">
+
+<label>Marks Per Correct Answer</label>
+<input id="omrMarksPerQuestion" type="number" min="0" step="0.25" value="1">
+
+<label>Negative Marks Per Wrong Answer</label>
+<input id="omrNegativeMarks" type="number" min="0" step="0.25" value="0">
+
+<button class="btn" type="button" onclick="createOMRExam()">Create Exam</button>
+
     <p>Yahan exam create karne, answer key set karne aur OMR sheets check karne ke options honge.</p>
     <p id="omrExamStatus"></p>
   </div>
