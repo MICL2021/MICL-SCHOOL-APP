@@ -6490,12 +6490,25 @@ async function loadAdminMarksheetSubjects() {
   }
 }
 async function loadAdminMarksheet() {
-  const studentId = document.getElementById("adminMarksheetStudent").value;
-  const exam = document.getElementById("adminMarksheetTerm").value;
-  const status = document.getElementById("marksheetStatus");
+  const studentId =
+    document.getElementById("adminMarksheetStudent").value;
+
+  const exam =
+    document.getElementById("adminMarksheetTerm").value;
+
+  const subject =
+    document.getElementById("adminMarksheetSubjectSelect").value;
+
+  const status =
+    document.getElementById("marksheetStatus");
 
   if (!studentId) {
     status.textContent = "Pehle student select karein.";
+    return;
+  }
+
+  if (!subject) {
+    status.textContent = "Pehle subject select karein.";
     return;
   }
 
@@ -6504,11 +6517,12 @@ async function loadAdminMarksheet() {
 
     const fsStudent = document.getElementById("fsStudent");
     fsStudent.value = studentId;
+
     document.getElementById("fsYear").value = "2026-2027";
 
     if (fsStudent.value !== studentId) {
       document.getElementById("fsStatus").textContent =
-        "Selected student list mein nahi mila. Student list dobara load karein.";
+        "Selected student list mein nahi mila.";
       return;
     }
 
@@ -6517,10 +6531,9 @@ async function loadAdminMarksheet() {
   }
 
   await fetchMarksheet(
-    `/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}`
+    `/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}&subject=${encodeURIComponent(subject)}`
   );
 }
-
 async function loadStudentMarksheet() {
   const exam = document.getElementById("studentMarksheetTerm").value;
   await fetchMarksheet(`/api/marksheet?exam=${encodeURIComponent(exam)}`);
