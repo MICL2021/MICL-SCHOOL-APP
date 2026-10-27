@@ -561,6 +561,77 @@ app.get("/api/admin/omr/exams", auth, admin, (req, res) => {
   }
 });
 
+app.post("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
+  try {
+    const examId = Number(req.params.id);
+    const answers = req.body.answers;
+
+    if (!Number.isInteger(examId) || examId < 1) {
+      return res.status(400).json({ error: "Invalid exam ID" });
+    }
+
+    const exam = db.prepare(
+      "SELECT id, total_questions FROM omr_exams WHERE id = ?"
+    ).get(examId);
+
+    if (!exam) {
+      return res.status(404).json({ error: "OMR exam not found" });
+    }
+
+    if (!Array.isArray(answers) || answers.length !== exam.total_questions) {
+      return res.status(400).json({
+        error: "Please provide one answer for every question"
+      });
+    }
+
+    const validAnswers = answers.every((item, index) =>
+      item &&
+      Number(item.question_no) === index + 1 &&
+      ["A", "B", "C", "D"].includes(
+        String(item.correct_answer).toUpperCase()
+      )
+    );
+
+    if (!validAnswers) {
+      return res.status(400).json({
+        error: "Answers must be A, B, C or D for every question"
+      });
+    }
+
+    const saveAnswers = db.transaction(() => {
+      db.prepare(
+        "DELETE FROM omr_answer_keys WHERE exam_id = ?"
+      ).run(examId);
+
+      const insert = db.prepare(`
+        INSERT INTO omr_answer_keys
+        (exam_id, question_no, correct_answer)
+        VALUES (?, ?, ?)
+      `);
+
+      answers.forEach(item => {
+        insert.run(
+          examId,
+          Number(item.question_no),
+          String(item.correct_answer).toUpperCase()
+        );
+      });
+    });
+
+    saveAnswers();
+
+    res.json({
+      success: true,
+      message: "OMR answer key saved successfully"
+    });
+  } catch (error) {
+    console.error("OMR answer key error:", error);
+    res.status(500).json({
+      error: "Could not save OMR answer key"
+    });
+  }
+});
+
 app.get("/api/admin/id-card-settings", auth, admin, (req, res) => {
   try {
     const settings = db.prepare(`
