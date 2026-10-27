@@ -378,6 +378,28 @@ for (const [column, definition] of applicationColumns) {
   }
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS omr_exams (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam_name TEXT NOT NULL,
+    class_name TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    total_questions INTEGER NOT NULL,
+    marks_per_question REAL NOT NULL DEFAULT 1,
+    negative_marks REAL NOT NULL DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS omr_answer_keys (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam_id INTEGER NOT NULL,
+    question_no INTEGER NOT NULL,
+    correct_answer TEXT NOT NULL,
+    UNIQUE(exam_id, question_no),
+    FOREIGN KEY(exam_id) REFERENCES omr_exams(id)
+  );
+`);
+
 function seed(){
  const admin=db.prepare("SELECT id FROM users WHERE role='admin'").get();
  if(!admin) db.prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)").run("MICL Admin","admin@micl.edu",bcrypt.hashSync("Admin@123",10),"admin");
