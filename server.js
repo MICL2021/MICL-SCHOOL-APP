@@ -730,7 +730,7 @@ app.get("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
   }
 });
 
-app.post("/api/admin/omr/exams/:id/submissions", auth, admin, (req, res) => {
+app.post("/api/admin/omr/exams/:id/submissions", auth, admin, omrUpload.single("omrFile"), async (req, res) => {
   try {
     const examId = Number(req.params.id);
     const studentId = Number(req.body.student_id);
