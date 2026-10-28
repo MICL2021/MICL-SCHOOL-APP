@@ -7632,18 +7632,69 @@ async function previewBulkStudentList() {
   preview.innerHTML = '';
 
   if (!file) {
-    status.textContent = 'Pehle student list ki Excel ya CSV file select karein.';
+    status.textContent = 'Pehle student list ki file select karein.';
     return;
   }
 
   const extension = file.name.split('.').pop().toLowerCase();
 
   if (!['xlsx', 'xls', 'csv'].includes(extension)) {
-    status.textContent = 'Abhi Preview sirf Excel ya CSV file ke liye available hai. PDF baad mein add karenge.';
+    status.textContent = 'Sirf Excel ya CSV file upload karein.';
     return;
   }
 
-  status.textContent = 'Excel preview ke liye agle step mein reader library connect karenge.';
+  if (typeof XLSX === 'undefined') {
+    status.textContent = 'Excel library load nahi hui. Page refresh karke dobara try karein.';
+    return;
+  }
+
+  try {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, {
+      defval: '',
+      raw: false
+    });
+
+    if (!rows.length) {
+      status.textContent = 'File mein student records nahi mile.';
+      return;
+    }
+
+    preview.innerHTML = '<p><b>Total records: ' + rows.length +
+      '</b></p><div style="overflow-x:auto"><table border="1" cellpadding="6"><thead><tr>';
+
+    const columns = Object.keys(rows[0]);
+
+    preview.querySelector('table').querySelector('thead').innerHTML =
+      '<tr>' + columns.map(col =>
+        '<th>' + String(col).replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</th>'
+      ).join('') + '</tr>';
+
+    const tbody = document.createElement('tbody');
+
+    rows.slice(0, 20).forEach(row => {
+      const tr = document.createElement('tr');
+
+      columns.forEach(col => {
+        const td = document.createElement('td');
+        td.textContent = row[col];
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    preview.querySelector('table').appendChild(tbody);
+
+    status.textContent = 'Preview tayyar hai. Total ' + rows.length +
+      ' records mile. Abhi database mein koi student save nahi hua.';
+
+  } catch (error) {
+    status.textContent = 'File read nahi hui: ' + error.message;
+  }
 }
 </script>
 </body>
