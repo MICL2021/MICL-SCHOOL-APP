@@ -1375,6 +1375,9 @@ body.teacher-view #teacherMarksheetCard {
   />
 
   <p id="omrUploadStatus">Abhi koi file select nahi hui.</p>
+  <button class="btn" type="button" onclick="uploadOMRSheet()">
+  📤 Upload OMR Sheet
+</button>
 </div>
 </section>
 
@@ -7520,6 +7523,55 @@ if (answerKeyExam) {
     if (status) status.textContent = 'Exams loaded: ' + exams.length;
   } catch (error) {
     if (status) status.textContent = 'Error: ' + error.message;
+  }
+}
+
+async function uploadOMRSheet() {
+  const fileInput = document.getElementById('omrFile');
+  const status = document.getElementById('omrUploadStatus');
+  const examSelect = document.getElementById('omrAnswerKeyExam');
+
+  if (!fileInput || !fileInput.files.length) {
+    status.textContent = 'Pehle OMR ki photo ya PDF select karein.';
+    return;
+  }
+
+  if (!examSelect || !examSelect.value) {
+    status.textContent = 'Pehle exam select karein.';
+    return;
+  }
+
+  status.textContent = 'File upload ho rahi hai...';
+
+  try {
+    const token = localStorage.getItem('micl_token');
+    const response = await fetch(
+      '/api/admin/omr/exams/' + examSelect.value + '/submissions',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        body: (() => {
+          const formData = new FormData();
+          formData.append('omrFile', fileInput.files[0]);
+          formData.append('student_id', document.getElementById('omrStudentId')?.value || '');
+          formData.append('answers', JSON.stringify({}));
+          return formData;
+        })()
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Upload nahi hua.');
+    }
+
+    status.textContent =
+      'OMR file upload ho gayi. Submission ID: ' + data.submission_id;
+  } catch (error) {
+    status.textContent = 'Error: ' + error.message;
   }
 }
 
