@@ -1383,7 +1383,6 @@ body.teacher-view #teacherMarksheetCard {
   📤 Upload OMR Sheet
 </button>
 </div>
-</section>
 <section id="bulkStudents" class="screen">
   <h2>📥 Upload Student List</h2>
 
@@ -1405,6 +1404,30 @@ body.teacher-view #teacherMarksheetCard {
     <p id="bulkStudentStatus"></p>
     <div id="bulkStudentPreview"></div>
   </div>
+ <hr>
+<h3>📝 Generate OMR Answer Sheet</h3>
+
+<label>Number of Questions</label>
+<input id="omrGenerateQuestions" type="number" min="1" value="50">
+
+<button class="btn" type="button" onclick="generateOMRSheet()">
+  Generate OMR Sheet
+</button>
+
+<button class="btn" type="button" onclick="previewOMRSheet()">
+  Preview OMR Sheet
+</button>
+
+<button class="btn" type="button" onclick="downloadOMRSheet()">
+  Download OMR Sheet
+</button>
+
+<button class="btn" type="button" onclick="printOMRSheet()">
+  Print OMR Sheet
+</button>
+
+<div id="omrGeneratedPreview"></div>
+<p id="omrGenerateStatus"></p>
 </section>
 <section id="study" class="screen"><h2>Study Material</h2><div class="card">📘 English Notes <button class="btn" style="float:right">Open</button></div><div class="card">📗 Mathematics Notes <button class="btn" style="float:right">Open</button></div><div class="card">📙 Science Notes <button class="btn" style="float:right">Open</button></div></section>
 
