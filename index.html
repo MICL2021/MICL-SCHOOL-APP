@@ -4168,6 +4168,10 @@ if (homeworkUploadButton) {
 
   function applyRoleMenu(role) {
   const buttons = document.querySelectorAll('#sideMenu button');
+   const omrButton = document.getElementById('omrExamMenuButton');
+if (omrButton) {
+  omrButton.style.display = String(role || '').toLowerCase() === 'admin' ? 'block' : 'none';
+}
 const homeworkUploadButton =
   document.getElementById('homeworkUploadMenuButton');
 
@@ -4189,6 +4193,7 @@ if (homeworkUploadButton) {
   ];
 
   buttons.forEach(button => {
+   if (button.id === 'omrExamMenuButton') return;
     const label = button.textContent
       .toLowerCase()
       .replace(/[^\w\s]/g, ' ')
