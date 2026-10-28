@@ -1362,6 +1362,20 @@ body.teacher-view #teacherMarksheetCard {
 </select>
 <button class="btn" type="button" onclick="saveOMRAnswer()">Save Answer</button>
   </div>
+ <div class="card">
+  <h3>📷 OMR Sheet Scanner</h3>
+
+  <label for="omrFile">Camera se photo lein ya PDF/Image upload karein:</label>
+
+  <input
+    id="omrFile"
+    type="file"
+    accept="image/*,application/pdf"
+    capture="environment"
+  />
+
+  <p id="omrUploadStatus">Abhi koi file select nahi hui.</p>
+</div>
 </section>
 
 <section id="study" class="screen"><h2>Study Material</h2><div class="card">📘 English Notes <button class="btn" style="float:right">Open</button></div><div class="card">📗 Mathematics Notes <button class="btn" style="float:right">Open</button></div><div class="card">📙 Science Notes <button class="btn" style="float:right">Open</button></div></section>
