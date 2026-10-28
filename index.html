@@ -7491,8 +7491,31 @@ async function loadOMRExams() {
         'Authorization': 'Bearer ' + token
       }
     });
-
     const exams = await response.json();
+   const studentSelect = document.getElementById('omrStudentId');
+
+if (studentSelect) {
+  const studentResponse = await fetch('/api/admin/students', {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  });
+
+  const students = await studentResponse.json();
+
+  if (studentResponse.ok) {
+    studentSelect.innerHTML = '<option value="">Select Student</option>';
+
+    students.forEach(student => {
+      const option = document.createElement('option');
+      option.value = student.id;
+      option.textContent =
+        (student.name || 'Student') +
+        ' - Admission No: ' + (student.admission_no || 'N/A');
+      studentSelect.appendChild(option);
+    });
+  }
+}
 const answerKeyExam = document.getElementById('omrAnswerKeyExam');
 if (answerKeyExam) {
   answerKeyExam.innerHTML = '<option value="">Select Exam</option>';
