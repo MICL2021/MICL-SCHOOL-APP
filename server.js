@@ -762,13 +762,18 @@ app.post("/api/admin/omr/exams/:id/submissions", auth, admin, omrUpload.single("
     if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
       return res.status(400).json({ error: "Answers must be an object" });
     }
+const uploadedFile = await uploadOMRFile(req.file);
 
-    const result = db.prepare(`
-      INSERT INTO omr_submissions
-      (exam_id, student_id, answers_json, status)
-      VALUES (?, ?, ?, 'Pending Review')
-    `).run(examId, studentId, JSON.stringify(answers));
-
+const result = db.prepare(`
+  INSERT INTO omr_submissions
+  (exam_id, student_id, file_url, answers_json, status)
+  VALUES (?, ?, ?, ?, 'Pending Review')
+`).run(
+  examId,
+  studentId,
+  uploadedFile ? uploadedFile.url : '',
+  JSON.stringify(answers)
+);
     res.status(201).json({
       success: true,
       submission_id: result.lastInsertRowid,
