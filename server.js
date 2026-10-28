@@ -735,7 +735,6 @@ app.post("/api/admin/omr/exams/:id/submissions", auth, admin, omrUpload.single("
     const examId = Number(req.params.id);
     const studentId = Number(req.body.student_id);
     const answers = req.body.answers;
-
     if (!Number.isInteger(examId) || examId < 1) {
       return res.status(400).json({ error: "Invalid exam ID" });
     }
