@@ -1385,7 +1385,28 @@ body.teacher-view #teacherMarksheetCard {
 </button>
 </div>
 </section>
+<section id="bulkStudents" class="screen">
+  <h2>📥 Upload Student List</h2>
 
+  <div class="card">
+    <label for="bulkStudentClass">Select Class</label>
+    <select id="bulkStudentClass">
+      <option value="">Select Class</option>
+    </select>
+
+    <p>Excel (.xlsx, .xls) ya PDF student list select karein.</p>
+
+    <label for="bulkStudentFile">Student List File</label>
+    <input id="bulkStudentFile" type="file"
+      accept=".xlsx,.xls,.csv,.pdf">
+
+    <button class="btn" type="button"
+      onclick="previewBulkStudentList()">👁️ Preview List</button>
+
+    <p id="bulkStudentStatus"></p>
+    <div id="bulkStudentPreview"></div>
+  </div>
+</section>
 <section id="study" class="screen"><h2>Study Material</h2><div class="card">📘 English Notes <button class="btn" style="float:right">Open</button></div><div class="card">📗 Mathematics Notes <button class="btn" style="float:right">Open</button></div><div class="card">📙 Science Notes <button class="btn" style="float:right">Open</button></div></section>
 
 <section id="gallery" class="screen"><h2>School Gallery</h2><div class="gallery"><div class="photo">🏫</div><div class="photo">👨‍🎓</div><div class="photo">🏆</div><div class="photo">🎨</div><div class="photo">🌳</div><div class="photo">🎉</div></div></section>
