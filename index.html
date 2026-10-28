@@ -7623,7 +7623,27 @@ async function uploadOMRSheet() {
     status.textContent = 'Error: ' + error.message;
   }
 }
+async function previewBulkStudentList() {
+  const file = document.getElementById('bulkStudentFile').files[0];
+  const status = document.getElementById('bulkStudentStatus');
+  const preview = document.getElementById('bulkStudentPreview');
 
+  preview.innerHTML = '';
+
+  if (!file) {
+    status.textContent = 'Pehle student list ki Excel ya CSV file select karein.';
+    return;
+  }
+
+  const extension = file.name.split('.').pop().toLowerCase();
+
+  if (!['xlsx', 'xls', 'csv'].includes(extension)) {
+    status.textContent = 'Abhi Preview sirf Excel ya CSV file ke liye available hai. PDF baad mein add karenge.';
+    return;
+  }
+
+  status.textContent = 'Excel preview ke liye agle step mein reader library connect karenge.';
+}
 </script>
 </body>
 </html>
