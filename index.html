@@ -7720,6 +7720,123 @@ async function previewBulkStudentList() {
     status.textContent = 'File read nahi hui: ' + error.message;
   }
 }
+function generateOMRSheet() {
+  const total = Number(
+    document.getElementById('omrGenerateQuestions').value
+  );
+  const preview = document.getElementById('omrGeneratedPreview');
+  const status = document.getElementById('omrGenerateStatus');
+
+  if (!Number.isInteger(total) || total < 1 || total > 300) {
+    status.textContent = '1 se 300 tak questions enter karein.';
+    return;
+  }
+
+  let html = `
+    <div id="omrPrintableSheet"
+      style="background:white;color:black;padding:20px;border:1px solid #333;font-family:Arial">
+      <h2 style="text-align:center">MICL OMR ANSWER SHEET</h2>
+      <p>Student Name: __________________________</p>
+      <p>Admission No: __________________ Class: __________</p>
+      <hr>
+      <p>Har question mein sirf ek circle fill karein.</p>
+      <table style="width:100%;border-collapse:collapse">
+  `;
+
+  for (let i = 1; i <= total; i++) {
+    html += `
+      <tr>
+        <td style="padding:7px;width:45px">${i}.</td>
+        ${['A','B','C','D'].map(answer => `
+          <td style="padding:7px">
+            <span style="display:inline-block;border:1.5px solid black;
+            border-radius:50%;width:20px;height:20px;text-align:center;
+            line-height:20px">${answer}</span>
+          </td>
+        `).join('')}
+      </tr>
+    `;
+  }
+
+  html += '</table></div>';
+  preview.innerHTML = html;
+  status.textContent = 'OMR sheet generate ho gayi.';
+}
+
+function previewOMRSheet() {
+  const sheet = document.getElementById('omrPrintableSheet');
+  const status = document.getElementById('omrGenerateStatus');
+
+  if (!sheet) {
+    status.textContent = 'Pehle Generate OMR Sheet dabayein.';
+    return;
+  }
+
+  sheet.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  status.textContent = 'OMR sheet preview neeche hai.';
+}
+
+function downloadOMRSheet() {
+  const sheet = document.getElementById('omrPrintableSheet');
+  const status = document.getElementById('omrGenerateStatus');
+
+  if (!sheet) {
+    status.textContent = 'Pehle Generate OMR Sheet dabayein.';
+    return;
+  }
+
+  const blob = new Blob(
+    ['<!doctype html><html><head><meta charset="UTF-8"><title>MICL OMR Sheet</title></head><body>' +
+      sheet.outerHTML + '</body></html>'],
+    { type: 'text/html;charset=utf-8' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'MICL-OMR-Sheet.html';
+  link.click();
+  URL.revokeObjectURL(url);
+
+  status.textContent = 'OMR sheet download shuru ho gayi.';
+}
+
+function printOMRSheet() {
+  const sheet = document.getElementById('omrPrintableSheet');
+  const status = document.getElementById('omrGenerateStatus');
+
+  if (!sheet) {
+    status.textContent = 'Pehle Generate OMR Sheet dabayein.';
+    return;
+  }
+
+  const win = window.open('', '_blank');
+
+  if (!win) {
+    status.textContent = 'Print ke liye browser pop-ups allow karein.';
+    return;
+  }
+
+  win.document.write(`
+    <!doctype html>
+    <html>
+    <head>
+      <title>MICL OMR Answer Sheet</title>
+      <style>
+        body { font-family: Arial; color: black; }
+        table { width: 100%; border-collapse: collapse; }
+        tr { break-inside: avoid; }
+        @page { size: A4 portrait; margin: 10mm; }
+      </style>
+    </head>
+    <body>${sheet.outerHTML}</body>
+    </html>
+  `);
+
+  win.document.close();
+  win.focus();
+  win.print();
+} 
 </script>
 </body>
 </html>
