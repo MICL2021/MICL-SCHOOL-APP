@@ -643,25 +643,27 @@ app.post("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
       return res.status(404).json({ error: "OMR exam not found" });
     }
 
-    if (!Array.isArray(answers) || answers.length !== exam.total_questions) {
-      return res.status(400).json({
-        error: "Please provide one answer for every question"
-      });
-    }
+if (!Array.isArray(answers) || answers.length === 0) {
+  return res.status(400).json({
+    error: "Please provide at least one answer"
+  });
+}
 
-    const validAnswers = answers.every((item, index) =>
-      item &&
-      Number(item.question_no) === index + 1 &&
-      ["A", "B", "C", "D"].includes(
-        String(item.correct_answer).toUpperCase()
-      )
-    );
+const validAnswers = answers.every(item =>
+  item &&
+  Number.isInteger(Number(item.question_no)) &&
+  Number(item.question_no) >= 1 &&
+  Number(item.question_no) <= exam.total_questions &&
+  ["A", "B", "C", "D"].includes(
+    String(item.correct_answer).toUpperCase()
+  )
+);
 
-    if (!validAnswers) {
-      return res.status(400).json({
-        error: "Answers must be A, B, C or D for every question"
-      });
-    }
+if (!validAnswers) {
+  return res.status(400).json({
+    error: "Question number or answer is invalid"
+  });
+}
 
     const saveAnswers = db.transaction(() => {
       const insert = db.prepare(`
