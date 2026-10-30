@@ -7845,6 +7845,116 @@ async function uploadOMRSheet() {
     status.textContent = 'Error: ' + error.message;
   }
 }
+ 
+function generateManualOMRAnswers() {
+  const total = Number(
+    document.getElementById('omrManualTotalQuestions').value
+  );
+
+  const grid = document.getElementById('omrManualAnswerGrid');
+  const result = document.getElementById('omrManualResult');
+
+  grid.innerHTML = '';
+  result.textContent = '';
+
+  if (!Number.isInteger(total) || total < 1 || total > 300) {
+    result.textContent = '1 se 300 tak questions enter karein.';
+    return;
+  }
+
+  for (let q = 1; q <= total; q++) {
+    const row = document.createElement('div');
+    row.style.cssText =
+      'display:flex;align-items:center;gap:12px;margin:8px 0;';
+
+    const label = document.createElement('label');
+    label.textContent = 'Question ' + q;
+    label.style.minWidth = '110px';
+
+    const select = document.createElement('select');
+    select.className = 'omr-manual-answer';
+    select.dataset.question = q;
+    select.style.padding = '8px';
+
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = 'Select';
+    select.appendChild(blank);
+
+    ['A', 'B', 'C', 'D'].forEach(answer => {
+      const option = document.createElement('option');
+      option.value = answer;
+      option.textContent = answer;
+      select.appendChild(option);
+    });
+
+    row.appendChild(label);
+    row.appendChild(select);
+    grid.appendChild(row);
+  }
+
+  result.textContent = total + ' questions ke options tayyar hain.';
+}
+
+
+async function submitManualOMRAnswers() {
+  const submissionId = Number(
+    document.getElementById('omrManualSubmissionId').value
+  );
+
+  const result = document.getElementById('omrManualResult');
+  const selects = document.querySelectorAll('.omr-manual-answer');
+
+  if (!Number.isInteger(submissionId) || submissionId < 1) {
+    result.textContent = 'Valid Submission ID enter karein.';
+    return;
+  }
+
+  if (!selects.length) {
+    result.textContent = 'Pehle Generate Answer Options dabayein.';
+    return;
+  }
+
+  const answers = {};
+
+  selects.forEach(select => {
+    answers[select.dataset.question] = select.value;
+  });
+
+  result.textContent = 'Checking ho rahi hai...';
+
+  try {
+    const response = await fetch(
+      '/api/admin/omr/submissions/' + submissionId + '/review',
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+            'Bearer ' + localStorage.getItem('micl_token')
+        },
+        body: JSON.stringify({ answers: answers })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Checking nahi hui.');
+    }
+
+    result.textContent =
+      'Result: Correct: ' + data.correct +
+      ' | Wrong: ' + data.wrong +
+      ' | Unanswered: ' + data.unanswered +
+      ' | Marks: ' + data.score +
+      ' / ' + data.max_marks;
+
+  } catch (error) {
+    result.textContent = 'Error: ' + error.message;
+  }
+}
+
 async function previewBulkStudentList() {
   const file = document.getElementById('bulkStudentFile').files[0];
   const status = document.getElementById('bulkStudentStatus');
