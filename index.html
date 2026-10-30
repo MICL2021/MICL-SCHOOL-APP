@@ -7888,6 +7888,7 @@ function generateOMRSheet() {
   const makeButton = document.getElementById('omrMakeFinal');
 
   makeButton.onclick = function () {
+   alert('Final OMR button clicked');
     const selected = Array.from(
       document.querySelectorAll('.omr-field:checked')
     ).map(el => el.value);
