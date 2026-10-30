@@ -625,7 +625,108 @@ app.get("/api/admin/omr/exams", auth, admin, (req, res) => {
     });
   }
 });
+// UPDATE OMR EXAM
+app.put("/api/admin/omr/exams/:id", auth, admin, (req, res) => {
+  try {
+    const examId = Number(req.params.id);
+    const {
+      exam_name,
+      class_name,
+      subject,
+      total_questions,
+      marks_per_question,
+      negative_marks
+    } = req.body;
 
+    if (!Number.isInteger(examId) || examId < 1) {
+      return res.status(400).json({ error: "Invalid exam ID" });
+    }
+
+    if (
+      !exam_name || !class_name || !subject ||
+      !Number.isInteger(Number(total_questions)) ||
+      Number(total_questions) < 1 ||
+      !Number.isFinite(Number(marks_per_question)) ||
+      Number(marks_per_question) < 0 ||
+      !Number.isFinite(Number(negative_marks)) ||
+      Number(negative_marks) < 0
+    ) {
+      return res.status(400).json({ error: "Invalid exam details" });
+    }
+
+    const result = db.prepare(`
+      UPDATE omr_exams
+      SET exam_name = ?,
+          class_name = ?,
+          subject = ?,
+          total_questions = ?,
+          marks_per_question = ?,
+          negative_marks = ?
+      WHERE id = ?
+    `).run(
+      String(exam_name).trim(),
+      String(class_name).trim(),
+      String(subject).trim(),
+      Number(total_questions),
+      Number(marks_per_question),
+      Number(negative_marks),
+      examId
+    );
+
+    if (!result.changes) {
+      return res.status(404).json({ error: "Exam not found" });
+    }
+
+    res.json({ success: true, message: "Exam updated successfully" });
+  } catch (error) {
+    console.error("OMR exam update error:", error);
+    res.status(500).json({ error: "Could not update exam" });
+  }
+});
+
+
+// DELETE OMR EXAM
+app.delete("/api/admin/omr/exams/:id", auth, admin, (req, res) => {
+  try {
+    const examId = Number(req.params.id);
+
+    if (!Number.isInteger(examId) || examId < 1) {
+      return res.status(400).json({ error: "Invalid exam ID" });
+    }
+
+    const exam = db.prepare(
+      "SELECT id FROM omr_exams WHERE id = ?"
+    ).get(examId);
+
+    if (!exam) {
+      return res.status(404).json({ error: "Exam not found" });
+    }
+
+    const removeExam = db.transaction(() => {
+      db.prepare(
+        "DELETE FROM omr_answer_keys WHERE exam_id = ?"
+      ).run(examId);
+
+      db.prepare(
+        "DELETE FROM omr_submissions WHERE exam_id = ?"
+      ).run(examId);
+
+      db.prepare(
+        "DELETE FROM omr_exams WHERE id = ?"
+      ).run(examId);
+    });
+
+    removeExam();
+
+    res.json({
+      success: true,
+      message: "OMR exam deleted successfully"
+    });
+  } catch (error) {
+    console.error("OMR exam delete error:", error);
+    res.status(500).json({ error: "Could not delete exam" });
+  }
+});
 app.post("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
   try {
     const examId = Number(req.params.id);
