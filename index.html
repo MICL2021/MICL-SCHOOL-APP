@@ -1445,6 +1445,34 @@ body.teacher-view #teacherMarksheetCard {
     </button>
   </div>
 
+<div class="card">
+  <h3>Manual OMR Answer Entry</h3>
+
+  <label>Submission ID</label>
+  <input id="omrManualSubmissionId"
+         type="number" min="1"
+         placeholder="Upload ke baad Submission ID enter karein">
+
+  <label>Total Questions</label>
+  <input id="omrManualTotalQuestions"
+         type="number" min="1" max="300"
+         placeholder="Total questions">
+
+  <button class="btn" type="button"
+          onclick="generateManualOMRAnswers()">
+    Generate Answer Options
+  </button>
+
+  <div id="omrManualAnswerGrid"></div>
+
+  <button class="btn" type="button"
+          onclick="submitManualOMRAnswers()">
+    Submit for Checking
+  </button>
+
+  <p id="omrManualResult"></p>
+</div>
+
   <div class="card">
     <h3>OMR Submissions / Results</h3>
     <div id="omrSubmissionsList"></div>
