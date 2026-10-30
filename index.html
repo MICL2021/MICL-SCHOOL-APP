@@ -7618,6 +7618,21 @@ if (answerKeyExam) {
     answerKeyExam.appendChild(option);
   });
 }
+       const checkingExam = document.getElementById('omrCheckingExam');
+
+    if (checkingExam) {
+      checkingExam.innerHTML =
+        '<option value="">Select Exam</option>';
+
+      exams.forEach(exam => {
+        const option = document.createElement('option');
+        option.value = exam.id;
+        option.textContent =
+          exam.exam_name + ' | Class: ' + exam.class_name +
+          ' | ID: ' + exam.id;
+        checkingExam.appendChild(option);
+      });
+    }
     if (!response.ok) {
       throw new Error(exams.error || 'Exams load nahi hue.');
     }
