@@ -1475,6 +1475,10 @@ body.teacher-view #teacherMarksheetCard {
 
   <div class="card">
     <h3>OMR Submissions / Results</h3>
+   <button class="btn" type="button"
+        onclick="loadOMRSubmissions()">
+  Load OMR Results
+</button>
     <div id="omrSubmissionsList"></div>
     <div id="omrReviewArea"></div>
   </div>
@@ -7879,7 +7883,96 @@ async function uploadOMRSheet() {
     status.textContent = 'Error: ' + error.message;
   }
 }
+async function loadOMRSubmissions() {
+  const examSelect = document.getElementById('omrCheckingExam');
+  const list = document.getElementById('omrSubmissionsList');
+  const status = document.getElementById('omrUploadStatus');
 
+  if (!examSelect || !examSelect.value) {
+    list.textContent = 'Pehle Checking Exam select karein.';
+    return;
+  }
+
+  list.textContent = 'Results load ho rahe hain...';
+
+  try {
+    const response = await fetch(
+      '/api/admin/omr/exams/' + examSelect.value + '/submissions',
+      {
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+        }
+      }
+    );
+
+    const submissions = await response.json();
+
+    if (!response.ok) {
+      throw new Error(submissions.error || 'Results load nahi hue.');
+    }
+
+    list.innerHTML = '';
+
+    if (!submissions.length) {
+      list.textContent = 'Abhi koi OMR submission upload nahi hui.';
+      return;
+    }
+
+    submissions.forEach(sub => {
+      const card = document.createElement('div');
+      card.style.cssText =
+        'border:1px solid #ddd;padding:12px;margin:10px 0;border-radius:10px;';
+
+      const details = document.createElement('p');
+      details.textContent =
+        'Submission ID: ' + sub.id +
+        ' | Student: ' + (sub.student_name || 'N/A') +
+        ' | Admission No: ' + (sub.admission_no || 'N/A') +
+        ' | Status: ' + sub.status +
+        ' | Marks: ' + sub.score;
+
+      card.appendChild(details);
+
+      if (sub.file_url) {
+        const fileLink = document.createElement('a');
+        fileLink.href = sub.file_url;
+        fileLink.target = '_blank';
+        fileLink.rel = 'noopener';
+        fileLink.textContent = 'View Uploaded OMR Sheet';
+        card.appendChild(fileLink);
+      }
+
+      const reviewBtn = document.createElement('button');
+      reviewBtn.className = 'btn';
+      reviewBtn.type = 'button';
+      reviewBtn.textContent = 'Manual Check';
+
+      reviewBtn.onclick = () => {
+        const exam = (window.omrExamsData || []).find(
+          e => String(e.id) === String(sub.exam_id)
+        );
+
+        document.getElementById('omrManualSubmissionId').value = sub.id;
+        document.getElementById('omrManualTotalQuestions').value =
+          exam ? exam.total_questions : '';
+
+        generateManualOMRAnswers();
+
+        document.getElementById('omrManualResult').scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      };
+
+      card.appendChild(document.createElement('br'));
+      card.appendChild(reviewBtn);
+      list.appendChild(card);
+    });
+
+  } catch (error) {
+    list.textContent = 'Error: ' + error.message;
+  }
+}
 function generateManualOMRAnswers() {
   const total = Number(
     document.getElementById('omrManualTotalQuestions').value
@@ -8061,7 +8154,6 @@ async function previewBulkStudentList() {
     status.textContent = 'File read nahi hui: ' + error.message;
   }
 }
-
 
 function generateOMRSheet() {
   const total = Number(
