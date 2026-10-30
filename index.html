@@ -7585,15 +7585,40 @@ if (answerKeyExam) {
     }
 
     list.innerHTML = '';
+window.omrExamsData = exams;
 
-    exams.forEach(exam => {
-      const item = document.createElement('p');
-      item.textContent = exam.exam_name + ' | Class: ' +
-        exam.class_name + ' | Subject: ' + exam.subject +
-        ' | ID: ' + exam.id;
-      list.appendChild(item);
-    });
+exams.forEach(exam => {
+  const item = document.createElement('div');
+  item.style.cssText =
+    'border:1px solid #ddd;padding:12px;margin:10px 0;border-radius:10px;';
 
+  const title = document.createElement('h4');
+  title.textContent = exam.exam_name;
+
+  const details = document.createElement('p');
+  details.textContent =
+    'Class: ' + exam.class_name +
+    ' | Paper: ' + exam.subject +
+    ' | Questions: ' + exam.total_questions +
+    ' | ID: ' + exam.id;
+
+  const viewBtn = document.createElement('button');
+  viewBtn.textContent = 'View';
+  viewBtn.onclick = () => viewOMRExam(exam.id);
+
+  const editBtn = document.createElement('button');
+  editBtn.textContent = 'Edit';
+  editBtn.onclick = () => editOMRExam(exam.id);
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = 'Delete';
+  deleteBtn.style.background = '#dc3545';
+  deleteBtn.style.color = 'white';
+  deleteBtn.onclick = () => deleteOMRExam(exam.id);
+
+  item.append(title, details, viewBtn, editBtn, deleteBtn);
+  list.appendChild(item);
+});
     if (status) status.textContent = 'Exams loaded: ' + exams.length;
   } catch (error) {
     if (status) status.textContent = 'Error: ' + error.message;
