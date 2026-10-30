@@ -8229,8 +8229,9 @@ function generateOMRSheet() {
     `).join('');
 
     const answers = ['A', 'B', 'C', 'D'];
-   const groups = Math.ceil(total / 25);
-
+   
+const groups = Math.min(4, total);
+const perColumn = Math.ceil(total / groups);
     let tables = '';
 
     for (let g = 0; g < groups; g++) {
