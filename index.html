@@ -7838,10 +7838,13 @@ async function previewBulkStudentList() {
     status.textContent = 'File read nahi hui: ' + error.message;
   }
 }
+
+
 function generateOMRSheet() {
   const total = Number(
     document.getElementById('omrGenerateQuestions').value
   );
+
   const preview = document.getElementById('omrGeneratedPreview');
   const status = document.getElementById('omrGenerateStatus');
 
@@ -7850,35 +7853,226 @@ function generateOMRSheet() {
     return;
   }
 
-  let html = `
-    <div id="omrPrintableSheet"
-      style="background:white;color:black;padding:20px;border:1px solid #333;font-family:Arial">
-      <h2 style="text-align:center">MICL OMR ANSWER SHEET</h2>
-      <p>Student Name: __________________________</p>
-      <p>Admission No: __________________ Class: __________</p>
-      <hr>
-      <p>Har question mein sirf ek circle fill karein.</p>
-      <table style="width:100%;border-collapse:collapse">
-  `;
+  // Admin ke liye optional fields
+  let panel = document.getElementById('omrPrintOptions');
 
-  for (let i = 1; i <= total; i++) {
-    html += `
-      <tr>
-        <td style="padding:7px;width:45px">${i}.</td>
-        ${['A','B','C','D'].map(answer => `
-          <td style="padding:7px">
-            <span style="display:inline-block;border:1.5px solid black;
-            border-radius:50%;width:20px;height:20px;text-align:center;
-            line-height:20px">${answer}</span>
-          </td>
-        `).join('')}
-      </tr>
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'omrPrintOptions';
+    panel.style.cssText =
+      'border:1px solid #ccd8e5;padding:14px;margin:12px 0;border-radius:10px;background:#f7fbff;';
+
+    panel.innerHTML = `
+      <h3>OMR Sheet Details Select Karein</h3>
+      <p>Jo details chahiye un par tick karein:</p>
+
+      <label><input type="checkbox" class="omr-field" value="student" checked> Student Name</label><br>
+      <label><input type="checkbox" class="omr-field" value="father"> Father's Name</label><br>
+      <label><input type="checkbox" class="omr-field" value="roll" checked> Roll Number</label><br>
+      <label><input type="checkbox" class="omr-field" value="date" checked> Date</label><br>
+      <label><input type="checkbox" class="omr-field" value="category"> Category (Senior / Junior)</label><br>
+      <label><input type="checkbox" class="omr-field" value="studentSign" checked> Student Signature</label><br>
+      <label><input type="checkbox" class="omr-field" value="invigilator"> Invigilator Signature</label><br>
+      <label><input type="checkbox" class="omr-field" value="time"> Time In / Time Out</label><br>
+      <label><input type="checkbox" class="omr-field" value="evaluated"> Evaluated By</label><br>
+      <label><input type="checkbox" class="omr-field" value="score" checked> Score / Total Marks</label><br>
+
+      <button type="button" class="btn" id="omrMakeFinal">
+        Generate Final OMR Sheet
+      </button>
     `;
+
+    preview.parentNode.insertBefore(panel, preview);
   }
 
-  html += '</table></div>';
-  preview.innerHTML = html;
-  status.textContent = 'OMR sheet generate ho gayi.';
+  const makeButton = document.getElementById('omrMakeFinal');
+
+  makeButton.onclick = function () {
+    const selected = Array.from(
+      document.querySelectorAll('.omr-field:checked')
+    ).map(el => el.value);
+
+    const fieldLabels = {
+      student: "Student's Name",
+      father: "Father's Name",
+      roll: "Roll No.",
+      date: "Date",
+      category: "Category: Senior / Junior",
+      studentSign: "Student's Signature",
+      invigilator: "Invigilator's Signature",
+      time: "Time In: __________ Time Out: __________",
+      evaluated: "Evaluated By",
+      score: "SCORE: ______ / " + total
+    };
+
+    let details = selected.map(key => `
+      <div class="omr-detail">
+        <b>${fieldLabels[key]}</b>
+        <span></span>
+      </div>
+    `).join('');
+
+    const answers = ['A', 'B', 'C', 'D'];
+    const groups = Math.ceil(total / 20);
+
+    let tables = '';
+
+    for (let g = 0; g < groups; g++) {
+      let rows = '';
+
+      for (let i = g * 20 + 1; i <= Math.min((g + 1) * 20, total); i++) {
+        rows += `
+          <tr>
+            <td class="qno">${String(i).padStart(2, '0')}</td>
+            ${answers.map(a => `
+              <td><span class="bubble"></span></td>
+            `).join('')}
+          </tr>
+        `;
+      }
+
+      tables += `
+        <table class="omr-grid">
+          <thead>
+            <tr>
+              <th>Q.No.</th>
+              ${answers.map(a => `<th>${a}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    const html = `
+      <div id="omrPrintableSheet">
+        <div class="omr-heading">
+          <img src="/public/micl_logo.png" alt="MICL Logo">
+          <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
+          <h3>DHARANA, MENDHAR</h3>
+          <h3>KNOWLEDGE BASE TEST (KBT)</h3>
+          <b>OMR ANSWER SHEET | TOTAL QUESTIONS: ${total}</b>
+        </div>
+
+        <div class="omr-details">${details}</div>
+
+        <h3 class="omr-instructions">IMPORTANT INSTRUCTIONS</h3>
+        <p class="omr-note">
+          1. Use a blue or black ball-point pen only.
+          2. Fill ONE bubble completely for each question.
+          3. Select only one answer (A, B, C or D).
+          4. Do not fold, tear or make unnecessary marks.
+        </p>
+
+        <div class="omr-tables">${tables}</div>
+
+        <div class="omr-footer">
+          MICL • Knowledge Base Test (KBT)
+        </div>
+      </div>
+
+      <style>
+        #omrPrintableSheet {
+          background: white;
+          color: #172b3d;
+          padding: 18px;
+          border: 1px solid #ccd8e5;
+          font-family: Arial, sans-serif;
+          max-width: 900px;
+          margin: 15px auto;
+        }
+        .omr-heading {
+          text-align: center;
+          border-bottom: 3px solid #17658d;
+          padding-bottom: 12px;
+        }
+        .omr-heading img {
+          width: 85px;
+          height: 85px;
+          object-fit: contain;
+        }
+        .omr-heading h2 {
+          color: #17658d;
+          font-size: 19px;
+          margin: 5px 0;
+        }
+        .omr-heading h3 { margin: 5px; }
+        .omr-details {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 9px;
+          margin: 14px 0;
+        }
+        .omr-detail {
+          display: flex;
+          gap: 5px;
+          align-items: end;
+          min-height: 25px;
+          border-bottom: 1px solid #888;
+          font-size: 12px;
+        }
+        .omr-detail span {
+          flex: 1;
+        }
+        .omr-instructions {
+          color: #17658d;
+          font-size: 14px;
+        }
+        .omr-note {
+          font-size: 11px;
+          line-height: 1.5;
+        }
+        .omr-tables {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-top: 12px;
+        }
+        .omr-grid {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 11px;
+          text-align: center;
+        }
+        .omr-grid th {
+          background: #17658d;
+          color: white;
+          padding: 6px 2px;
+          border: 1px solid #aaa;
+        }
+        .omr-grid td {
+          border: 1px solid #b9c5ce;
+          padding: 5px 2px;
+        }
+        .bubble {
+          display: inline-block;
+          width: 13px;
+          height: 13px;
+          border: 1.5px solid #172b3d;
+          border-radius: 50%;
+        }
+        .omr-footer {
+          text-align: center;
+          font-size: 11px;
+          margin-top: 18px;
+        }
+        @media print {
+          #omrPrintableSheet {
+            border: none;
+            margin: 0;
+            padding: 0;
+          }
+        }
+      </style>
+    `;
+
+    preview.innerHTML = html;
+    status.textContent = 'Final MICL OMR Sheet tayyar hai. Print OMR Sheet dabayein.';
+    preview.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  status.textContent =
+    'Details select karein, phir Generate Final OMR Sheet dabayein.';
 }
 
 function previewOMRSheet() {
