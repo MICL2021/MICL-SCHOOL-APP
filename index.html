@@ -7943,129 +7943,211 @@ function generateOMRSheet() {
         </table>
       `;
     }
+const html = `
+<div id="omrPrintableSheet">
+<style>
+#omrPrintableSheet {
+  position:relative;
+  width:100%;
+  max-width:760px;
+  margin:10px auto;
+  padding:18px;
+  box-sizing:border-box;
+  background:white;
+  color:#172b3d;
+  border:1.5px solid #17658d;
+  font-family:Arial,sans-serif;
+  overflow:hidden;
+}
+#omrPrintableSheet::before {
+  content:"";
+  position:absolute;
+  inset:30% 15%;
+  background:url('/public/micl_logo.png') center/contain no-repeat;
+  opacity:.07;
+  pointer-events:none;
+}
+#omrPrintableSheet > * {
+  position:relative;
+}
+#omrPrintableSheet .omr-head {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  text-align:center;
+  border-bottom:3px solid #17658d;
+  padding-bottom:10px;
+}
+#omrPrintableSheet .omr-head img {
+  width:85px;
+  height:85px;
+  object-fit:contain;
+}
+#omrPrintableSheet h2 {
+  color:#124777;
+  font-size:19px;
+  margin:3px 0;
+}
+#omrPrintableSheet h3 {
+  margin:5px 0;
+  font-size:14px;
+}
+#omrPrintableSheet .omr-title {
+  background:#dceefa;
+  border:1px solid #17658d;
+  text-align:center;
+  padding:8px;
+  font-size:17px;
+  font-weight:bold;
+  margin:10px 0;
+}
+#omrPrintableSheet .omr-exam {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  border:1px solid #8daebe;
+  padding:10px;
+  font-size:12px;
+}
+#omrPrintableSheet .omr-details {
+  border:1px solid #8daebe;
+  padding:8px;
+  margin-top:10px;
+  font-size:12px;
+}
+#omrPrintableSheet .omr-details > b {
+  display:block;
+  background:#17658d;
+  color:white;
+  padding:6px;
+  margin:-8px -8px 8px;
+}
+#omrPrintableSheet .omr-details > div {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+#omrPrintableSheet .omr-detail {
+  border-bottom:1px solid #888;
+  min-height:25px;
+  padding:5px 0;
+}
+#omrPrintableSheet .omr-instructions {
+  background:#edf6fc;
+  border:1px solid #9bbdce;
+  padding:8px;
+  margin-top:10px;
+  font-size:11px;
+  line-height:1.5;
+}
+#omrPrintableSheet .omr-tables {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+#omrPrintableSheet .omr-grid {
+  width:100%;
+  border-collapse:collapse;
+  font-size:10px;
+  text-align:center;
+}
+#omrPrintableSheet .omr-grid th {
+  background:#17658d;
+  color:white;
+  padding:5px 2px;
+  border:1px solid #aaa;
+}
+#omrPrintableSheet .omr-grid td {
+  border:1px solid #b9c5ce;
+  padding:4px 2px;
+}
+#omrPrintableSheet .bubble {
+  display:inline-block;
+  width:12px;
+  height:12px;
+  border:1.4px solid #172b3d;
+  border-radius:50%;
+}
+#omrPrintableSheet .omr-footer {
+  text-align:center;
+  font-size:10px;
+  margin-top:12px;
+  border-top:1px solid #17658d;
+  padding-top:7px;
+}
+@page {
+  size:A4 portrait;
+  margin:8mm;
+}
+@media print {
+  #omrPrintableSheet {
+    width:100%;
+    max-width:none;
+    margin:0;
+    border:1px solid #17658d;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+}
+</style>
 
-    const html = `
-      <div id="omrPrintableSheet">
-        <div class="omr-heading">
-          <img src="/public/micl_logo.png" alt="MICL Logo">
-          <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
-          <h3>DHARANA, MENDHAR</h3>
-          <h3>KNOWLEDGE BASE TEST (KBT)</h3>
-          <b>OMR ANSWER SHEET | TOTAL QUESTIONS: ${total}</b>
-        </div>
+<div class="omr-head">
+  <img src="/public/micl_logo.png" alt="MICL Logo">
+  <div>
+    <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
+    <h3>DHARANA, MENDHAR</h3>
+    <div>Channi (Dharana), Mendhar</div>
+    <div>Email: info.micl2021@gmail.com</div>
+    <div>Phone: 8825043337</div>
+  </div>
+</div>
 
-        <div class="omr-details">${details}</div>
+<div class="omr-title">OMR ANSWER SHEET</div>
 
-        <h3 class="omr-instructions">IMPORTANT INSTRUCTIONS</h3>
-        <p class="omr-note">
-          1. Use a blue or black ball-point pen only.
-          2. Fill ONE bubble completely for each question.
-          3. Select only one answer (A, B, C or D).
-          4. Do not fold, tear or make unnecessary marks.
-        </p>
+<div class="omr-exam">
+  <div><b>EXAM NAME:</b> ${safeText(examName)}</div>
+  <div><b>PAPER TYPE:</b> ${safeText(paperType)}</div>
+  <div><b>PAPER:</b> ${safeText(paperName)}</div>
+  <div><b>TOTAL QUESTIONS:</b> ${total}</div>
+  <div><b>DURATION:</b> __________________</div>
+  <div><b>DATE:</b> ____ / ____ / ______</div>
+</div>
 
-        <div class="omr-tables">${tables}</div>
+<div class="omr-details">
+  <b>STUDENT DETAILS (Fill in Capital Letters Only)</b>
+  ${details}
+</div>
 
-        <div class="omr-footer">
-          MICL • Knowledge Base Test (KBT)
-        </div>
-      </div>
+<div class="omr-instructions">
+  <b>IMPORTANT INSTRUCTIONS</b><br>
+  1. Use only blue or black ball-point pen.<br>
+  2. Fill ONE bubble completely for each question.<br>
+  3. Select only one answer (A, B, C or D).<br>
+  4. Do not tick, cross or partially shade the circle.<br>
+  5. Do not fold, tear or make unnecessary marks.
+</div>
 
-      <style>
-        #omrPrintableSheet {
-          background: white;
-          color: #172b3d;
-          padding: 18px;
-          border: 1px solid #ccd8e5;
-          font-family: Arial, sans-serif;
-          max-width: 900px;
-          margin: 15px auto;
-        }
-        .omr-heading {
-          text-align: center;
-          border-bottom: 3px solid #17658d;
-          padding-bottom: 12px;
-        }
-        .omr-heading img {
-          width: 85px;
-          height: 85px;
-          object-fit: contain;
-        }
-        .omr-heading h2 {
-          color: #17658d;
-          font-size: 19px;
-          margin: 5px 0;
-        }
-        .omr-heading h3 { margin: 5px; }
-        .omr-details {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 9px;
-          margin: 14px 0;
-        }
-        .omr-detail {
-          display: flex;
-          gap: 5px;
-          align-items: end;
-          min-height: 25px;
-          border-bottom: 1px solid #888;
-          font-size: 12px;
-        }
-        .omr-detail span {
-          flex: 1;
-        }
-        .omr-instructions {
-          color: #17658d;
-          font-size: 14px;
-        }
-        .omr-note {
-          font-size: 11px;
-          line-height: 1.5;
-        }
-        .omr-tables {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 8px;
-          margin-top: 12px;
-        }
-        .omr-grid {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 11px;
-          text-align: center;
-        }
-        .omr-grid th {
-          background: #17658d;
-          color: white;
-          padding: 6px 2px;
-          border: 1px solid #aaa;
-        }
-        .omr-grid td {
-          border: 1px solid #b9c5ce;
-          padding: 5px 2px;
-        }
-        .bubble {
-          display: inline-block;
-          width: 13px;
-          height: 13px;
-          border: 1.5px solid #172b3d;
-          border-radius: 50%;
-        }
-        .omr-footer {
-          text-align: center;
-          font-size: 11px;
-          margin-top: 18px;
-        }
-        @media print {
-          #omrPrintableSheet {
-            border: none;
-            margin: 0;
-            padding: 0;
-          }
-        }
-      </style>
-    `;
+<div class="omr-tables">${tables}</div>
 
+<div class="omr-details">
+  <b>INVIGILATOR'S DETAILS</b>
+  <div>
+    <div class="omr-detail">Invigilator's Signature: __________</div>
+    <div class="omr-detail">Date: __________________</div>
+    <div class="omr-detail">Time In: ______ Time Out: ______</div>
+    <div class="omr-detail">Evaluated By: ______________</div>
+  </div>
+</div>
+
+<div class="omr-footer">
+  FOR OFFICE USE ONLY |
+  SCORE: ______ / ${total}<br>
+  MICL • Modern Institute of Creative Learning • Dharana, Mendhar
+</div>
+</div>
+`;
     preview.innerHTML = html;
     status.textContent = 'Final MICL OMR Sheet tayyar hai. Print OMR Sheet dabayein.';
     preview.scrollIntoView({ behavior: 'smooth' });
