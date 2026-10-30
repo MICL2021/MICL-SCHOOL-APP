@@ -8259,6 +8259,17 @@ function generateOMRSheet() {
         </table>
       `;
     }
+  const examName = document.getElementById('omrExamName')?.value || 'MICL Examination';
+const paperType = document.getElementById('omrExamClass')?.value || 'General Paper';
+const paperName = document.getElementById('omrExamSubject')?.value || 'General Paper';
+
+const safeText = value => String(value).replace(/[&<>"']/g, ch => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+}[ch])); 
 const html = `
 <div id="omrPrintableSheet">
 <style>
