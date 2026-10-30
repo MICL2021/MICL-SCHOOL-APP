@@ -8219,11 +8219,13 @@ function downloadOMRSheet() {
 
   status.textContent = 'OMR sheet download ho gayi.';
 }
+
 function printOMRSheet() {
   const preview = document.getElementById('omrGeneratedPreview');
   const status = document.getElementById('omrGenerateStatus');
+  const sheet = document.getElementById('omrPrintableSheet');
 
-  if (!preview || !document.getElementById('omrPrintableSheet')) {
+  if (!preview || !sheet || !sheet.innerHTML.trim()) {
     status.textContent = 'Pehle Generate Final OMR Sheet dabayein.';
     return;
   }
@@ -8231,12 +8233,12 @@ function printOMRSheet() {
   const win = window.open('', '_blank');
 
   if (!win) {
-    status.textContent = 'Browser mein pop-ups allow karein.';
+    status.textContent =
+      'Browser settings mein Pop-ups allow karein, phir dobara Print dabayein.';
     return;
   }
 
-  win.document.open();
-  win.document.write(`
+  const printHTML = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -8249,41 +8251,71 @@ function printOMRSheet() {
           margin: 8mm;
         }
 
+        * {
+          box-sizing: border-box;
+        }
+
         body {
+          margin: 0;
+          padding: 0;
           background: white;
           color: black;
           font-family: Arial, sans-serif;
         }
 
-        @media print {
-          #omrPrintableSheet {
-            max-width: none !important;
-            margin: 0 !important;
-            border: none !important;
-          }
+        #omrPrintableSheet {
+          width: 100%;
+          max-width: none;
+          margin: 0;
+          border: 1px solid #17658d;
+          padding: 10px;
+          background: white;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
 
-          tr {
-            break-inside: avoid;
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        tr {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        img {
+          max-width: 100%;
+        }
+
+        @media print {
+          body {
+            margin: 0;
           }
         }
       </style>
     </head>
     <body>
-      ${preview.innerHTML}
+      ${sheet.outerHTML}
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.focus();
+            window.print();
+          }, 700);
+        };
+      <\/script>
     </body>
     </html>
-  `);
-  win.document.close();
+  `;
 
-  win.onload = function() {
-    setTimeout(function() {
-      win.focus();
-      win.print();
-    }, 800);
-  };
+  win.document.open();
+  win.document.write(printHTML);
+  win.document.close();
 
   status.textContent = 'Print window khul rahi hai.';
 }
+
 </script>
 <style>
 /* OMR EXAM PROFESSIONAL FORM */
