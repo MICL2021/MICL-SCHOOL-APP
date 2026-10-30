@@ -7797,25 +7797,45 @@ async function deleteOMRExam(id) {
   alert('Exam deleted successfully');
   loadOMRExams();
 }
+
 async function uploadOMRSheet() {
   const fileInput = document.getElementById('omrFile');
   const status = document.getElementById('omrUploadStatus');
-  const examSelect = document.getElementById('omrAnswerKeyExam');
+  const examSelect = document.getElementById('omrCheckingExam');
+  const studentSelect = document.getElementById('omrStudentId');
+  const mode = document.getElementById('omrCheckingMode').value;
+
+  if (mode === 'automatic') {
+    status.textContent =
+      'Automatic bubble scanner abhi tayyar nahi hai. Filhal Manual Checking select karein.';
+    return;
+  }
 
   if (!fileInput || !fileInput.files.length) {
-    status.textContent = 'Pehle OMR ki photo ya PDF select karein.';
+    status.textContent = 'Pehle OMR photo ya PDF select karein.';
     return;
   }
 
   if (!examSelect || !examSelect.value) {
-    status.textContent = 'Pehle exam select karein.';
+    status.textContent = 'Pehle Checking Exam select karein.';
     return;
   }
 
-  status.textContent = 'File upload ho rahi hai...';
+  if (!studentSelect || !studentSelect.value) {
+    status.textContent = 'Pehle Student select karein.';
+    return;
+  }
+
+  status.textContent = 'OMR file upload ho rahi hai...';
 
   try {
     const token = localStorage.getItem('micl_token');
+    const formData = new FormData();
+
+    formData.append('omrFile', fileInput.files[0]);
+    formData.append('student_id', studentSelect.value);
+    formData.append('answers', JSON.stringify({}));
+
     const response = await fetch(
       '/api/admin/omr/exams/' + examSelect.value + '/submissions',
       {
@@ -7823,29 +7843,43 @@ async function uploadOMRSheet() {
         headers: {
           'Authorization': 'Bearer ' + token
         },
-        body: (() => {
-          const formData = new FormData();
-          formData.append('omrFile', fileInput.files[0]);
-          formData.append('student_id', document.getElementById('omrStudentId')?.value || '');
-          formData.append('answers', JSON.stringify({}));
-          return formData;
-        })()
+        body: formData
       }
     );
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Upload nahi hua.');
+      throw new Error(data.error || 'OMR upload nahi hua.');
+    }
+
+    const submissionId =
+      data.submission_id || data.id;
+
+    if (submissionId) {
+      document.getElementById('omrManualSubmissionId').value =
+        submissionId;
+    }
+
+    const exams = window.omrExamsData || [];
+    const selectedExam = exams.find(
+      exam => String(exam.id) === String(examSelect.value)
+    );
+
+    if (selectedExam) {
+      document.getElementById('omrManualTotalQuestions').value =
+        selectedExam.total_questions;
     }
 
     status.textContent =
-      'OMR file upload ho gayi. Submission ID: ' + data.submission_id;
+      'OMR upload successful! Submission ID: ' + submissionId +
+      '. Ab Manual Answer Entry mein answers select karein.';
+
   } catch (error) {
     status.textContent = 'Error: ' + error.message;
   }
 }
- 
+
 function generateManualOMRAnswers() {
   const total = Number(
     document.getElementById('omrManualTotalQuestions').value
