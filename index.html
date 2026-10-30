@@ -7599,7 +7599,90 @@ if (answerKeyExam) {
     if (status) status.textContent = 'Error: ' + error.message;
   }
 }
+function viewOMRExam(id) {
+  const exam = (window.omrExamsData || []).find(e => e.id == id);
+  if (!exam) return;
 
+  alert(
+    'Exam: ' + exam.exam_name +
+    '\nClass: ' + exam.class_name +
+    '\nPaper: ' + exam.subject +
+    '\nQuestions: ' + exam.total_questions +
+    '\nMarks: ' + exam.marks_per_question +
+    '\nNegative Marks: ' + exam.negative_marks
+  );
+}
+
+async function editOMRExam(id) {
+  const exam = (window.omrExamsData || []).find(e => e.id == id);
+  if (!exam) return;
+
+  const exam_name = prompt('Exam Name:', exam.exam_name);
+  if (exam_name === null) return;
+
+  const class_name = prompt('Class:', exam.class_name);
+  if (class_name === null) return;
+
+  const subject = prompt('Paper:', exam.subject);
+  if (subject === null) return;
+
+  const total_questions = Number(
+    prompt('Total Questions:', exam.total_questions)
+  );
+
+  const marks_per_question = Number(
+    prompt('Marks Per Question:', exam.marks_per_question)
+  );
+
+  const negative_marks = Number(
+    prompt('Negative Marks:', exam.negative_marks)
+  );
+
+  const response = await fetch('/api/admin/omr/exams/' + id, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+    },
+    body: JSON.stringify({
+      exam_name, class_name, subject,
+      total_questions, marks_per_question, negative_marks
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.error || 'Update failed');
+    return;
+  }
+
+  alert('Exam updated successfully');
+  loadOMRExams();
+}
+
+async function deleteOMRExam(id) {
+  if (!confirm('Kya aap is exam aur uske results ko delete karna chahte hain?')) {
+    return;
+  }
+
+  const response = await fetch('/api/admin/omr/exams/' + id, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('micl_token')
+    }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.error || 'Delete failed');
+    return;
+  }
+
+  alert('Exam deleted successfully');
+  loadOMRExams();
+}
 async function uploadOMRSheet() {
   const fileInput = document.getElementById('omrFile');
   const status = document.getElementById('omrUploadStatus');
