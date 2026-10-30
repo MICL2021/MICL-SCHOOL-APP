@@ -8236,7 +8236,7 @@ function generateOMRSheet() {
     for (let g = 0; g < groups; g++) {
       let rows = '';
 
-      for (let i = g * 20 + 1; i <= Math.min((g + 1) * 20, total); i++) {
+      for (let i = g * 25 + 1; i <= Math.min((g + 1) * 25, total); i++) {
         rows += `
           <tr>
             <td class="qno">${String(i).padStart(2, '0')}</td>
