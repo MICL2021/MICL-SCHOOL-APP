@@ -8303,17 +8303,21 @@ const html = `
   position:relative;
 }
 #omrPrintableSheet .omr-head {
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:12px;
   text-align:center;
-  border-bottom:3px solid #17658d;
-  padding-bottom:10px;
+  min-height:48px;
+  padding:2px 5px 5px 55px;
+  border-bottom:2px solid #17658d;
 }
 #omrPrintableSheet .omr-head img {
-  width:85px;
-  height:85px;
+  position:absolute;
+  left:2px;
+  top:2px;
+  width:42px;
+  height:42px;
   object-fit:contain;
 }
 #omrPrintableSheet h2 {
