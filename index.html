@@ -8224,19 +8224,19 @@ function generateOMRSheet() {
     `).join('');
 
     const answers = ['A', 'B', 'C', 'D'];
-   
-const groups = Math.min(4, total);
+const groups = 5;
 const perColumn = Math.ceil(total / groups);
-    let tables = '';
 
-    for (let g = 0; g < groups; g++) {
-      let rows = '';
+let tables = '';
 
-    for (
-  let i = g * perColumn + 1;
-  i <= Math.min((g + 1) * perColumn, total);
-  i++
-) {  
+for (let g = 0; g < groups; g++) {
+  let rows = '';
+
+  for (
+    let i = g * perColumn + 1;
+    i <= Math.min((g + 1) * perColumn, total);
+    i++
+  ) {
         rows += `
           <tr>
             <td class="qno">${String(i).padStart(2, '0')}</td>
