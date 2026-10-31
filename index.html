@@ -8460,16 +8460,14 @@ const html = `
 </div>
 
 <div class="omr-title">OMR ANSWER SHEET</div>
-
 <div class="omr-exam">
-  <div><b>EXAM NAME:</b> ${safeText(examName)}</div>
+  <div><b>EXAM:</b> ${safeText(examName)}</div>
   <div><b>PAPER TYPE:</b> ${safeText(paperType)}</div>
   <div><b>PAPER:</b> ${safeText(paperName)}</div>
-  <div><b>TOTAL QUESTIONS:</b> ${total}</div>
-  <div><b>DURATION:</b> __________________</div>
+  <div><b>QUESTIONS:</b> ${total}</div>
+  <div><b>DURATION:</b> ______________</div>
   <div><b>DATE:</b> ____ / ____ / ______</div>
 </div>
-
 <div class="omr-details">
   <b>STUDENT DETAILS (Fill in Capital Letters Only)</b>
   ${details}
