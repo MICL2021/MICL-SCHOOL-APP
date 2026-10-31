@@ -8187,11 +8187,7 @@ function generateOMRSheet() {
       <label><input type="checkbox" class="omr-field" value="date" checked> Date</label><br>
       <label><input type="checkbox" class="omr-field" value="category"> Category (Senior / Junior)</label><br>
       <label><input type="checkbox" class="omr-field" value="studentSign" checked> Student Signature</label><br>
-      <label><input type="checkbox" class="omr-field" value="invigilator"> Invigilator Signature</label><br>
-      <label><input type="checkbox" class="omr-field" value="time"> Time In / Time Out</label><br>
-      <label><input type="checkbox" class="omr-field" value="evaluated"> Evaluated By</label><br>
-      <label><input type="checkbox" class="omr-field" value="score" checked> Score / Total Marks</label><br>
-
+     
       <button type="button" class="btn" id="omrMakeFinal">
         Generate Final OMR Sheet
       </button>
@@ -8203,7 +8199,6 @@ function generateOMRSheet() {
   const makeButton = document.getElementById('omrMakeFinal');
 
   makeButton.onclick = function () {
-   alert('Final OMR button clicked');
     const selected = Array.from(
       document.querySelectorAll('.omr-field:checked')
     ).map(el => el.value);
