@@ -8241,7 +8241,7 @@ const perColumn = Math.ceil(total / groups);
           <tr>
             <td class="qno">${String(i).padStart(2, '0')}</td>
             ${answers.map(a => `
-              <td><span class="bubble"></span></td>
+              <td><span class="bubble">${a}</span></td>
             `).join('')}
           </tr>
         `;
