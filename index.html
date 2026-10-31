@@ -8704,6 +8704,83 @@ function printOMRSheet() {
   color: #12477f;
   margin-top: 18px;
 }
+ #omrPrintableSheet .omr-head {
+  padding: 2px 5px;
+  min-height: 42px;
+}
+
+#omrPrintableSheet .omr-head img {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+#omrPrintableSheet .omr-exam {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px 6px;
+  padding: 5px;
+  font-size: 9px;
+}
+
+#omrPrintableSheet .omr-title {
+  padding: 4px;
+  margin: 5px 0;
+  font-size: 13px;
+}
+
+#omrPrintableSheet .omr-details {
+  padding: 5px;
+  margin-top: 5px;
+  font-size: 9px;
+}
+
+#omrPrintableSheet .omr-detail {
+  min-height: 17px;
+  padding: 2px 0;
+}
+
+#omrPrintableSheet .omr-instructions {
+  padding: 4px;
+  margin-top: 5px;
+  font-size: 8px;
+  line-height: 1.2;
+}
+
+#omrPrintableSheet .omr-tables {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+  margin-top: 5px;
+}
+
+#omrPrintableSheet .omr-grid {
+  font-size: 6px;
+}
+
+#omrPrintableSheet .omr-grid th,
+#omrPrintableSheet .omr-grid td {
+  padding: 1px 0;
+  line-height: 1;
+}
+
+#omrPrintableSheet .bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 9px;
+  height: 9px;
+  font-size: 5px;
+  line-height: 1;
+  font-weight: bold;
+}
+
+#omrPrintableSheet .omr-footer {
+  font-size: 8px;
+  margin-top: 5px;
+  padding-top: 3px;
+}
 </style>
 
 </body>
