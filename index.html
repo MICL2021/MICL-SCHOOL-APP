@@ -1359,7 +1359,31 @@ body.teacher-view #teacherMarksheetCard {
   <select id="omrAnswerKeyExam" onchange="generateBulkAnswerKey()">
     <option value="">Select Exam</option>
   </select>
+<hr>
 
+<h3>Upload Question Paper PDF</h3>
+
+<label for="omrQuestionPaperFile">
+  Select Question Paper PDF
+</label>
+
+<input
+  type="file"
+  id="omrQuestionPaperFile"
+  accept="application/pdf"
+>
+
+<button
+  class="btn"
+  type="button"
+  onclick="extractOMRQuestions()"
+>
+  Upload PDF & Read Questions
+</button>
+
+<p id="omrQuestionPaperStatus"></p>
+
+<div id="omrExtractedQuestions"></div>
   <p id="omrAnswerKeyStatus">
     Exam select karein. Saare questions automatically aa jayenge.
   </p>
