@@ -7603,6 +7603,254 @@ async function saveOMRAnswer() {
     status.textContent = 'Error: ' + error.message;
   }
 }
+ async function generateBulkAnswerKey() {
+    const examId = document.getElementById('omrAnswerKeyExam').value;
+    const status = document.getElementById('omrAnswerKeyStatus');
+    const grid = document.getElementById('omrAnswerKeyGrid');
+    const token = localStorage.getItem('micl_token');
+
+    if (!examId) {
+        status.textContent = 'Please select an exam.';
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/admin/omr/exams', {
+    headers: {
+        'Authorization': 'Bearer ' + token
+    }
+});
+
+const exams = await response.json();
+
+if (!response.ok) {
+    throw new Error('Exam load failed');
+}
+
+const exam = exams.find(
+    item => Number(item.id) === Number(examId)
+);
+
+if (!exam) {
+    throw new Error('Selected exam not found');
+}
+
+        const total = Number(
+            exam.total_questions ||
+            exam.totalQuestions ||
+            0
+        );
+
+        if (!total) {
+            status.textContent = 'Total questions not found.';
+            return;
+        }
+
+        const keyResponse = await fetch(
+            '/api/admin/omr/exams/' + examId + '/answer-key',
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+        );
+
+        const savedData = await keyResponse.json();
+        const savedAnswers = {};
+
+        if (keyResponse.ok) {
+            const list = Array.isArray(savedData)
+                ? savedData
+                : (savedData.answers || []);
+
+            list.forEach(item => {
+                savedAnswers[item.question_no] =
+                    item.correct_answer;
+            });
+        }
+
+        let html = '';
+
+        for (let q = 1; q <= total; q++) {
+            html += `
+                <div class="omr-key-row"
+                     style="display:flex;align-items:center;gap:10px;
+                     padding:7px;border-bottom:1px solid #ddd;">
+
+                    <b style="width:55px">Q ${q}</b>
+
+                    <select class="omr-key-answer"
+                            data-question="${q}"
+                            style="flex:1;padding:8px;">
+                        <option value="">Select Answer</option>
+                        ${['A','B','C','D'].map(a => `
+                            <option value="${a}"
+                                ${savedAnswers[q] === a ? 'selected' : ''}>
+                                ${a}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+            `;
+        }
+
+        grid.innerHTML = html;
+        status.textContent = total + ' questions loaded.';
+
+    } catch (error) {
+        status.textContent = 'Error: ' + error.message;
+    }
+}
+
+
+async function saveBulkOMRAnswerKey() {
+    const examId = document.getElementById('omrAnswerKeyExam').value;
+    const status = document.getElementById('omrAnswerKeyStatus');
+    const token = localStorage.getItem('micl_token');
+
+    if (!examId) {
+        status.textContent = 'Please select an exam.';
+        return;
+    }
+
+    const selects = document.querySelectorAll('.omr-key-answer');
+    const answers = [];
+
+    for (const select of selects) {
+        if (!select.value) {
+            status.textContent =
+                'Please select answer for Question ' +
+                select.dataset.question;
+            select.focus();
+            return;
+        }
+
+        answers.push({
+            question_no: Number(select.dataset.question),
+            correct_answer: select.value
+        });
+    }
+
+    if (!answers.length) {
+        status.textContent = 'First load the questions.';
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            '/api/admin/omr/exams/' + examId + '/answer-key',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ answers })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Save failed');
+        }
+
+        status.textContent =
+            answers.length + ' answers saved successfully.';
+
+    } catch (error) {
+        status.textContent = 'Error: ' + error.message;
+    }
+}
+
+
+function downloadOMRAnswerKey() {
+    const rows = document.querySelectorAll('.omr-key-answer');
+
+    if (!rows.length) {
+        alert('First load the answer key.');
+        return;
+    }
+
+    let html = '<h2>MICL OMR ANSWER KEY</h2>';
+    html += '<table border="1" cellspacing="0" cellpadding="8">';
+    html += '<tr><th>Question</th><th>Correct Answer</th></tr>';
+
+    rows.forEach(select => {
+        html += `<tr>
+            <td>${select.dataset.question}</td>
+            <td>${select.value || '-'}</td>
+        </tr>`;
+    });
+
+    html += '</table>';
+
+    const blob = new Blob(
+        [html],
+        { type: 'text/html;charset=utf-8' }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = 'MICL-OMR-Answer-Key.html';
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+
+function printOMRAnswerKey() {
+    const rows = document.querySelectorAll('.omr-key-answer');
+
+    if (!rows.length) {
+        alert('First load the answer key.');
+        return;
+    }
+
+    let html = `
+        <html>
+        <head>
+            <title>MICL OMR Answer Key</title>
+            <style>
+                body { font-family: Arial; padding: 20px; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td {
+                    border: 1px solid #333;
+                    padding: 7px;
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            <h2>MICL OMR ANSWER KEY</h2>
+            <table>
+                <tr><th>Question</th><th>Correct Answer</th></tr>
+    `;
+
+    rows.forEach(select => {
+        html += `
+            <tr>
+                <td>${select.dataset.question}</td>
+                <td>${select.value || '-'}</td>
+            </tr>
+        `;
+    });
+
+    html += '</table></body></html>';
+
+    const win = window.open('', '_blank');
+
+    if (!win) {
+        alert('Browser pop-ups allow karein.');
+        return;
+    }
+
+    win.document.write(html);
+    win.document.close();
+    win.onload = () => win.print();
+}
 async function loadOMRExams() {
   const status = document.getElementById('omrExamStatus');
   const token = localStorage.getItem('micl_token');
