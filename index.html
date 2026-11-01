@@ -7181,7 +7181,6 @@ async function saveAdminStudentMarks() {
 async function loadAdminMarksSubjects() {
   const dropdown = document.getElementById("adminMarksSubject");
   const token = localStorage.getItem("micl_token");
-alert("Token status: " + (token ? "AVAILABLE" : "MISSING"));
   if (!dropdown) return;
 
   dropdown.innerHTML =
