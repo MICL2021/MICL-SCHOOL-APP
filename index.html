@@ -1352,34 +1352,32 @@ body.teacher-view #teacherMarksheetCard {
     <p id="omrExamStatus"></p>
     <div id="omrExamList"></div>
   </div>
+<div class="card" id="omrBulkAnswerKey">
+  <h3>Answer Key – All Questions</h3>
 
-  <div class="card">
-    <h3>Answer Key</h3>
+  <label>Select Exam</label>
+  <select id="omrAnswerKeyExam" onchange="generateBulkAnswerKey()">
+    <option value="">Select Exam</option>
+  </select>
 
-    <label>Select Exam</label>
-    <select id="omrAnswerKeyExam">
-      <option value="">Select Exam</option>
-    </select>
+  <p id="omrAnswerKeyStatus">
+    Exam select karein. Saare questions automatically aa jayenge.
+  </p>
 
-    <label>Question Number</label>
-    <input id="omrQuestionNo" type="number"
-           min="1" placeholder="Enter question number">
+  <div id="omrAnswerKeyGrid"></div>
 
-    <label>Correct Answer</label>
-    <select id="omrCorrectAnswer">
-      <option value="">Select Answer</option>
-      <option value="A">A</option>
-      <option value="B">B</option>
-      <option value="C">C</option>
-      <option value="D">D</option>
-    </select>
+  <button class="btn" type="button" onclick="saveBulkOMRAnswerKey()">
+    Save All Answers
+  </button>
 
-    <button class="btn" type="button"
-            onclick="saveOMRAnswer()">
-      Save Answer
-    </button>
-  </div>
+  <button class="btn" type="button" onclick="downloadOMRAnswerKey()">
+    Download Answer Key
+  </button>
 
+  <button class="btn" type="button" onclick="printOMRAnswerKey()">
+    Print Answer Key
+  </button>
+</div>
   <div class="card">
     <h3>Generate MICL OMR Sheet</h3>
 
