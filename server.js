@@ -833,7 +833,110 @@ app.get("/api/admin/omr/exams/:id/answer-key", auth, admin, (req, res) => {
     });
   }
 });
+// EXTRACT QUESTIONS FROM QUESTION PAPER PDF
+app.post(
+  "/api/admin/omr/exams/:id/question-paper/extract",
+  auth,
+  admin,
+  omrUpload.single("questionPaper"),
+  async (req, res) => {
+    try {
+      const examId = Number(req.params.id);
 
+      if (!Number.isInteger(examId) || examId < 1) {
+        return res.status(400).json({ error: "Invalid exam ID" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          error: "Please upload a question paper PDF"
+        });
+      }
+
+      if (req.file.mimetype !== "application/pdf") {
+        return res.status(400).json({
+          error: "Only PDF question papers are supported"
+        });
+      }
+
+      const exam = db.prepare(
+        "SELECT id, total_questions FROM omr_exams WHERE id = ?"
+      ).get(examId);
+
+      if (!exam) {
+        return res.status(404).json({ error: "Exam not found" });
+      }
+
+      const parsedPdf = await pdfParse(req.file.buffer);
+      const fullText = (parsedPdf.text || "")
+        .replace(/\r/g, "\n")
+        .replace(/[ \t]+/g, " ");
+
+      if (!fullText.trim()) {
+        return res.status(400).json({
+          error: "PDF has no selectable text. Scanned PDF needs OCR."
+        });
+      }
+
+      const lines = fullText
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean);
+
+      const questions = [];
+      let current = null;
+
+      for (const line of lines) {
+        const match = line.match(/^(\d{1,3})[\.)]\s*(.*)$/);
+
+        if (match) {
+          if (current) questions.push(current);
+
+          current = {
+            question_no: Number(match[1]),
+            question_text: match[2],
+            options: {}
+          };
+          continue;
+        }
+
+        if (!current) continue;
+
+        const option = line.match(/^([A-D])[\.)]\s*(.*)$/i);
+
+        if (option) {
+          current.options[option[1].toUpperCase()] = option[2];
+        } else {
+          current.question_text += " " + line;
+        }
+      }
+
+      if (current) questions.push(current);
+
+      const validQuestions = questions.filter(
+        q => q.question_no >= 1 &&
+             q.question_no <= Number(exam.total_questions)
+      );
+
+      res.json({
+        success: true,
+        exam_id: examId,
+        total_questions: exam.total_questions,
+        extracted_count: validQuestions.length,
+        questions: validQuestions,
+        message: validQuestions.length
+          ? "Questions extracted. Please verify them."
+          : "No numbered questions detected. PDF format may need OCR or a parser adjustment."
+      });
+
+    } catch (error) {
+      console.error("Question paper extraction error:", error);
+      res.status(500).json({
+        error: "Could not read question paper PDF"
+      });
+    }
+  }
+);
 app.post("/api/admin/omr/exams/:id/submissions", auth, admin, omrUpload.single("omrFile"), async (req, res) => {
   try {
     const examId = Number(req.params.id);
