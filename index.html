@@ -7223,16 +7223,17 @@ console.log("Admin subjects response:", subjects);
       dropdown.innerHTML =
         '<option value="">Pehle Subject Manager mein subjects add karein</option>';
     }
-  } catch (error) {
-    dropdown.innerHTML =
-      '<option value="">Subjects load nahi hue</option>';
+} catch (error) {
+  dropdown.innerHTML =
+    '<option value="">Subjects load nahi hue</option>';
 
-    const status = document.getElementById(
-      "adminMarksEntryStatus"
-    );
+  const status = document.getElementById("adminMarksEntryStatus");
 
-    if (status) status.textContent = error.message;
+  if (status) {
+    status.textContent = "Subject API Error: " + error.message;
   }
+
+  alert("Subject API Error: " + error.message);
 }
 document.addEventListener("DOMContentLoaded", function () {
   loadAdminMarksSubjects();
