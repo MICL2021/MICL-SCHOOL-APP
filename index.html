@@ -7627,6 +7627,70 @@ async function saveOMRAnswer() {
     status.textContent = 'Error: ' + error.message;
   }
 }
+ async function extractOMRQuestions() {
+  const examId = document.getElementById('omrAnswerKeyExam').value;
+  const fileInput = document.getElementById('omrQuestionPaperFile');
+  const status = document.getElementById('omrQuestionPaperStatus');
+  const output = document.getElementById('omrExtractedQuestions');
+  const token = localStorage.getItem('micl_token');
+
+  if (!examId) {
+    status.textContent = 'Please select an exam first.';
+    return;
+  }
+
+  if (!fileInput.files.length) {
+    status.textContent = 'Please select a question paper PDF.';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('questionPaper', fileInput.files[0]);
+
+  status.textContent = 'Reading question paper...';
+  output.innerHTML = '';
+
+  try {
+    const response = await fetch(
+      '/api/admin/omr/exams/' + examId + '/question-paper/extract',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'PDF reading failed');
+    }
+
+    if (!data.questions || !data.questions.length) {
+      throw new Error('No questions found in this PDF.');
+    }
+
+    output.innerHTML = data.questions.map(q => `
+      <div style="padding:10px;border-bottom:1px solid #ddd;">
+        <b>Q${q.question_no}.</b>
+        ${q.question_text}
+        <div>
+          ${Object.entries(q.options || {}).map(([letter, value]) =>
+            `<p>${letter}. ${value}</p>`
+          ).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    status.textContent =
+      data.extracted_count + ' questions extracted. Please check them.';
+
+  } catch (error) {
+    status.textContent = 'Error: ' + error.message;
+  }
+}
  async function generateBulkAnswerKey() {
     const examId = document.getElementById('omrAnswerKeyExam').value;
     const status = document.getElementById('omrAnswerKeyStatus');
