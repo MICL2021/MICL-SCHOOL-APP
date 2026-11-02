@@ -8109,11 +8109,17 @@ if (preview.parentElement !== previewContainer) {
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;
+          <div style="display:grid;grid-template-columns:1fr 1fr 110px;
             gap:10px;border:1px solid #b9cbe0;
             border-radius:8px;padding:13px;margin:16px 0;
             background:rgba(247,251,255,.92)">
-
+${student.photo ? `
+  <div style="grid-column:3;grid-row:1 / span 5;text-align:right">
+    <img src="${escapeMarksheet(student.photo)}"
+         alt="Student Photo"
+         style="width:100px;height:120px;object-fit:cover;border:2px solid #164b87;border-radius:8px">
+  </div>
+` : ""}
             <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
             <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
             <div><b>Father Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
