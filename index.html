@@ -7195,13 +7195,27 @@ function printMarksheet() {
     </body>
     </html>
   `);
+win.onload = () => {
+  const images = Array.from(win.document.images);
 
-  win.document.close();
+  Promise.all(
+    images.map(img =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          })
+    )
+  ).then(() => {
+    setTimeout(() => {
+      win.focus();
+      win.print();
+    }, 700);
+  });
+};
 
-  win.onload = () => {
-    win.focus();
-    win.print();
-  };
+win.document.close();
 }
 
 function drawMarksheetStamp() {
