@@ -6805,7 +6805,14 @@ const teacherRemarks =
 <div class="micl-premium-ribbon">
   STUDENT MARKSHEET — ${escapeMarksheet(data.exam || "")}
 </div>
-      <div class="micl-premium-info">
+     <div class="micl-premium-info" style="grid-template-columns:1fr 1fr 110px">
+  ${student.photo ? `
+    <div style="grid-column:3;grid-row:1 / span 4;text-align:right">
+      <img src="${escapeMarksheet(student.photo)}"
+           alt="Student Photo"
+           style="width:100px;height:120px;object-fit:cover;border:2px solid #164b87;border-radius:8px">
+    </div>
+  ` : ""}
   <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
   <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
   <div><b>Father's Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
