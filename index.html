@@ -7465,11 +7465,22 @@ document.querySelectorAll(
     loadFormativeStudents();
   });
 });
-async function showFormativeMarksheet() {
-  const studentId = document.getElementById("fsStudent").value;
-  const year = document.getElementById("fsYear").value.trim();
-  const status = document.getElementById("fsStatus");
+async function showFormativeMarksheet(target = "formative") {
+  const adminMode = target === "admin";
 
+  const studentId =
+    document.getElementById("fsStudent").value;
+
+  const year =
+    document.getElementById("fsYear").value.trim();
+
+  const status = document.getElementById(
+    adminMode ? "marksheetStatus" : "fsStatus"
+  );
+
+  const previewContainer = adminMode
+    ? document.getElementById("marksheetOutput")
+    : status.parentElement;
   if (!studentId) {
     status.textContent = "Pehle student select karein.";
     return;
