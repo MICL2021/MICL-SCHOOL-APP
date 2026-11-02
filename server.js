@@ -3260,8 +3260,8 @@ app.get("/api/admin/formative-summative-marks", auth, admin, (req, res) => {
 
   try {
     const student = db.prepare(`
-      SELECT id, name, admission_no, class_name, section, roll_no,
-             father_name, photo
+      SELECT id, name, admission_no, class_name, section,
+       roll_no, father_name, mother_name, dob, address, photo
       FROM users
       WHERE id = ? AND role = 'student'
     `).get(studentId);
