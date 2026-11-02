@@ -1097,11 +1097,15 @@ body.teacher-view #teacherMarksheetCard {
 
   <div class="card">
     <h3>Student Result Entry</h3>
+<label for="fsClass">Select Class</label>
+<select id="fsClass" onchange="filterFormativeStudents()">
+  <option value="">All Classes</option>
+</select>
 
-    <label for="fsStudent">Select Student</label>
-    <select id="fsStudent">
-      <option value="">Select Student</option>
-    </select>
+<label for="fsStudent">Select Student</label>
+<select id="fsStudent">
+  <option value="">Select Student</option>
+</select>
 <label for="fsSubject">Select Class Subject</label>
 <select id="fsSubject">
   <option value="">Pehle student select karein</option>
