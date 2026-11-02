@@ -436,6 +436,224 @@ box-sizing:border-box;
 body.teacher-view #teacherMarksheetCard {
   display: block;
 }
+ /* MICL PREMIUM BLUE & GOLD MARKSHEET */
+.micl-premium-sheet {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  color: #142b49;
+  border: 2px solid #123f78;
+  border-radius: 12px;
+  padding: 22px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 5px 18px rgba(6,59,130,.12);
+}
+
+.micl-premium-sheet:before {
+  content: "";
+  display: block;
+  height: 9px;
+  margin: -22px -22px 18px;
+  background: linear-gradient(90deg,#063b82,#1684d8,#f2bd43,#063b82);
+}
+
+.micl-premium-header {
+  display: grid;
+  grid-template-columns: 115px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 15px;
+  border-bottom: 3px solid #164b87;
+  text-align: center;
+}
+
+.micl-premium-header img {
+  width: 105px;
+  height: 105px;
+  object-fit: contain;
+}
+
+.micl-premium-header h2 {
+  color: #102e5c;
+  font-family: Georgia,serif;
+  font-size: 25px;
+  margin: 0;
+}
+
+.micl-premium-ribbon {
+  display: table;
+  margin: 15px auto;
+  padding: 9px 28px;
+  color: #fff;
+  background: linear-gradient(90deg,#063b82,#176bc0);
+  border-bottom: 4px solid #e9b83f;
+  border-radius: 5px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.micl-premium-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px 18px;
+  padding: 14px;
+  margin: 15px 0;
+  border: 1px solid #a9c4e5;
+  border-radius: 10px;
+  background: #f5f9ff;
+}
+
+.micl-premium-info div {
+  padding: 3px;
+  overflow-wrap: anywhere;
+}
+
+.micl-premium-info img {
+  max-width: 105px;
+  max-height: 125px;
+  object-fit: cover;
+  border: 2px solid #164b87;
+  border-radius: 8px;
+}
+
+.micl-premium-sheet table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.micl-premium-sheet th {
+  padding: 10px 6px;
+  color: #fff;
+  background: #0b3d7d;
+  border: 1px solid #315b8c;
+}
+
+.micl-premium-sheet td {
+  padding: 9px 6px;
+  border: 1px solid #9eb4d0;
+}
+
+.micl-premium-sheet tbody tr:nth-child(even) {
+  background: #eef5ff;
+}
+
+.micl-premium-summary {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 9px;
+  margin: 18px 0;
+}
+
+.micl-premium-summary div {
+  padding: 13px 5px;
+  text-align: center;
+  background: #edf5ff;
+  border: 1px solid #c7d9ee;
+  border-radius: 10px;
+}
+
+.micl-premium-summary strong {
+  display: block;
+  margin-top: 5px;
+  color: #0b3d7d;
+  font-size: 20px;
+}
+
+.micl-premium-remarks {
+  padding: 11px 14px;
+  margin: 18px 0;
+  background: #fff8e5;
+  border: 1px solid #e8c66c;
+  border-radius: 8px;
+}
+
+.micl-premium-signatures {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 12px;
+  align-items: end;
+  margin-top: 35px;
+  text-align: center;
+}
+
+.micl-premium-signatures img {
+  display: block;
+  max-width: 125px;
+  max-height: 55px;
+  object-fit: contain;
+  margin: 0 auto 5px;
+}
+
+.micl-premium-signatures div {
+  font-size: 12px;
+}
+
+.micl-premium-stamp {
+  display: block;
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: contain;
+  margin: 15px auto 0;
+}
+
+@media (max-width: 600px) {
+  .micl-premium-sheet {
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .micl-premium-header {
+    grid-template-columns: 75px 1fr;
+    gap: 8px;
+  }
+
+  .micl-premium-header img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .micl-premium-header h2 {
+    font-size: 16px;
+  }
+
+  .micl-premium-info {
+    grid-template-columns: 1fr 1fr;
+    font-size: 11px;
+  }
+
+  .micl-premium-sheet table {
+    min-width: 620px;
+    font-size: 11px;
+  }
+
+  .micl-premium-summary {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .micl-premium-signatures {
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  .micl-premium-sheet {
+    box-shadow: none !important;
+    border-radius: 0;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .micl-premium-sheet tr {
+    break-inside: avoid;
+  }
+}
 </style>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
