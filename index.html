@@ -7174,11 +7174,15 @@ function printMarksheet() {
     }
 
     @media print {
-      body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-    }
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body * {
+    visibility: visible !important;
+  }
+}
   `;
 
   win.document.write(`
