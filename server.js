@@ -3065,41 +3065,56 @@ app.get("/api/admin/marksheet/students", auth, admin, (req, res) => {
 
 app.get("/api/admin/marksheet", auth, admin, (req, res) => {
   const studentId = Number(req.query.student_id);
-  const exam = String(req.query.exam || "");
-const subject = String(req.query.subject || "").trim();
+  const exam = String(req.query.exam || "").trim();
 
-if (!subject) {
-  return res.status(400).json({
-    error: "Pehle subject select karein."
-  });
-}
   if (
-    !Number.isInteger(studentId) || studentId < 1 ||
+    !Number.isInteger(studentId) ||
+    studentId < 1 ||
     !["Term 1", "Term 2", "Annual"].includes(exam)
   ) {
     return res.status(400).json({
-      error: "Select a student and term."
+      error: "Select a student and valid term."
     });
   }
 
-  const student = db.prepare(`
-    SELECT id, name, admission_no, class_name, section, roll_no,
-           exam_roll_no, father_name, photo
-    FROM users
-    WHERE id=? AND role='student'
-  `).get(studentId);
+  try {
+    const student = db.prepare(`
+      SELECT id, name, admission_no, class_name, section,
+             roll_no, exam_roll_no, father_name, mother_name,
+             dob, address, photo
+      FROM users
+      WHERE id = ? AND role = 'student'
+    `).get(studentId);
 
-  if (!student) {
-    return res.status(404).json({ error: "Student not found." });
+    if (!student) {
+      return res.status(404).json({
+        error: "Student not found."
+      });
+    }
+
+    // Get ALL subjects for the selected exam
+    const records = db.prepare(`
+      SELECT subject, marks, max_marks
+      FROM results
+      WHERE student_id = ? AND exam = ?
+      ORDER BY subject
+    `).all(studentId, exam);
+
+    res.json({
+      success: true,
+      student,
+      exam,
+      records
+    });
+
+  } catch (error) {
+    console.error("Admin marksheet error:", error);
+    res.status(500).json({
+      error: "Marksheet generate nahi hui."
+    });
   }
-const records = db.prepare(`
-  SELECT subject, marks, max_marks
-  FROM results
-  WHERE student_id=? AND exam=? AND subject=?
-  ORDER BY subject
-`).all(studentId, exam, subject);
-  res.json({ student, exam, records });
 });
+
 app.post("/api/admin/marksheet/marks", auth, admin, (req, res) => {
   const studentId = Number(req.body.student_id);
   const exam = String(req.body.exam || "");
