@@ -7342,9 +7342,9 @@ document.addEventListener("input", function(event) {
 });
 
 updateFormativeTotal();
-
 async function loadFormativeStudents() {
   const select = document.getElementById("fsStudent");
+  const classSelect = document.getElementById("fsClass");
   const status = document.getElementById("fsStatus");
   const token = localStorage.getItem("micl_token");
 
@@ -7363,27 +7363,65 @@ async function loadFormativeStudents() {
       throw new Error(data.error || "Students load nahi hue.");
     }
 
-    select.innerHTML = '<option value="">Select Student</option>';
+    // Keep all students available for class filtering
+    window.miclFormativeStudents = data;
 
-    data.forEach(student => {
+    // Load unique classes from student records
+    const classes = [...new Set(
+      data.map(student => String(student.class_name || "").trim())
+        .filter(Boolean)
+    )].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+    classSelect.innerHTML = '<option value="">All Classes</option>';
+
+    classes.forEach(className => {
       const option = document.createElement("option");
-      option.value = student.id;
-option.textContent =
-  student.name + " - " + (student.admission_no || "No admission number");
-
-option.dataset.className = student.class_name || "";
-option.dataset.section = student.section || "";
-
-select.appendChild(option);
+      option.value = className;
+      option.textContent = className;
+      classSelect.appendChild(option);
     });
+
+    filterFormativeStudents();
 
     if (data.length === 0) {
       status.textContent = "Koi student nahi mila.";
     }
+
   } catch (error) {
     select.innerHTML = '<option value="">Students load nahi hue</option>';
     status.textContent = error.message;
   }
+}
+
+function filterFormativeStudents() {
+  const classSelect = document.getElementById("fsClass");
+  const studentSelect = document.getElementById("fsStudent");
+  const selectedClass = classSelect.value;
+
+  const students = window.miclFormativeStudents || [];
+
+  studentSelect.innerHTML = '<option value="">Select Student</option>';
+
+  students
+    .filter(student =>
+      !selectedClass ||
+      String(student.class_name || "").trim() === selectedClass
+    )
+    .forEach(student => {
+      const option = document.createElement("option");
+
+      option.value = student.id;
+      option.textContent =
+        student.name + " - " + (student.admission_no || "No admission number");
+
+      option.dataset.className = student.class_name || "";
+      option.dataset.section = student.section || "";
+
+      studentSelect.appendChild(option);
+    });
+
+  document.getElementById("fsSubject").innerHTML =
+    '<option value="">Pehle student select karein</option>';
 }
  document.getElementById("fsStudent").onchange = loadFormativeSubjects;
  async function loadFormativeSubjects() {
