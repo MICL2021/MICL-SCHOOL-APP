@@ -7536,11 +7536,347 @@ async function showFormativeMarksheet() {
   }
 }
 
-function escapeMarksheet(value) {
-  return String(value ?? "").replace(/[&<>"']/g, ch => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;",
-    '"': "&quot;", "'": "&#39;"
-  })[ch]);
+async function showFormativeMarksheet() {
+  const studentId = document.getElementById("fsStudent").value;
+  const year = document.getElementById("fsYear").value.trim();
+  const status = document.getElementById("fsStatus");
+
+  if (!studentId) {
+    status.textContent = "Pehle student select karein.";
+    return;
+  }
+
+  status.textContent = "Marksheet load ho rahi hai...";
+
+  try {
+    const token = localStorage.getItem("micl_token");
+
+    const response = await fetch(
+      `/api/admin/formative-summative-marks?student_id=${encodeURIComponent(studentId)}&academic_year=${encodeURIComponent(year)}`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Marksheet load nahi hui.");
+
+    const student = data.student || {};
+    const records = data.records || [];
+
+    if (!records.length) {
+      status.textContent = "Is student ke marks abhi save nahi hue.";
+      return;
+    }
+
+    // Existing saved school signatures and stamp
+    let settings = {};
+
+    const settingsResponse = await fetch("/api/admin/id-card-settings", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    if (settingsResponse.ok) {
+      settings = await settingsResponse.json();
+    }
+
+    const rows = records.map(r => {
+      const formative = ["f1", "f2", "f3", "f4", "f5", "f6"]
+        .reduce((sum, key) => sum + Number(r[key] || 0), 0);
+
+      const co = Number(r.co_curricular || 0);
+      const summative = Number(r.summative || 0);
+      const total = formative + co + summative;
+
+      return `
+        <tr>
+          <td>${escapeMarksheet(r.subject || "-")}</td>
+          <td>${["f1","f2","f3","f4","f5","f6"]
+            .map(k => Number(r[k] || 0)).join(" + ")}</td>
+          <td>${formative}/30</td>
+          <td>${co}/20</td>
+          <td>${summative}/50</td>
+          <td><b>${total}/100</b></td>
+        </tr>`;
+    }).join("");
+
+    const totalMarks = records.reduce((sum, r) => {
+      return sum +
+        ["f1","f2","f3","f4","f5","f6"].reduce(
+          (s,k) => s + Number(r[k] || 0), 0
+        ) +
+        Number(r.co_curricular || 0) +
+        Number(r.summative || 0);
+    }, 0);
+
+    const maximumMarks = records.length * 100;
+    const percentage = maximumMarks
+      ? totalMarks / maximumMarks * 100 : 0;
+
+    const grade = percentage >= 90 ? "A+" :
+      percentage >= 80 ? "A" :
+      percentage >= 70 ? "B" :
+      percentage >= 60 ? "C" :
+      percentage >= 50 ? "D" : "F";
+
+    const result = percentage >= 33 ? "PASS" : "NEEDS IMPROVEMENT";
+
+    // Create preview inside the app
+    let preview = document.getElementById("fsMarksheetPreview");
+
+    if (!preview) {
+      preview = document.createElement("div");
+      preview.id = "fsMarksheetPreview";
+      status.parentElement.appendChild(preview);
+    }
+
+    const logo = "/public/micl_logo.png";
+
+    preview.innerHTML = `
+      <div id="fsSignatureChoices" class="card">
+        <h3>🖊️ Marksheet Settings</h3>
+        <p>Select the signatures and stamp you want on this marksheet.</p>
+
+        <label><input type="checkbox" id="fsChoosePrincipal"> Principal Signature</label><br>
+        <label><input type="checkbox" id="fsChooseTeacher"> Class Teacher Signature</label><br>
+        <label><input type="checkbox" id="fsChooseChecked"> Checked By Signature</label><br>
+        <label><input type="checkbox" id="fsChooseCounter"> Counter Signature</label><br>
+        <label><input type="checkbox" id="fsChooseStamp"> School Stamp</label>
+
+        <p>
+          <label>Watermark Opacity:
+            <input type="range" id="fsWatermarkOpacity"
+              min="3" max="25" value="12">
+          </label>
+        </p>
+      </div>
+
+      <div id="fsPrintArea" style="
+        position:relative;background:#fff;color:#172b43;
+        border:2px solid #063b82;border-radius:10px;
+        padding:22px;margin-top:15px;overflow:hidden">
+
+        <img id="fsWatermark" src="${logo}" alt=""
+          style="position:absolute;width:55%;height:auto;
+          max-height:65%;object-fit:contain;opacity:.12;
+          top:50%;left:50%;transform:translate(-50%,-50%);
+          z-index:0;pointer-events:none">
+
+        <div style="position:relative;z-index:1">
+
+          <div style="display:flex;align-items:center;gap:15px;
+            border-bottom:3px double #063b82;padding-bottom:14px">
+
+            <img src="${logo}" alt="MICL Logo"
+              style="width:85px;height:85px;object-fit:contain">
+
+            <div style="text-align:center;flex:1">
+              <h2 style="margin:0;color:#063b82">
+                MODERN INSTITUTE OF CREATIVE LEARNING
+              </h2>
+              <p style="margin:5px 0;font-size:12px">
+                Channi Dharana, Mendhar |
+                Recognised by Government of Jammu & Kashmir
+              </p>
+              <h3 style="margin:8px 0">
+                FORMATIVE & SUMMATIVE MARKSHEET
+              </h3>
+              <b>Academic Year: ${escapeMarksheet(data.academic_year || year)}</b>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;
+            gap:10px;border:1px solid #b9cbe0;
+            border-radius:8px;padding:13px;margin:16px 0;
+            background:rgba(247,251,255,.92)">
+
+            <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
+            <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
+            <div><b>Father Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
+            <div><b>Mother Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
+            <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
+            <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
+            <div><b>Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
+            <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
+            <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
+            <div><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
+          </div>
+
+          <table style="width:100%;border-collapse:collapse;
+            text-align:center;background:rgba(255,255,255,.88)">
+            <thead>
+              <tr style="background:#eaf3ff;color:#063b82">
+                <th>Subject</th>
+                <th>F1–F6</th>
+                <th>Formative /30</th>
+                <th>Co-curricular /20</th>
+                <th>Summative /50</th>
+                <th>Total /100</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+
+          <p style="margin-top:12px">
+            Formative Assessment: 30 marks |
+            Co-curricular: 20 marks |
+            Summative Assessment: 50 marks
+          </p>
+
+          <div style="display:flex;justify-content:space-around;
+            flex-wrap:wrap;gap:12px;margin:22px 0">
+            <div><b>Total Marks</b><br>${totalMarks}/${maximumMarks}</div>
+            <div><b>Percentage</b><br>${percentage.toFixed(2)}%</div>
+            <div><b>Grade</b><br>${grade}</div>
+            <div><b>Result</b><br>${result}</div>
+          </div>
+
+          <div style="display:flex;justify-content:space-around;
+            align-items:flex-end;flex-wrap:wrap;gap:15px;margin-top:45px">
+
+            <div id="fsPrincipalBlock" class="fs-sign" style="display:none">
+              <img id="fsPrincipalImg">
+              <div>Principal Signature</div>
+            </div>
+
+            <div id="fsTeacherBlock" class="fs-sign" style="display:none">
+              <img id="fsTeacherImg">
+              <div>Class Teacher Signature</div>
+            </div>
+
+            <div id="fsCheckedBlock" class="fs-sign" style="display:none">
+              <img id="fsCheckedImg">
+              <div>Checked By Signature</div>
+            </div>
+
+            <div id="fsCounterBlock" class="fs-sign" style="display:none">
+              <img id="fsCounterImg">
+              <div>Counter Signature</div>
+            </div>
+          </div>
+
+          <div id="fsStampBlock" style="display:none;text-align:center;margin-top:20px">
+            <img id="fsStampImg" style="max-width:100px;max-height:90px;object-fit:contain">
+            <div>School Stamp</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
+        <button class="btn" type="button" onclick="previewFormativeMarksheet()">
+          👁 Preview
+        </button>
+        <button class="btn" type="button" onclick="printFormativeMarksheet()">
+          🖨 Print / Save PDF
+        </button>
+      </div>
+    `;
+
+    const assets = [
+      ["fsPrincipalImg", settings.principal_signature],
+      ["fsTeacherImg", settings.class_teacher_signature],
+      ["fsCheckedImg", settings.checked_by_signature],
+      ["fsCounterImg", settings.digital_signature],
+      ["fsStampImg", settings.school_stamp]
+    ];
+
+    assets.forEach(([id, src]) => {
+      const img = document.getElementById(id);
+      if (img && src) img.src = src || "";
+    });
+
+    const options = [
+      ["fsChoosePrincipal", "fsPrincipalBlock", "fsPrincipalImg", settings.principal_signature],
+      ["fsChooseTeacher", "fsTeacherBlock", "fsTeacherImg", settings.class_teacher_signature],
+      ["fsChooseChecked", "fsCheckedBlock", "fsCheckedImg", settings.checked_by_signature],
+      ["fsChooseCounter", "fsCounterBlock", "fsCounterImg", settings.digital_signature],
+      ["fsChooseStamp", "fsStampBlock", "fsStampImg", settings.school_stamp]
+    ];
+
+    options.forEach(([checkId, blockId, imageId, source]) => {
+      const checkbox = document.getElementById(checkId);
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked && !source) {
+          checkbox.checked = false;
+          alert("Pehle Marksheets Settings mein ye signature/stamp upload karein.");
+          return;
+        }
+        document.getElementById(blockId).style.display =
+          checkbox.checked ? "block" : "none";
+        document.getElementById(imageId).style.display =
+          checkbox.checked ? "block" : "none";
+      });
+    });
+
+    document.getElementById("fsWatermarkOpacity").addEventListener("input", function() {
+      document.getElementById("fsWatermark").style.opacity =
+        Number(this.value) / 100;
+    });
+
+    status.textContent = "Marksheet preview ready. Signatures select karke Preview karein.";
+
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+function previewFormativeMarksheet() {
+  const area = document.getElementById("fsPrintArea");
+  if (!area) return;
+
+  const win = window.open("", "_blank");
+  if (!win) {
+    alert("Browser pop-ups allow karein.");
+    return;
+  }
+
+  win.document.write(`
+    <!doctype html>
+    <html><head><title>MICL Formative Marksheet Preview</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:20px;color:#172b43}
+      table{width:100%;border-collapse:collapse}
+      th,td{border:1px solid #9fb4cc;padding:8px;text-align:center}
+      th{background:#eaf3ff}
+      .fs-sign{text-align:center;min-width:130px;font-size:12px}
+      .fs-sign img{display:block;max-width:125px;max-height:55px;object-fit:contain;margin:auto}
+      @page{size:A4 landscape;margin:10mm}
+    </style></head><body>
+    ${area.outerHTML}
+    </body></html>
+  `);
+  win.document.close();
+}
+
+function printFormativeMarksheet() {
+  const area = document.getElementById("fsPrintArea");
+  if (!area) return;
+
+  const win = window.open("", "_blank");
+  if (!win) {
+    alert("Browser pop-ups allow karein.");
+    return;
+  }
+
+  win.document.write(`
+    <!doctype html>
+    <html><head><title>MICL Formative Marksheet</title>
+    <style>
+      @page{size:A4 landscape;margin:10mm}
+      body{font-family:Arial,sans-serif;padding:10px;color:#172b43}
+      table{width:100%;border-collapse:collapse}
+      th,td{border:1px solid #9fb4cc;padding:8px;text-align:center}
+      th{background:#eaf3ff;color:#063b82}
+      .fs-sign{text-align:center;min-width:130px;font-size:12px}
+      .fs-sign img{display:block;max-width:125px;max-height:55px;object-fit:contain;margin:auto}
+      @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+    </style></head><body>
+    ${area.outerHTML}
+    </body></html>
+  `);
+
+  win.document.close();
+  win.focus();
+  win.print();
 }
 
 async function createOMRExam() {
