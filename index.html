@@ -7042,27 +7042,166 @@ async function fetchMarksheet(url) {
 function printMarksheet() {
   const content = document.getElementById("printMarksheet");
   if (!content) return;
+
   const win = window.open("", "_blank");
+
   if (!win) {
-    alert("Print window blocked. Browser mein pop-ups allow karein.");
+    alert("Browser pop-ups allow karein.");
     return;
   }
+
+  // Copy the app's original design CSS
+  const appStyles = Array.from(
+    document.querySelectorAll("style")
+  ).map(style => style.innerHTML).join("\n");
+
+  const printStyles = `
+    @page {
+      size: A4 portrait;
+      margin: 7mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      color: #142b49;
+      font-size: 10px;
+    }
+
+    #printMarksheet {
+      width: 100%;
+      max-width: none;
+      margin: 0 auto;
+      padding: 10px !important;
+      box-shadow: none !important;
+      border: 2px solid #123f78;
+      border-radius: 8px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .micl-premium-sheet:before {
+      margin: -10px -10px 8px;
+    }
+
+    .micl-premium-header {
+      grid-template-columns: 75px 1fr !important;
+      gap: 10px !important;
+      padding-bottom: 8px !important;
+    }
+
+    .micl-premium-header img {
+      width: 70px !important;
+      height: 70px !important;
+      max-width: 70px !important;
+      object-fit: contain !important;
+    }
+
+    .micl-premium-header h2 {
+      font-size: 19px !important;
+    }
+
+    .micl-premium-ribbon {
+      margin: 8px auto;
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    .micl-premium-info {
+      gap: 4px 10px;
+      padding: 8px;
+      margin: 8px 0;
+      font-size: 10px;
+    }
+
+    .micl-premium-sheet table {
+      margin: 8px 0;
+      font-size: 10px;
+    }
+
+    .micl-premium-sheet th,
+    .micl-premium-sheet td {
+      padding: 5px 4px;
+    }
+
+    .micl-premium-summary {
+      gap: 6px;
+      margin: 8px 0;
+    }
+
+    .micl-premium-summary div {
+      padding: 7px 3px;
+    }
+
+    .micl-premium-summary strong {
+      font-size: 14px;
+    }
+
+    .micl-premium-remarks {
+      padding: 7px;
+      margin: 8px 0;
+    }
+
+    .micl-premium-sheet img {
+      object-fit: contain;
+    }
+
+    #principalSignBlock,
+    #classTeacherSignBlock,
+    #checkedBySignBlock,
+    #counterSignBlock {
+      break-inside: avoid;
+    }
+
+    #schoolStampBlock {
+      margin-top: 8px !important;
+      text-align: center !important;
+    }
+
+    #printSchoolStamp {
+      max-width: 65px !important;
+      max-height: 65px !important;
+    }
+
+    button,
+    #marksheetSignatureChoices {
+      display: none !important;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  `;
+
   win.document.write(`
-    <!doctype html><html><head><title>MICL Marksheet</title>
-    <style>
-      @page{size:A4 portrait;margin:12mm}
-      body{font-family:Arial,sans-serif;padding:8px;color:#172b43;font-size:12px}
-      #printMarksheet{border:2px solid #063b82;border-radius:10px;padding:16px;box-shadow:none}
-      table{border-collapse:collapse;width:100%;margin-top:12px}
-      th,td{border:1px solid #9fb4cc;padding:8px}
-      th{background:#eaf3ff;color:#063b82}
-      button,#marksheetSignatureChoices{display:none!important}
-      img{object-fit:contain}
-      @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-    </style></head><body>${content.innerHTML}</body></html>`);
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>MICL Annual Marksheet</title>
+      <style>${appStyles}</style>
+      <style>${printStyles}</style>
+    </head>
+    <body>
+      ${content.outerHTML}
+    </body>
+    </html>
+  `);
+
   win.document.close();
-  win.focus();
-  win.print();
+
+  win.onload = () => {
+    win.focus();
+    win.print();
+  };
 }
 
 function drawMarksheetStamp() {
