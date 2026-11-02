@@ -8161,22 +8161,68 @@ ${student.photo ? `
             <tbody>${rows}</tbody>
           </table>
 
-          <p style="margin-top:12px">
+         <div style="margin:16px 0;
+padding:14px 18px;
+background:linear-gradient(135deg,#fff8df,#fff);
+border:1.5px solid #e5b52b;
+border-radius:12px;
+box-shadow:0 3px 8px rgba(0,0,0,.08);
+font-weight:700;color:#172b4d;
+line-height:2">
             Formative Assessment: 30 marks |
             Co-curricular: 20 marks |
             Summative Assessment: 50 marks
-          </p>
-
-          <div style="display:flex;justify-content:space-around;
-            flex-wrap:wrap;gap:12px;margin:22px 0">
-            <div><b>Total Marks</b><br>${totalMarks}/${maximumMarks}</div>
-            <div><b>Percentage</b><br>${percentage.toFixed(2)}%</div>
-            <div><b>Grade</b><br>${grade}</div>
-            <div><b>Result</b><br>${result}</div>
           </div>
-
-          <div style="display:flex;justify-content:space-around;
-            align-items:flex-end;flex-wrap:wrap;gap:15px;margin-top:45px">
+<div style="display:grid;
+grid-template-columns:repeat(4,minmax(0,1fr));
+gap:8px;margin:22px 0;
+padding:12px;
+background:#eaf5ff;
+border:1px solid #b7d9fa;
+border-radius:12px">
+            <div style="background:#fff;border:1px solid #c5ddf5;
+border-radius:10px;padding:12px 5px;text-align:center;
+font-weight:700;color:#063b82">
+<b>Total Marks</b><br>
+<span style="font-size:23px">${totalMarks}/${maximumMarks}</span>
+</div>
+            <div style="background:#fff;border:1px solid #c5ddf5;
+border-radius:10px;padding:12px 5px;text-align:center;
+font-weight:700;color:#063b82">
+<b>Percentage</b><br>
+<span style="font-size:23px">${percentage.toFixed(2)}%</span>
+</div>
+            <div style="background:#fff;border:1px solid #c5ddf5;
+border-radius:10px;padding:12px 5px;text-align:center;
+font-weight:700;color:#063b82">
+<b>Grade</b><br>
+<span style="font-size:23px">${grade}</span>
+</div>
+            <div style="background:#e8f8ed;border:1px solid #9bd6ad;
+border-radius:10px;padding:12px 5px;text-align:center;
+font-weight:700;color:#08752b">
+<b>Result</b><br>
+<span style="font-size:23px">${result}</span>
+</div>
+          </div>
+<div style="margin:18px 0;
+padding:13px 18px;
+background:linear-gradient(90deg,#eaf5ff,#d9edff);
+border:1px solid #8fc8ff;
+border-radius:12px;
+color:#063b82;
+font-size:17px;
+font-weight:700">
+✎ Remarks :
+<span style="color:#172b4d;font-style:italic;font-weight:600">
+Excellent Performance. Keep it up!
+</span>
+</div>
+          <div style="display:grid;
+grid-template-columns:repeat(5,minmax(0,1fr));
+align-items:end;
+gap:8px;
+margin-top:45px">
 
             <div id="fsPrincipalBlock" class="fs-sign" style="display:none">
               <img id="fsPrincipalImg">
@@ -8187,7 +8233,10 @@ ${student.photo ? `
               <img id="fsTeacherImg">
               <div>Class Teacher Signature</div>
             </div>
-
+<div id="fsStampBlock" style="display:none;text-align:center;margin-top:20px">
+  <img id="fsStampImg" style="max-width:100px;max-height:90px;object-fit:contain">
+  <div>School Stamp</div>
+</div>
             <div id="fsCheckedBlock" class="fs-sign" style="display:none">
               <img id="fsCheckedImg">
               <div>Checked By Signature</div>
@@ -8199,10 +8248,7 @@ ${student.photo ? `
             </div>
           </div>
 
-          <div id="fsStampBlock" style="display:none;text-align:center;margin-top:20px">
-            <img id="fsStampImg" style="max-width:100px;max-height:90px;object-fit:contain">
-            <div>School Stamp</div>
-          </div>
+
 
         </div>
       </div>
