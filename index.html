@@ -6770,7 +6770,12 @@ try {
     percentage >= 60 ? "C" :
     percentage >= 50 ? "D" : "F";
   const result = percentage >= 33 ? "PASS" : "NEEDS IMPROVEMENT";
-
+const teacherRemarks =
+  percentage >= 90 ? "Excellent Performance. Keep it up!" :
+  percentage >= 80 ? "Very Good Performance. Well done!" :
+  percentage >= 60 ? "Good Performance. Keep improving!" :
+  percentage >= 40 ? "Satisfactory Performance. Work harder!" :
+  "Needs Improvement. More practice required.";
   output.innerHTML = `
     <div class="card" id="marksheetSignatureChoices" style="margin-bottom:12px">
       <h3>Choose Signatures for This Marksheet</h3>
@@ -6780,6 +6785,13 @@ try {
       <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseCheckedBySign" onchange="toggleMarksheetSignature('checked',this.checked)"> Checked By Signature</label>
       <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseCounterSign" onchange="toggleMarksheetSignature('counter',this.checked)"> Counter Signature</label>
       <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseSchoolStamp" onchange="toggleMarksheetSignature('stamp',this.checked)"> School Stamp</label>
+      <label style="display:block;margin:10px 0">
+  Paper Orientation:
+  <select id="marksheetOrientation">
+    <option value="portrait">Portrait</option>
+    <option value="landscape" selected>Landscape</option>
+  </select>
+</label>
     </div>
     <div class="micl-premium-sheet" id="printMarksheet">
       <div class="micl-premium-header">
@@ -7042,7 +7054,7 @@ async function fetchMarksheet(url) {
 function printMarksheet() {
   const content = document.getElementById("printMarksheet");
   if (!content) return;
-
+const orientation = document.getElementById("marksheetOrientation")?.value || "landscape";
   const win = window.open("", "_blank");
 
   if (!win) {
@@ -7057,7 +7069,7 @@ function printMarksheet() {
 
   const printStyles = `
     @page {
-      size: A4 portrait;
+      size: A4 ${orientation};
       margin: 7mm;
     }
 
