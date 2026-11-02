@@ -6713,26 +6713,26 @@ async function loadAdminMarksheetSubjects() {
     console.error(error);
   }
 }
+
 async function loadAdminMarksheet() {
   const studentId =
     document.getElementById("adminMarksheetStudent").value;
 
   const exam =
     document.getElementById("adminMarksheetTerm").value;
-const subject =
-  document.getElementById("adminMarksSubject").value;
+
+  const status =
+    document.getElementById("marksheetStatus");
 
   if (!studentId) {
     status.textContent = "Pehle student select karein.";
     return;
   }
 
-  if (!subject) {
-    status.textContent = "Pehle subject select karein.";
-    return;
-  }
-
+  // Formative & Summative Marksheet
   if (exam === "Formative Summative") {
+    status.textContent = "Formative & Summative marksheet load ho rahi hai...";
+
     await loadFormativeStudents();
 
     const fsStudent = document.getElementById("fsStudent");
@@ -6741,7 +6741,7 @@ const subject =
     document.getElementById("fsYear").value = "2026-2027";
 
     if (fsStudent.value !== studentId) {
-      document.getElementById("fsStatus").textContent =
+      status.textContent =
         "Selected student list mein nahi mila.";
       return;
     }
@@ -6750,13 +6750,18 @@ const subject =
     return;
   }
 
+  // Term 1, Term 2 and Annual
+  const subject =
+    document.getElementById("adminMarksSubject").value;
+
+  if (!subject) {
+    status.textContent = "Pehle subject select karein.";
+    return;
+  }
+
   await fetchMarksheet(
     `/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}&subject=${encodeURIComponent(subject)}`
   );
-}
-async function loadStudentMarksheet() {
-  const exam = document.getElementById("studentMarksheetTerm").value;
-  await fetchMarksheet(`/api/marksheet?exam=${encodeURIComponent(exam)}`);
 }
 
 async function fetchMarksheet(url) {
