@@ -7501,12 +7501,16 @@ async function showFormativeMarksheet(target = "formative") {
 
     const student = data.student || {};
     const records = data.records || [];
+if (!records.length) {
+  if (adminMode && previewContainer) {
+    previewContainer.innerHTML = "";
+  }
 
-    if (!records.length) {
-      status.textContent = "Is student ke marks abhi save nahi hue.";
-      return;
-    }
+  status.textContent =
+    "Is student ke marks abhi save nahi hue.";
 
+  return;
+}
     // Existing saved school signatures and stamp
     let settings = {};
 
@@ -7562,11 +7566,14 @@ async function showFormativeMarksheet(target = "formative") {
     // Create preview inside the app
     let preview = document.getElementById("fsMarksheetPreview");
 
-    if (!preview) {
-      preview = document.createElement("div");
-      preview.id = "fsMarksheetPreview";
-      status.parentElement.appendChild(preview);
-    }
+if (!preview) {
+  preview = document.createElement("div");
+  preview.id = "fsMarksheetPreview";
+}
+
+if (preview.parentElement !== previewContainer) {
+  previewContainer.appendChild(preview);
+}
 
     const logo = "/public/micl_logo.png";
 
