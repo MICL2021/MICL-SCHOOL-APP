@@ -6724,6 +6724,11 @@ async function loadAdminMarksheet() {
   const status =
     document.getElementById("marksheetStatus");
 
+  const output =
+    document.getElementById("marksheetOutput");
+
+  if (output) output.innerHTML = "";
+
   if (!studentId) {
     status.textContent = "Pehle student select karein.";
     return;
@@ -6731,36 +6736,41 @@ async function loadAdminMarksheet() {
 
   // Formative & Summative Marksheet
   if (exam === "Formative Summative") {
-    status.textContent = "Formative & Summative marksheet load ho rahi hai...";
+    status.textContent =
+      "Formative & Summative marksheet load ho rahi hai...";
 
-    await loadFormativeStudents();
+    try {
+      await loadFormativeStudents();
 
-    const fsStudent = document.getElementById("fsStudent");
-    fsStudent.value = studentId;
+      const fsStudent =
+        document.getElementById("fsStudent");
 
-    document.getElementById("fsYear").value = "2026-2027";
+      fsStudent.value = studentId;
 
-    if (fsStudent.value !== studentId) {
-      status.textContent =
-        "Selected student list mein nahi mila.";
-      return;
+      const yearInput =
+        document.getElementById("fsYear");
+
+      const year = yearInput.value.trim() || "2026-2027";
+
+      if (fsStudent.value !== studentId) {
+        status.textContent =
+          "Selected student list mein nahi mila.";
+        return;
+      }
+
+      await showFormativeMarksheet("admin");
+    } catch (error) {
+      status.textContent = error.message;
     }
 
-    await showFormativeMarksheet();
     return;
   }
 
-  // Term 1, Term 2 and Annual
-  const subject =
-    document.getElementById("adminMarksSubject").value;
-
-  if (!subject) {
-    status.textContent = "Pehle subject select karein.";
-    return;
-  }
+  // Annual, Term 1 and Term 2
+  status.textContent = "Loading marksheet...";
 
   await fetchMarksheet(
-    `/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}&subject=${encodeURIComponent(subject)}`
+    `/api/admin/marksheet?student_id=${encodeURIComponent(studentId)}&exam=${encodeURIComponent(exam)}`
   );
 }
 
