@@ -7195,24 +7195,41 @@ function printMarksheet() {
     </body>
     </html>
   `);
-win.onload = () => {
-  const images = Array.from(win.document.images);
+win.onload = async () => {
+  try {
+    if (win.document.fonts) {
+      await win.document.fonts.ready;
+    }
 
-  Promise.all(
-    images.map(img =>
-      img.complete
-        ? Promise.resolve()
-        : new Promise(resolve => {
-            img.onload = resolve;
-            img.onerror = resolve;
-          })
-    )
-  ).then(() => {
+    const images = Array.from(win.document.images);
+
+    await Promise.all(
+      images.map(img => {
+        if (img.complete) return Promise.resolve();
+
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+          setTimeout(resolve, 3000);
+        });
+      })
+    );
+
+    await new Promise(resolve => {
+      win.requestAnimationFrame(() => {
+        win.requestAnimationFrame(resolve);
+      });
+    });
+
     setTimeout(() => {
       win.focus();
       win.print();
-    }, 700);
-  });
+    }, 1500);
+
+  } catch (error) {
+    win.focus();
+    win.print();
+  }
 };
 
 win.document.close();
