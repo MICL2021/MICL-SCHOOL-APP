@@ -6782,27 +6782,30 @@ try {
       <label style="display:block;margin:7px 0"><input type="checkbox" id="chooseSchoolStamp" onchange="toggleMarksheetSignature('stamp',this.checked)"> School Stamp</label>
     </div>
     <div class="micl-premium-sheet" id="printMarksheet">
-      <div style="display:flex;align-items:center;justify-content:center;gap:16px;text-align:center;border-bottom:3px double #063b82;padding:8px 0 14px;margin-bottom:16px">
-        <img src="/public/micl_logo.png" alt="MICL School Logo" style="width:88px;height:88px;object-fit:contain" onerror="this.style.display='none'">
-        <div>
-          <h2 style="margin:0;color:#063b82;font-size:22px">MODERN INSTITUTE OF CREATIVE LEARNING</h2>
-          <p style="margin:5px 0;font-size:12px">Channi Dharana, Mendhar | Recognised by Government of Jammu &amp; Kashmir</p>
-          <h3 style="margin:8px 0 0;letter-spacing:1px">STUDENT MARKSHEET — ${escapeMarksheet(data.exam || "")}</h3>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;border:1px solid #b9cbe0;border-radius:8px;padding:12px;margin-bottom:16px;background:#f7fbff">
-        <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
-        <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
-        <div><b>Father Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
-        <div><b>Mother Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
-        <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
-        <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
-        <div><b>Class Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
-        <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
-        <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
-        <div><b>Academic Session:</b> ${escapeMarksheet(data.academic_year || data.academicYear || "2026-2027")}</div>
-        <div style="grid-column:1/-1"><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
-      </div>
+      <div class="micl-premium-header">
+  <img src="/public/micl_logo.png" alt="MICL School Logo">
+  <div>
+    <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
+    <p>Channi Dharana, Mendhar | Recognised by Govt. of Jammu &amp; Kashmir</p>
+  </div>
+</div>
+
+<div class="micl-premium-ribbon">
+  STUDENT MARKSHEET — ${escapeMarksheet(data.exam || "")}
+</div>
+      <div class="micl-premium-info">
+  <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
+  <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
+  <div><b>Father's Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
+  <div><b>Mother's Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
+  <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
+  <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
+  <div><b>Class Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
+  <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
+  <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
+  <div><b>Academic Session:</b> ${escapeMarksheet(data.academic_year || data.academicYear || "2026-2027")}</div>
+  <div style="grid-column:1/-1"><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
+</div>
       <table style="width:100%;border-collapse:collapse">
         <thead>
           <tr>
@@ -6820,10 +6823,33 @@ try {
             </tr>`).join("")}
         </tbody>
       </table>
-      <h3>Total: ${total} / ${maximum}</h3>
-      <h3>Percentage: ${percentage.toFixed(2)}%</h3>
-      <h3>Grade: ${grade} | Result: ${result}</h3>
-      
+      <div class="micl-premium-summary">
+  <div>
+    Total Marks
+    <strong>${total} / ${maximum}</strong>
+  </div>
+
+  <div>
+    Percentage
+    <strong>${percentage.toFixed(2)}%</strong>
+  </div>
+
+  <div>
+    Grade
+    <strong>${grade}</strong>
+  </div>
+
+  <div>
+    Result
+    <strong>${result}</strong>
+  </div>
+</div>
+<div class="micl-premium-remarks">
+  <b>Teacher's Remarks:</b>
+  <div style="min-height:35px;margin-top:8px">
+    ______________________________
+  </div>
+</div>
 <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:35px;gap:12px;flex-wrap:wrap">
   <div id="principalSignBlock" style="text-align:center;width:30%;display:none">
     <img id="printPrincipalSign" style="max-width:130px;max-height:55px;display:none;margin:auto">
