@@ -8258,6 +8258,7 @@ function printFormativeMarksheet() {
   if (!area) return;
 
   const win = window.open("", "_blank");
+
   if (!win) {
     alert("Browser pop-ups allow karein.");
     return;
@@ -8267,68 +8268,97 @@ function printFormativeMarksheet() {
     document.querySelectorAll("style")
   ).map(style => style.innerHTML).join("\n");
 
+  const printStyles = `
+    @page {
+      size: A4 landscape;
+      margin: 5mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100%;
+      background: #fff !important;
+      color: #142b49;
+      font-family: Arial, sans-serif;
+    }
+
+    #fsPrintArea {
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 auto !important;
+      padding: 8px !important;
+      box-shadow: none !important;
+      box-sizing: border-box !important;
+      overflow: visible !important;
+    }
+
+    #fsPrintArea .micl-premium-info {
+      grid-template-columns: 120px 1fr 1fr !important;
+    }
+
+    #fsPrintArea table {
+      width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse !important;
+      font-size: 10px !important;
+    }
+
+    #fsPrintArea th,
+    #fsPrintArea td {
+      padding: 5px 3px !important;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    #fsPrintArea .micl-premium-summary {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    #fsPrintArea .micl-premium-signatures {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    #fsPrintArea img {
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    #fsPrintArea,
+    #fsPrintArea table,
+    #fsPrintArea .micl-premium-info,
+    #fsPrintArea .micl-premium-summary,
+    #fsPrintArea .micl-premium-signatures {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    button,
+    #fsSignatureChoices {
+      display: none !important;
+    }
+
+    @media print {
+      html, body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  `;
+
   win.document.write(`
     <!doctype html>
     <html>
     <head>
-      <title>MICL Formative Marksheet</title>
+      <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>MICL Formative & Summative Marksheet</title>
       <style>${appStyles}</style>
-      <style>
-        @page {
-          size: A4 landscape;
-          margin: 8mm;
-        }
-
-        body {
-          margin: 0;
-          padding: 10px;
-          background: #fff;
-          color: #142b49;
-          font-family: Arial, sans-serif;
-        }
-
-        #fsPrintArea {
-          width: 100%;
-          max-width: none;
-          margin: 0 auto;
-          box-shadow: none;
-        }
-
-        #fsPrintArea .micl-premium-info {
-          grid-template-columns: 120px 1fr 1fr !important;
-        }
-
-        #fsPrintArea table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        #fsPrintArea th,
-        #fsPrintArea td {
-          border: 1px solid #9eb4d0;
-          padding: 8px 6px;
-          text-align: center;
-        }
-
-        #fsPrintArea th {
-          color: #fff;
-          background: #0b3d7d !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-
-        #fsPrintArea .micl-premium-signatures {
-          grid-template-columns: repeat(4, 1fr);
-        }
-
-        @media print {
-          body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-        }
-      </style>
+      <style>${printStyles}</style>
     </head>
     <body>
       ${area.outerHTML}
@@ -8336,9 +8366,38 @@ function printFormativeMarksheet() {
     </html>
   `);
 
+  win.onload = async function() {
+    try {
+      if (win.document.fonts) {
+        await win.document.fonts.ready;
+      }
+
+      const images = Array.from(win.document.images);
+
+      await Promise.all(
+        images.map(img => {
+          if (img.complete) return Promise.resolve();
+
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+            setTimeout(resolve, 3000);
+          });
+        })
+      );
+
+      setTimeout(() => {
+        win.focus();
+        win.print();
+      }, 1000);
+
+    } catch (error) {
+      win.focus();
+      win.print();
+    }
+  };
+
   win.document.close();
-  win.focus();
-  win.print();
 }
 
 async function createOMRExam() {
