@@ -622,11 +622,19 @@ body.teacher-view #teacherMarksheetCard {
     grid-template-columns: 1fr 1fr;
     font-size: 11px;
   }
+.micl-premium-sheet table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    font-size: 10px;
+    word-break: break-word;
+}
 
-  .micl-premium-sheet table {
-    min-width: 620px;
-    font-size: 11px;
-  }
+.micl-premium-sheet th,
+.micl-premium-sheet td {
+    padding: 5px 3px;
+    overflow-wrap: anywhere;
+}
 
   .micl-premium-summary {
     grid-template-columns: repeat(2,1fr);
