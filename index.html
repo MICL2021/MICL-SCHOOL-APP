@@ -8058,206 +8058,106 @@ if (preview.parentElement !== previewContainer) {
 
     preview.innerHTML = `
       <div id="fsSignatureChoices" class="card">
-        <h3>🖊️ Marksheet Settings</h3>
-        <p>Select the signatures and stamp you want on this marksheet.</p>
-
-        <label><input type="checkbox" id="fsChoosePrincipal"> Principal Signature</label><br>
-        <label><input type="checkbox" id="fsChooseTeacher"> Class Teacher Signature</label><br>
-        <label><input type="checkbox" id="fsChooseChecked"> Checked By Signature</label><br>
-        <label><input type="checkbox" id="fsChooseCounter"> Counter Signature</label><br>
-        <label><input type="checkbox" id="fsChooseStamp"> School Stamp</label>
-
-        <p>
-          <label>Watermark Opacity:
-            <input type="range" id="fsWatermarkOpacity"
-              min="3" max="25" value="12">
-          </label>
-        </p>
+        <h3>🖊️ Choose Signatures for This Marksheet</h3>
+        <p>Select the signatures and stamp you want printed.</p>
+        <label style="display:block;margin:7px 0"><input type="checkbox" id="fsChoosePrincipal"> Principal Signature</label>
+        <label style="display:block;margin:7px 0"><input type="checkbox" id="fsChooseTeacher"> Class Teacher Signature</label>
+        <label style="display:block;margin:7px 0"><input type="checkbox" id="fsChooseChecked"> Checked By Signature</label>
+        <label style="display:block;margin:7px 0"><input type="checkbox" id="fsChooseCounter"> Counter Signature</label>
+        <label style="display:block;margin:7px 0"><input type="checkbox" id="fsChooseStamp"> School Stamp</label>
       </div>
 
-      <div id="fsPrintArea" style="
-        position:relative;background:#fff;color:#172b43;
-        border:2px solid #063b82;border-radius:10px;
-        padding:22px;margin-top:15px;overflow:hidden">
-
-        <img id="fsWatermark" src="${logo}" alt=""
-          style="position:absolute;width:55%;height:auto;
-          max-height:65%;object-fit:contain;opacity:.12;
-          top:50%;left:50%;transform:translate(-50%,-50%);
-          z-index:0;pointer-events:none">
-
-        <div style="position:relative;z-index:1">
-
-          <div style="display:flex;align-items:center;gap:15px;
-            border-bottom:3px double #063b82;padding-bottom:14px">
-
-            <img src="${logo}" alt="MICL Logo"
-              style="width:85px;height:85px;object-fit:contain">
-
-            <div style="text-align:center;flex:1">
-              <h2 style="margin:0;color:#063b82">
-                MODERN INSTITUTE OF CREATIVE LEARNING
-              </h2>
-              <p style="margin:5px 0;font-size:12px">
-                Channi Dharana, Mendhar |
-                Recognised by Government of Jammu & Kashmir
-              </p>
-             <h3 style="margin:12px auto;padding:10px 20px;
-  background:linear-gradient(90deg,#063b82,#1685d4,#063b82);
-  color:#fff;border-radius:8px;
-  text-align:center;font-size:22px;
-  font-weight:800;letter-spacing:.5px;
-  box-shadow:0 3px 8px rgba(0,0,0,.2)">
-                FORMATIVE & SUMMATIVE MARKSHEET
-              </h3>
-              <b style="display:inline-block;margin:10px auto;padding:8px 24px;
-background:linear-gradient(90deg,#f5b400,#ffdf65,#e5a000);
-color:#17233b;border-radius:20px;font-size:17px;
-font-weight:800;box-shadow:0 3px 6px rgba(0,0,0,.18)">
-Academic Year : ${escapeMarksheet(data.academic_year || year)}
-</b>
-            </div>
+      <div id="fsPrintArea" class="micl-premium-sheet">
+        <div class="micl-premium-header">
+          <img src="${logo}" alt="MICL School Logo">
+          <div>
+            <h2>MODERN INSTITUTE OF CREATIVE LEARNING</h2>
+            <p>Channi Dharana, Mendhar | Recognised by Govt. of Jammu &amp; Kashmir</p>
           </div>
+        </div>
 
-      <div style="display:grid;
-  grid-template-columns:120px 1fr 1fr;
-  gap:12px;
-  border:1.5px solid #164b87;
-  border-radius:12px;
-  padding:16px;
-  margin:16px 0;
-  background:linear-gradient(135deg,#ffffff,#edf6ff);
-  box-shadow:0 3px 10px rgba(6,59,130,.10)">
+        <div class="micl-premium-ribbon">
+          FORMATIVE &amp; SUMMATIVE MARKSHEET
+        </div>
 
-  ${student.photo ? `
-    <div style="grid-column:1;grid-row:1 / span 5;text-align:center">
-      <img src="${escapeMarksheet(student.photo)}"
-           alt="Student Photo"
-           style="width:105px;height:125px;object-fit:cover;
-           border:2px solid #164b87;border-radius:8px">
-    </div>
-  ` : ""}
+        <div style="text-align:center;margin:-5px 0 15px">
+          <b>Academic Session: ${escapeMarksheet(data.academic_year || year)}</b>
+        </div>
 
-  <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
-  <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
-  <div><b>Father Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
-  <div><b>Mother Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
-  <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
-  <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
-  <div><b>Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
-  <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
-  <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
-  <div><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
-</div>
+        <div class="micl-premium-info" style="grid-template-columns:120px 1fr 1fr">
+          ${student.photo ? `
+            <div style="grid-column:1;grid-row:1 / span 5;text-align:center">
+              <img src="${escapeMarksheet(student.photo)}"
+                   alt="Student Photo"
+                   style="width:100px;height:120px;object-fit:cover;border:2px solid #164b87;border-radius:8px">
+            </div>
+          ` : ""}
+          <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
+          <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
+          <div><b>Father's Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
+          <div><b>Mother's Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
+          <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
+          <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
+          <div><b>Class Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
+          <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
+          <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
+          <div style="grid-column:2/-1"><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
+        </div>
 
-          <table style="width:100%;border-collapse:collapse;
-            text-align:center;background:rgba(255,255,255,.88)">
-            <thead>
-              <tr style="background:linear-gradient(90deg,#063b82,#1685d4,#063b82);color:#ffffff">
-                <th>Subject</th>
-                <th>F1–F6</th>
-                <th>Formative /30</th>
-                <th>Co-curricular /20</th>
-                <th>Summative /50</th>
-                <th>Total /100</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>F1–F6</th>
+              <th>Formative /30</th>
+              <th>Co-curricular /20</th>
+              <th>Summative /50</th>
+              <th>Total /100</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
 
-         <div style="margin:16px 0;
-padding:14px 18px;
-background:linear-gradient(135deg,#fff8df,#fff);
-border:1.5px solid #e5b52b;
-border-radius:12px;
-box-shadow:0 3px 8px rgba(0,0,0,.08);
-font-weight:700;color:#172b4d;
-line-height:2">
-            Formative Assessment: 30 marks |
-            Co-curricular: 20 marks |
-            Summative Assessment: 50 marks
+        <div class="micl-premium-summary">
+          <div>Total Marks<strong>${totalMarks} / ${maximumMarks}</strong></div>
+          <div>Percentage<strong>${percentage.toFixed(2)}%</strong></div>
+          <div>Grade<strong>${grade}</strong></div>
+          <div>Result<strong>${result}</strong></div>
+        </div>
+
+        <div class="micl-premium-remarks">
+          <b>Teacher's Remarks:</b>
+          <div style="min-height:35px;margin-top:8px">
+            Excellent Performance. Keep it up!
           </div>
-<div style="display:grid;
-grid-template-columns:repeat(4,minmax(0,1fr));
-gap:8px;margin:22px 0;
-padding:12px;
-background:#eaf5ff;
-border:1px solid #b7d9fa;
-border-radius:12px">
-            <div style="background:#fff;border:1px solid #c5ddf5;
-border-radius:10px;padding:12px 5px;text-align:center;
-font-weight:700;color:#063b82">
-<b>Total Marks</b><br>
-<span style="font-size:23px">${totalMarks}/${maximumMarks}</span>
-</div>
-            <div style="background:#fff;border:1px solid #c5ddf5;
-border-radius:10px;padding:12px 5px;text-align:center;
-font-weight:700;color:#063b82">
-<b>Percentage</b><br>
-<span style="font-size:23px">${percentage.toFixed(2)}%</span>
-</div>
-            <div style="background:#fff;border:1px solid #c5ddf5;
-border-radius:10px;padding:12px 5px;text-align:center;
-font-weight:700;color:#063b82">
-<b>Grade</b><br>
-<span style="font-size:23px">${grade}</span>
-</div>
-            <div style="background:#e8f8ed;border:1px solid #9bd6ad;
-border-radius:10px;padding:12px 5px;text-align:center;
-font-weight:700;color:#08752b">
-<b>Result</b><br>
-<span style="font-size:23px">${result}</span>
-</div>
+        </div>
+
+        <div class="micl-premium-signatures">
+          <div id="fsPrincipalBlock" style="display:none">
+            <img id="fsPrincipalImg" alt="Principal Signature">
+            <div>Principal Signature</div>
           </div>
-<div style="margin:18px 0;
-padding:13px 18px;
-background:linear-gradient(90deg,#eaf5ff,#d9edff);
-border:1px solid #8fc8ff;
-border-radius:12px;
-color:#063b82;
-font-size:17px;
-font-weight:700">
-✎ Remarks :
-<span style="color:#172b4d;font-style:italic;font-weight:600">
-Excellent Performance. Keep it up!
-</span>
-</div>
-          <div style="display:grid;
-grid-template-columns:repeat(5,minmax(0,1fr));
-align-items:end;
-gap:8px;
-margin-top:45px">
-
-            <div id="fsPrincipalBlock" class="fs-sign" style="display:none">
-              <img id="fsPrincipalImg">
-              <div>Principal Signature</div>
-            </div>
-
-            <div id="fsTeacherBlock" class="fs-sign" style="display:none">
-              <img id="fsTeacherImg">
-              <div>Class Teacher Signature</div>
-            </div>
-<div id="fsStampBlock" style="display:none;text-align:center;margin-top:20px">
-  <img id="fsStampImg" style="max-width:100px;max-height:90px;object-fit:contain">
-  <div>School Stamp</div>
-</div>
-            <div id="fsCheckedBlock" class="fs-sign" style="display:none">
-              <img id="fsCheckedImg">
-              <div>Checked By Signature</div>
-            </div>
-
-            <div id="fsCounterBlock" class="fs-sign" style="display:none">
-              <img id="fsCounterImg">
-              <div>Counter Signature</div>
-            </div>
+          <div id="fsTeacherBlock" style="display:none">
+            <img id="fsTeacherImg" alt="Class Teacher Signature">
+            <div>Class Teacher Signature</div>
           </div>
+          <div id="fsCheckedBlock" style="display:none">
+            <img id="fsCheckedImg" alt="Checked By Signature">
+            <div>Checked By Signature</div>
+          </div>
+          <div id="fsCounterBlock" style="display:none">
+            <img id="fsCounterImg" alt="Counter Signature">
+            <div>Counter Signature</div>
+          </div>
+        </div>
 
-
-
+        <div id="fsStampBlock" style="display:none;text-align:center;margin-top:18px">
+          <img id="fsStampImg" class="micl-premium-stamp" alt="School Stamp">
+          <div>School Stamp</div>
         </div>
       </div>
 
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
+      <div class="fs-actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
         <button class="btn" type="button" onclick="previewFormativeMarksheet()">
           👁 Preview
         </button>
