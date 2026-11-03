@@ -8303,11 +8303,6 @@ margin-top:45px">
       });
     });
 
-    document.getElementById("fsWatermarkOpacity").addEventListener("input", function() {
-      document.getElementById("fsWatermark").style.opacity =
-        Number(this.value) / 100;
-    });
-
     status.textContent = "Marksheet preview ready. Signatures select karke Preview karein.";
 
   } catch (error) {
@@ -8325,19 +8320,26 @@ function previewFormativeMarksheet() {
     return;
   }
 
+  const appStyles = Array.from(
+    document.querySelectorAll("style")
+  ).map(style => style.innerHTML).join("\n");
+
   win.document.write(`
     <!doctype html>
     <html><head><title>MICL Formative Marksheet Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>${appStyles}</style>
     <style>
-      body{font-family:Arial,sans-serif;padding:20px;color:#172b43}
-      table{width:100%;border-collapse:collapse}
-      th,td{border:1px solid #9fb4cc;padding:8px;text-align:center}
-      th{background:#eaf3ff}
-      .fs-sign{text-align:center;min-width:130px;font-size:12px}
-      .fs-sign img{display:block;max-width:125px;max-height:55px;object-fit:contain;margin:auto}
-      @page{size:A4 landscape;margin:10mm}
+      @page { size: A4 landscape; margin: 8mm; }
+      body { margin:0; padding:12px; background:#fff; color:#142b49; font-family:Arial,sans-serif; }
+      #fsPrintArea { width:100%; max-width:none; margin:0 auto; box-shadow:none; }
+      #fsPrintArea .micl-premium-info { grid-template-columns:120px 1fr 1fr !important; }
+      #fsPrintArea table { width:100%; border-collapse:collapse; }
+      #fsPrintArea th, #fsPrintArea td { border:1px solid #9eb4d0; padding:8px 6px; text-align:center; }
+      #fsPrintArea th { color:#fff; background:#0b3d7d; }
+      #fsPrintArea .micl-premium-signatures { grid-template-columns:repeat(4,1fr); }
     </style></head><body>
-    ${area.outerHTML}
+      ${area.outerHTML}
     </body></html>
   `);
   win.document.close();
@@ -8353,21 +8355,77 @@ function printFormativeMarksheet() {
     return;
   }
 
+  const appStyles = Array.from(
+    document.querySelectorAll("style")
+  ).map(style => style.innerHTML).join("\n");
+
   win.document.write(`
     <!doctype html>
-    <html><head><title>MICL Formative Marksheet</title>
-    <style>
-      @page{size:A4 landscape;margin:10mm}
-      body{font-family:Arial,sans-serif;padding:10px;color:#172b43}
-      table{width:100%;border-collapse:collapse}
-      th,td{border:1px solid #9fb4cc;padding:8px;text-align:center}
-      th{background:#eaf3ff;color:#063b82}
-      .fs-sign{text-align:center;min-width:130px;font-size:12px}
-      .fs-sign img{display:block;max-width:125px;max-height:55px;object-fit:contain;margin:auto}
-      @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-    </style></head><body>
-    ${area.outerHTML}
-    </body></html>
+    <html>
+    <head>
+      <title>MICL Formative Marksheet</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <style>${appStyles}</style>
+      <style>
+        @page {
+          size: A4 landscape;
+          margin: 8mm;
+        }
+
+        body {
+          margin: 0;
+          padding: 10px;
+          background: #fff;
+          color: #142b49;
+          font-family: Arial, sans-serif;
+        }
+
+        #fsPrintArea {
+          width: 100%;
+          max-width: none;
+          margin: 0 auto;
+          box-shadow: none;
+        }
+
+        #fsPrintArea .micl-premium-info {
+          grid-template-columns: 120px 1fr 1fr !important;
+        }
+
+        #fsPrintArea table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        #fsPrintArea th,
+        #fsPrintArea td {
+          border: 1px solid #9eb4d0;
+          padding: 8px 6px;
+          text-align: center;
+        }
+
+        #fsPrintArea th {
+          color: #fff;
+          background: #0b3d7d !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        #fsPrintArea .micl-premium-signatures {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media print {
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      ${area.outerHTML}
+    </body>
+    </html>
   `);
 
   win.document.close();
