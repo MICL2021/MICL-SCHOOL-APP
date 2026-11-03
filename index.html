@@ -8119,32 +8119,36 @@ Academic Year : ${escapeMarksheet(data.academic_year || year)}
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:150px 1fr 1fr
-            gap:12px;
-border:1.5px solid #164b87;
-border-radius:12px;
-padding:16px;
-margin:16px 0;
-background:linear-gradient(135deg,#ffffff,#edf6ff);
-box-shadow:0 3px 10px rgba(6,59,130,.10)
-${student.photo ? `
-  <div style="grid-column:1;grid-row:1 / span 5;text-align:right">
-    <img src="${escapeMarksheet(student.photo)}"
-         alt="Student Photo"
-         style="width:100px;height:120px;object-fit:cover;border:2px solid #164b87;border-radius:8px">
-  </div>
-` : ""}
-            <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
-            <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
-            <div><b>Father Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
-            <div><b>Mother Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
-            <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
-            <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
-            <div><b>Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
-            <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
-            <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
-            <div><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
-          </div>
+      <div style="display:grid;
+  grid-template-columns:120px 1fr 1fr;
+  gap:12px;
+  border:1.5px solid #164b87;
+  border-radius:12px;
+  padding:16px;
+  margin:16px 0;
+  background:linear-gradient(135deg,#ffffff,#edf6ff);
+  box-shadow:0 3px 10px rgba(6,59,130,.10)">
+
+  ${student.photo ? `
+    <div style="grid-column:1;grid-row:1 / span 5;text-align:center">
+      <img src="${escapeMarksheet(student.photo)}"
+           alt="Student Photo"
+           style="width:105px;height:125px;object-fit:cover;
+           border:2px solid #164b87;border-radius:8px">
+    </div>
+  ` : ""}
+
+  <div><b>Student Name:</b> ${escapeMarksheet(student.name || "-")}</div>
+  <div><b>Admission No:</b> ${escapeMarksheet(student.admission_no || "-")}</div>
+  <div><b>Father Name:</b> ${escapeMarksheet(student.father_name || "-")}</div>
+  <div><b>Mother Name:</b> ${escapeMarksheet(student.mother_name || "-")}</div>
+  <div><b>Class:</b> ${escapeMarksheet(student.class_name || "-")}</div>
+  <div><b>Section:</b> ${escapeMarksheet(student.section || "-")}</div>
+  <div><b>Roll No:</b> ${escapeMarksheet(student.roll_no || "-")}</div>
+  <div><b>Exam Roll No:</b> ${escapeMarksheet(student.exam_roll_no || "-")}</div>
+  <div><b>Date of Birth:</b> ${escapeMarksheet(student.dob || "-")}</div>
+  <div><b>Address:</b> ${escapeMarksheet(student.address || "-")}</div>
+</div>
 
           <table style="width:100%;border-collapse:collapse;
             text-align:center;background:rgba(255,255,255,.88)">
