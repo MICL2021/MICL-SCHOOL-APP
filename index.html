@@ -4608,13 +4608,13 @@ if (teacherFields) {
 
   const heading = document.querySelector('#profile h2');
 
-  if (heading) {
+if (heading) {
     heading.textContent = isAdmin
-      ? '👤 Admin Profile'
-      : isTeacher
-      ? '👨‍🏫 Teacher Profile'
-      : '👤 Student Profile';
-  }
+        ? '👤 Admin Profile'
+        : isTeacher
+            ? '👨‍🏫 Teacher Profile'
+            : '👤 Student Profile';
+}
 
   const photo = document.getElementById('profilePhoto');
 
