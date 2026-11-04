@@ -8347,12 +8347,18 @@ function printFormativeMarksheet() {
     }
 
     @media print {
-      html, body {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-    }
-  `;
+  html, body {
+    visibility: visible !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #fsPrintArea,
+  #fsPrintArea * {
+    visibility: visible !important;
+  }
+}
 
   win.document.write(`
     <!doctype html>
