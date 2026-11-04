@@ -7101,18 +7101,17 @@ const orientation = document.getElementById("marksheetOrientation")?.value || "l
       font-size: 10px;
     }
 
-    #printMarksheet {
-      width: 100%;
-      max-width: none;
-      margin: 0 auto;
-      padding: 10px !important;
-      box-shadow: none !important;
-      border: 2px solid #123f78;
-      border-radius: 8px;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
+#printMarksheet {
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  padding: 10px !important;
+  box-shadow: none !important;
+  border: 2px solid #123f78;
+  border-radius: 8px;
+  page-break-inside: auto !important;
+  break-inside: auto !important;
+}
     .micl-premium-sheet:before {
       margin: -10px -10px 8px;
     }
