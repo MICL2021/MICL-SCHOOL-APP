@@ -8288,14 +8288,18 @@ function printFormativeMarksheet() {
     }
 
     #fsPrintArea {
-      width: 100% !important;
-      max-width: none !important;
-      margin: 0 auto !important;
-      padding: 8px !important;
-      box-shadow: none !important;
-      box-sizing: border-box !important;
-      overflow: visible !important;
-    }
+  break-inside: auto !important;
+  page-break-inside: auto !important;
+}
+
+#fsPrintArea table,
+#fsPrintArea tr,
+#fsPrintArea .micl-premium-info,
+#fsPrintArea .micl-premium-summary,
+#fsPrintArea .micl-premium-signatures {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
 
     #fsPrintArea .micl-premium-info {
       grid-template-columns: 120px 1fr 1fr !important;
