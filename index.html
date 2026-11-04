@@ -2294,10 +2294,12 @@ body.teacher-view #teacherMarksheetCard {
 
   localStorage.setItem('micl_school_info', JSON.stringify(data));
 
-  document.getElementById('schoolInfoStatus').textContent =
-    '✅ School information saved successfully';
+  const status = document.getElementById('schoolInfoStatus');
 
-  document.getElementById('schoolInfoStatus').style.color = 'green';
+  if (status) {
+    status.textContent = 'School information saved successfully';
+    status.style.color = 'green';
+  }
 }
 document.getElementById('adminPhotoUpload').addEventListener('change', function () {
   const file = this.files[0];
