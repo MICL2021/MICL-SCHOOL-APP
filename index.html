@@ -758,6 +758,37 @@ body.teacher-view #teacherMarksheetCard {
 
 
 <div id="login" class="login">
+ <div class="login-desktop-layout">
+
+  <div class="login-showcase">
+    <div class="showcase-brand">
+      <img src="/public/micl_logo.png" alt="MICL Logo">
+      <div>
+        <h1>MICL</h1>
+        <p>Modern Institute of Creative Learning</p>
+      </div>
+    </div>
+
+    <h2>School Management <span>System</span></h2>
+
+    <p class="showcase-subtitle">
+      A Complete &amp; Integrated Solution for
+      Students, Teachers and Administration
+    </p>
+
+    <div class="showcase-features">
+      <div>🎓<br>Student Portal</div>
+      <div>👨‍🏫<br>Teacher Portal</div>
+      <div>⚙️<br>Admin Panel</div>
+      <div>📊<br>Reports &amp; Records</div>
+    </div>
+
+    <div class="showcase-school">
+      <h2>🏫 MICL SCHOOL</h2>
+      <p>Learn • Create • Grow</p>
+      <p>Building a brighter future through education.</p>
+    </div>
+  </div>
   <div class="loginbox">
     
 <div class="logo">
@@ -784,6 +815,7 @@ body.teacher-view #teacherMarksheetCard {
   Address: Channi Dharana, Mendhar
 </p>
   </div>
+ </div>
 </div>
 
 
@@ -10181,6 +10213,109 @@ function printOMRSheet() {
 
   #login .loginbox h2 {
     text-align: center;
+  }
+}
+ /* MICL Professional Desktop Login */
+.login-desktop-layout {
+  width: 100%;
+  max-width: 1500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 45px;
+}
+
+.login-showcase {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  #login {
+    min-height: 100vh;
+    padding: 35px;
+    background: linear-gradient(120deg, #06366f, #0875bd, #dceeff);
+  }
+
+  .login-desktop-layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 45px;
+  }
+
+  .login-showcase {
+    display: block;
+    color: white;
+    padding: 25px;
+  }
+
+  .showcase-brand {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 35px;
+  }
+
+  .showcase-brand img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    background: white;
+    border-radius: 18px;
+    padding: 6px;
+  }
+
+  .showcase-brand h1 {
+    font-size: 55px;
+    margin: 0;
+  }
+
+  .showcase-brand p {
+    font-size: 18px;
+  }
+
+  .login-showcase > h2 {
+    font-size: 40px;
+    color: white;
+  }
+
+  .login-showcase > h2 span {
+    color: #ffc94d;
+  }
+
+  .showcase-subtitle {
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
+  .showcase-features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 30px 0;
+  }
+
+  .showcase-features div {
+    padding: 20px 8px;
+    text-align: center;
+    background: #ffffff20;
+    border: 1px solid #ffffff55;
+    border-radius: 12px;
+  }
+
+  .showcase-school {
+    padding: 30px;
+    text-align: center;
+    background: #ffffff20;
+    border-radius: 18px;
+  }
+
+  #login .loginbox {
+    width: 100%;
+    max-width: 550px;
+    padding: 35px;
+    border: 2px solid #e8bd51;
+    border-radius: 25px;
+    box-shadow: 0 20px 45px #001b3d55;
   }
 }
 </style>
