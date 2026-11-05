@@ -3125,7 +3125,53 @@ app.get("/api/admin/marksheet", auth, admin, (req, res) => {
     });
   }
 });
+// Save generated marksheet record
+app.post("/api/admin/saved-marksheets", auth, admin, (req, res) => {
+  const studentId = Number(req.body.student_id);
+  const exam = String(req.body.exam || "").trim();
+  const year = String(req.body.academic_year || "").trim();
+  const html = String(req.body.marksheet_html || "");
 
+  if (
+    !Number.isInteger(studentId) ||
+    studentId < 1 ||
+    !["Term 1", "Term 2", "Annual", "Formative Summative"].includes(exam) ||
+    !html.trim()
+  ) {
+    return res.status(400).json({
+      error: "Student, exam aur marksheet select karein."
+    });
+  }
+
+  try {
+    const student = db.prepare(
+      "SELECT id FROM users WHERE id = ? AND role = 'student'"
+    ).get(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        error: "Student not found."
+      });
+    }
+
+    const result = db.prepare(`
+      INSERT INTO saved_marksheets
+      (student_id, exam, academic_year, marksheet_html)
+      VALUES (?, ?, ?, ?)
+    `).run(studentId, exam, year, html);
+
+    res.json({
+      success: true,
+      id: result.lastInsertRowid,
+      message: "Marksheet successfully saved."
+    });
+  } catch (error) {
+    console.error("Save marksheet error:", error);
+    res.status(500).json({
+      error: "Marksheet save nahi ho saki."
+    });
+  }
+});
 app.post("/api/admin/marksheet/marks", auth, admin, (req, res) => {
   const studentId = Number(req.body.student_id);
   const exam = String(req.body.exam || "");
