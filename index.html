@@ -7108,8 +7108,9 @@ const orientation = document.getElementById("marksheetOrientation")?.value || "l
   box-shadow: none !important;
   border: 2px solid #123f78;
   border-radius: 8px;
-  page-break-inside: auto !important;
-  break-inside: auto !important;
+  page-break-inside: avoid !important;
+break-inside: avoid !important;
+zoom: ${orientation === "portrait" ? "0.68" : "0.82"} !important;
 }
     .micl-premium-sheet:before {
       margin: -10px -10px 8px;
