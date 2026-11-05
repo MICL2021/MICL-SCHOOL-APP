@@ -10193,64 +10193,134 @@ function printOMRSheet() {
   margin-top: 5px;
   padding-top: 3px;
 }
- /* MICL Desktop Login Layout */
-@media (min-width: 900px) {
-  #login {
-    padding: 40px;
-    background: linear-gradient(135deg, #082f65, #1769aa);
-  }
+/* MICL SAME RESPONSIVE LOGIN DESIGN */
 
-  #login .loginbox {
-    max-width: 520px;
-    padding: 40px;
-    border-radius: 18px;
-  }
-
-  #login .loginbox .logo img {
-    width: 100px;
-    height: 100px;
-  }
-
-  #login .loginbox h2 {
-    text-align: center;
-  }
+#login {
+  min-height: 100vh;
+  padding: 25px 16px;
+  background: linear-gradient(120deg, #06366f, #0875bd, #dceeff);
 }
- /* MICL Professional Desktop Login */
+
 .login-desktop-layout {
   width: 100%;
   max-width: 1500px;
+  margin: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 45px;
+  gap: 25px;
 }
 
 .login-showcase {
-  display: none;
+  display: block;
+  width: 100%;
+  color: white;
+  padding: 15px;
 }
 
+.showcase-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.showcase-brand img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  background: white;
+  border-radius: 18px;
+  padding: 6px;
+}
+
+.showcase-brand h1 {
+  font-size: 38px;
+  margin: 0;
+}
+
+.showcase-brand p {
+  font-size: 14px;
+}
+
+.login-showcase > h2 {
+  font-size: 28px;
+  color: white;
+  text-align: center;
+}
+
+.login-showcase > h2 span {
+  color: #ffc94d;
+}
+
+.showcase-subtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.showcase-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.showcase-features div {
+  padding: 14px 6px;
+  text-align: center;
+  background: #ffffff20;
+  border: 1px solid #ffffff55;
+  border-radius: 12px;
+}
+
+.showcase-school {
+  padding: 20px;
+  text-align: center;
+  background: #ffffff20;
+  border-radius: 18px;
+}
+
+#login .loginbox {
+  width: 100%;
+  max-width: 550px;
+  padding: 25px 20px;
+  background: #ffffff;
+  border: 2px solid #e8bd51;
+  border-radius: 25px;
+  box-shadow: 0 20px 45px #001b3d55;
+}
+
+#login .loginbox .logo img {
+  width: 100px;
+  height: 100px;
+}
+
+#login .loginbox h2 {
+  text-align: center;
+}
+
+/* COMPUTER / DESKTOP */
 @media (min-width: 900px) {
   #login {
-    min-height: 100vh;
     padding: 35px;
-    background: linear-gradient(120deg, #06366f, #0875bd, #dceeff);
   }
 
   .login-desktop-layout {
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
     gap: 45px;
   }
 
   .login-showcase {
-    display: block;
-    color: white;
     padding: 25px;
   }
 
   .showcase-brand {
-    display: flex;
-    align-items: center;
+    justify-content: flex-start;
     gap: 20px;
     margin-bottom: 35px;
   }
@@ -10258,37 +10328,23 @@ function printOMRSheet() {
   .showcase-brand img {
     width: 100px;
     height: 100px;
-    object-fit: contain;
-    background: white;
-    border-radius: 18px;
-    padding: 6px;
   }
 
   .showcase-brand h1 {
     font-size: 55px;
-    margin: 0;
-  }
-
-  .showcase-brand p {
-    font-size: 18px;
   }
 
   .login-showcase > h2 {
     font-size: 40px;
-    color: white;
-  }
-
-  .login-showcase > h2 span {
-    color: #ffc94d;
+    text-align: left;
   }
 
   .showcase-subtitle {
     font-size: 20px;
-    line-height: 1.6;
+    text-align: center;
   }
 
   .showcase-features {
-    display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin: 30px 0;
@@ -10296,26 +10352,14 @@ function printOMRSheet() {
 
   .showcase-features div {
     padding: 20px 8px;
-    text-align: center;
-    background: #ffffff20;
-    border: 1px solid #ffffff55;
-    border-radius: 12px;
   }
 
   .showcase-school {
     padding: 30px;
-    text-align: center;
-    background: #ffffff20;
-    border-radius: 18px;
   }
 
   #login .loginbox {
-    width: 100%;
-    max-width: 550px;
     padding: 35px;
-    border: 2px solid #e8bd51;
-    border-radius: 25px;
-    box-shadow: 0 20px 45px #001b3d55;
   }
 }
 </style>
