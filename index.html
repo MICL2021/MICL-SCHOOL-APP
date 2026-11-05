@@ -6931,7 +6931,48 @@ assetMap.forEach(([id, src]) => {
 ["principal", "teacher", "checked", "counter", "stamp"].forEach(type => toggleMarksheetSignature(type, false));
 status.textContent = "Marksheet ready. Select the signatures you want, then Print / Save PDF.";
 }
+async function saveGeneratedMarksheet() {
+  const data = window.currentGeneratedMarksheet;
+  const status = document.getElementById("marksheetStatus");
+  const content = document.getElementById("printMarksheet");
+  const token = localStorage.getItem("micl_token");
 
+  if (!data || !data.student || !content) {
+    status.textContent = "Pehle marksheet generate karein.";
+    return;
+  }
+
+  const exam = data.exam ||
+    document.getElementById("adminMarksheetTerm").value;
+
+  try {
+    status.textContent = "Marksheet save ho rahi hai...";
+
+    const response = await fetch("/api/admin/saved-marksheets", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({
+        student_id: data.student.id,
+        exam: exam,
+        academic_year: data.academic_year || "",
+        marksheet_html: content.outerHTML
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Marksheet save nahi hui.");
+    }
+
+    status.textContent = "Marksheet successfully saved.";
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
 function toggleMarksheetSignature(type, selected) {
   const config = {
     principal: { checkbox: "choosePrincipalSign", image: "printPrincipalSign", block: "principalSignBlock" },
