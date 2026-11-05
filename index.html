@@ -8009,7 +8009,29 @@ if (!records.length) {
       settings = await settingsResponse.json();
     }
 
-    const rows = records.map(r => {
+    const subjectOrder = [
+  "English",
+  "Mathematics",
+  "Science",
+  "Social science",
+  "Urdu",
+  "Hindi",
+  "Computer"
+];
+
+const sortedRecords = [...records].sort((a, b) => {
+  const indexA = subjectOrder.findIndex(
+    s => s.toLowerCase() === String(a.subject || "").toLowerCase()
+  );
+  const indexB = subjectOrder.findIndex(
+    s => s.toLowerCase() === String(b.subject || "").toLowerCase()
+  );
+
+  return (indexA === -1 ? 999 : indexA) -
+         (indexB === -1 ? 999 : indexB);
+});
+
+const rows = sortedRecords.map(r => {
       const formative = ["f1", "f2", "f3", "f4", "f5", "f6"]
         .reduce((sum, key) => sum + Number(r[key] || 0), 0);
 
