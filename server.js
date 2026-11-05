@@ -3172,6 +3172,50 @@ app.post("/api/admin/saved-marksheets", auth, admin, (req, res) => {
     });
   }
 });
+// Get saved marksheets list
+app.get("/api/admin/saved-marksheets", auth, admin, (req, res) => {
+  try {
+    const records = db.prepare(`
+      SELECT sm.id, sm.student_id, sm.exam, sm.academic_year,
+             sm.created_at, u.name, u.admission_no,
+             u.class_name, u.section
+      FROM saved_marksheets sm
+      JOIN users u ON u.id = sm.student_id
+      ORDER BY sm.created_at DESC
+    `).all();
+
+    res.json(records);
+  } catch (error) {
+    console.error("Saved marksheets list error:", error);
+    res.status(500).json({
+      error: "Saved marksheets load nahi ho sakin."
+    });
+  }
+});
+
+// Open one saved marksheet
+app.get("/api/admin/saved-marksheets/:id", auth, admin, (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id < 1) {
+    return res.status(400).json({ error: "Invalid marksheet ID." });
+  }
+
+  try {
+    const record = db.prepare(`
+      SELECT * FROM saved_marksheets WHERE id = ?
+    `).get(id);
+
+    if (!record) {
+      return res.status(404).json({ error: "Marksheet not found." });
+    }
+
+    res.json(record);
+  } catch (error) {
+    console.error("Saved marksheet view error:", error);
+    res.status(500).json({ error: "Marksheet open nahi hui." });
+  }
+});
 app.post("/api/admin/marksheet/marks", auth, admin, (req, res) => {
   const studentId = Number(req.body.student_id);
   const exam = String(req.body.exam || "");
