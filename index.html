@@ -8298,7 +8298,46 @@ if (preview.parentElement !== previewContainer) {
     status.textContent = error.message;
   }
 }
+async function saveFormativeMarksheet() {
+  const status = document.getElementById("fsStatus");
+  const token = localStorage.getItem("micl_token");
+  const studentId = document.getElementById("fsStudent").value;
+  const academicYear = document.getElementById("fsYear").value.trim();
+  const area = document.getElementById("fsPrintArea");
 
+  if (!studentId || !area) {
+    status.textContent = "Pehle marksheet generate karein.";
+    return;
+  }
+
+  try {
+    status.textContent = "Marksheet save ho rahi hai...";
+
+    const response = await fetch("/api/admin/saved-marksheets", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({
+        student_id: Number(studentId),
+        exam: "Formative Summative",
+        academic_year: academicYear,
+        marksheet_html: area.outerHTML
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Marksheet save nahi hui.");
+    }
+
+    status.textContent = "Marksheet successfully saved.";
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
 function previewFormativeMarksheet() {
   const area = document.getElementById("fsPrintArea");
   if (!area) return;
