@@ -7129,7 +7129,7 @@ const orientation = document.getElementById("marksheetOrientation")?.value || "l
   const printStyles = `
     @page {
       size: A4 ${orientation};
-      margin: 7mm;
+      margin: 0;
     }
 
     * {
@@ -7147,7 +7147,8 @@ const orientation = document.getElementById("marksheetOrientation")?.value || "l
 #printMarksheet {
   width: 100%;
   max-width: none;
-  margin: 0 auto;
+  margin: 0 auto !important;
+margin-top: 0 !important;
   padding: 10px !important;
   box-shadow: none !important;
   border: 2px solid #123f78;
