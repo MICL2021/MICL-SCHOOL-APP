@@ -4891,7 +4891,12 @@ async function deleteFeeRecord(studentId) {
 async function restoreLoginAfterRefresh() {
   const token = localStorage.getItem('micl_token');
   if (!token) return;
+const lastActivity = Number(localStorage.getItem('micl_last_activity') || 0);
 
+if (!lastActivity || Date.now() - lastActivity >= 30 * 60 * 1000) {
+    logout();
+    return;
+}
   try {
     const response = await fetch('/api/me', {
       headers: {
