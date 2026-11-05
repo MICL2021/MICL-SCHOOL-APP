@@ -2877,11 +2877,17 @@ if (data.user.photo) {
   function logout() {
   localStorage.removeItem('micl_token');
   localStorage.removeItem('micl_user');
-document.getElementById('sideMenu').classList.remove('open');
-document.getElementById('menuOverlay').classList.remove('open');
+  localStorage.removeItem('micl_last_activity');
+
+  document.getElementById('sideMenu').classList.remove('open');
+  document.getElementById('menuOverlay').classList.remove('open');
+
   document.getElementById('app').style.display = 'none';
   document.getElementById('login').style.display = 'block';
-  }
+
+  document.getElementById('sid').value = '';
+  document.getElementById('pw').value = '';
+}
   function startQRScanner() {
   const reader = document.getElementById('qr-reader');
 
