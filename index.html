@@ -8031,7 +8031,7 @@ const sortedRecords = [...records].sort((a, b) => {
          (indexB === -1 ? 999 : indexB);
 });
 
-const rows = sortedRecords.map(r => {
+const rows = sortedRecords.map((r, index) => {
       const formative = ["f1", "f2", "f3", "f4", "f5", "f6"]
         .reduce((sum, key) => sum + Number(r[key] || 0), 0);
 
@@ -8040,15 +8040,17 @@ const rows = sortedRecords.map(r => {
       const total = formative + co + summative;
 
       return `
-        <tr>
-          <td>${escapeMarksheet(r.subject || "-")}</td>
-          <td>${["f1","f2","f3","f4","f5","f6"]
-            .map(k => Number(r[k] || 0)).join(" + ")}</td>
-          <td>${formative}/30</td>
-          <td>${co}/20</td>
-          <td>${summative}/50</td>
-          <td><b>${total}/100</b></td>
-        </tr>`;
+<tr>
+  <td>${index + 1}</td>
+  <td>${escapeMarksheet(r.subject || "-")}</td>
+  ${["f1","f2","f3","f4","f5","f6"].map(k =>
+    `<td>${Number(r[k] || 0)}</td>`
+  ).join("")}
+  <td>${formative}/30</td>
+  <td>${co}/20</td>
+  <td>${summative}/50</td>
+  <td><b>${total}/100</b></td>
+</tr>`;
     }).join("");
 
     const totalMarks = records.reduce((sum, r) => {
