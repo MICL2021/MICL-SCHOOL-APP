@@ -209,7 +209,18 @@ db.exec(`
     FOREIGN KEY(student_id) REFERENCES users(id)
   );
 `);
-
+db.exec(`
+  CREATE TABLE IF NOT EXISTS saved_marksheets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    exam TEXT NOT NULL,
+    academic_year TEXT DEFAULT '',
+    marksheet_html TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(student_id) REFERENCES users(id)
+  );
+`);
 const timetableColumns = db
   .prepare("PRAGMA table_info(timetable)")
   .all()
