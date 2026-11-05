@@ -6749,7 +6749,7 @@ async function showMarksheet(data) {
   const status = document.getElementById("marksheetStatus");
   const student = data.student;
   const records = data.records || [];
-
+window.currentGeneratedMarksheet = data;
 const token = localStorage.getItem("micl_token");
 
 let marksheetSettings = {};
