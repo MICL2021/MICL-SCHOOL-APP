@@ -8136,15 +8136,24 @@ if (preview.parentElement !== previewContainer) {
 
         <table>
           <thead>
-            <tr>
-              <th>Subject</th>
-              <th>F1–F6</th>
-              <th>Formative /30</th>
-              <th>Co-curricular /20</th>
-              <th>Summative /50</th>
-              <th>Total /100</th>
-            </tr>
-          </thead>
+  <tr>
+    <th rowspan="2">S. No.</th>
+    <th rowspan="2">Subject</th>
+    <th colspan="6">Formative Assessment (30)</th>
+    <th rowspan="2">Formative /30</th>
+    <th rowspan="2">Co-curricular /20</th>
+    <th rowspan="2">Summative /50</th>
+    <th rowspan="2">Total /100</th>
+  </tr>
+  <tr>
+    <th>F1</th>
+    <th>F2</th>
+    <th>F3</th>
+    <th>F4</th>
+    <th>F5</th>
+    <th>F6</th>
+  </tr>
+</thead>
           <tbody>${rows}</tbody>
         </table>
 
