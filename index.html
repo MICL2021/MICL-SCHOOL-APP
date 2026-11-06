@@ -10432,6 +10432,60 @@ function printOMRSheet() {
 .showcase-school > * {
     display: none;
 }
+ /* MICL PREMIUM LOGIN CARD */
+
+#login .loginbox {
+    max-width: 620px;
+    padding: 35px 30px;
+    background: linear-gradient(145deg, #ffffff, #edf5ff);
+    border: 2px solid #e8bd51;
+    border-radius: 28px;
+    box-shadow: 0 18px 45px rgba(0, 25, 65, 0.25);
+}
+
+#login .loginbox .logo img {
+    border-radius: 20px;
+    box-shadow: 0 6px 18px rgba(0, 45, 100, 0.15);
+}
+
+#login #sid,
+#login #pw {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 15px;
+    border: 1px solid #cbd9e9;
+    border-radius: 13px;
+    background: #f8fbff;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+#login #sid:focus,
+#login #pw:focus {
+    outline: none;
+    border: 2px solid #176bc0;
+    box-shadow: 0 0 0 3px rgba(23, 107, 192, 0.12);
+}
+
+#login .loginbox .btn {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 13px;
+    font-size: 15px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 45, 100, 0.15);
+}
+
+#login .loginbox .btn:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 600px) {
+    #login .loginbox {
+        padding: 25px 18px;
+        border-radius: 22px;
+    }
+}
 </style>
 
 </body>
