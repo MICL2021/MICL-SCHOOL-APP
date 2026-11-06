@@ -10486,6 +10486,50 @@ function printOMRSheet() {
         border-radius: 22px;
     }
 }
+ /* MICL PREMIUM ROLE SELECTION BUTTONS */
+
+#login #sid + button,
+#login #sid + button + button,
+#login #sid + button + button + button {
+    width: 32%;
+    min-height: 62px;
+    padding: 9px 4px;
+    margin: 5px 0;
+    border: 1px solid #c5d7ed;
+    border-radius: 13px;
+    background: linear-gradient(145deg, #ffffff, #e5efff);
+    color: #063b82;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 45, 100, 0.13);
+    transition: all 0.2s ease;
+}
+
+#login #sid + button:focus,
+#login #sid + button + button:focus,
+#login #sid + button + button + button:focus {
+    background: linear-gradient(135deg, #063b82, #176bc0);
+    color: white;
+    border: 2px solid #e8bd51;
+    outline: none;
+    box-shadow: 0 5px 14px rgba(0, 45, 100, 0.25);
+}
+
+#login #sid + button:active,
+#login #sid + button + button:active,
+#login #sid + button + button + button:active {
+    transform: scale(0.96);
+}
+
+@media (max-width: 380px) {
+    #login #sid + button,
+    #login #sid + button + button,
+    #login #sid + button + button + button {
+        font-size: 10px;
+        padding: 7px 2px;
+        min-height: 56px;
+    }
+}
 </style>
 
 </body>
