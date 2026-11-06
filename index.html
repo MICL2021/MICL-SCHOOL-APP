@@ -10469,12 +10469,22 @@ function printOMRSheet() {
 
 #login .loginbox .btn {
     width: 100%;
-    min-height: 48px;
+    min-height: 52px;
+    border: none;
     border-radius: 13px;
-    font-size: 15px;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 45, 100, 0.15);
+    background: linear-gradient(135deg, #063b82, #1976c9);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 5px 14px rgba(0, 45, 100, 0.22);
+    transition: all 0.2s ease;
 }
+
+#login .loginbox .btn:active {
+    transform: scale(0.98);
+}
+
 
 #login .loginbox .btn:active {
     transform: scale(0.98);
@@ -10486,22 +10496,22 @@ function printOMRSheet() {
         border-radius: 22px;
     }
 }
- /* MICL PREMIUM ROLE SELECTION BUTTONS */
 
+/* MICL PROFESSIONAL ROLE BUTTONS */
 #login #sid + button,
 #login #sid + button + button,
 #login #sid + button + button + button {
     width: 32%;
-    min-height: 62px;
-    padding: 9px 4px;
+    min-height: 56px;
+    padding: 10px 5px;
     margin: 5px 0;
-    border: 1px solid #c5d7ed;
-    border-radius: 13px;
-    background: linear-gradient(145deg, #ffffff, #e5efff);
-    color: #063b82;
+    border: 1px solid #cbd9e9;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #ffffff, #edf4fc);
+    color: #123d70;
     font-size: 12px;
     font-weight: 700;
-    box-shadow: 0 4px 10px rgba(0, 45, 100, 0.13);
+    box-shadow: 0 3px 9px rgba(0, 35, 80, 0.10);
     transition: all 0.2s ease;
 }
 
@@ -10509,27 +10519,12 @@ function printOMRSheet() {
 #login #sid + button + button:focus,
 #login #sid + button + button + button:focus {
     background: linear-gradient(135deg, #063b82, #176bc0);
-    color: white;
-    border: 2px solid #e8bd51;
+    color: #ffffff;
+    border: 2px solid #f2c94c;
     outline: none;
-    box-shadow: 0 5px 14px rgba(0, 45, 100, 0.25);
+    box-shadow: 0 5px 14px rgba(0, 35, 80, 0.22);
 }
 
-#login #sid + button:active,
-#login #sid + button + button:active,
-#login #sid + button + button + button:active {
-    transform: scale(0.96);
-}
-
-@media (max-width: 380px) {
-    #login #sid + button,
-    #login #sid + button + button,
-    #login #sid + button + button + button {
-        font-size: 10px;
-        padding: 7px 2px;
-        min-height: 56px;
-    }
-}
 </style>
 
 </body>
