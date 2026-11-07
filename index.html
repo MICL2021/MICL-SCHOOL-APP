@@ -2709,7 +2709,10 @@ if (passwordCard) {
 document.getElementById('sid').placeholder =
   role === 'admin' || role === 'teacher' ? 'Username / Email' : 'Student ID / Admission No.';
 
- 
+document.querySelectorAll('#login button[onclick^="setRole("]').forEach(btn => {
+    const selected = btn.getAttribute('onclick').includes("'" + role + "'");
+    btn.classList.toggle('role-active', selected);
+}); 
 }
 
 async function enterApp() {
@@ -10515,16 +10518,35 @@ function printOMRSheet() {
     transition: all 0.2s ease;
 }
 
+/* ROLE BUTTON FOCUS */
 #login #sid + button:focus,
 #login #sid + button + button:focus,
 #login #sid + button + button + button:focus {
-    background: linear-gradient(135deg, #063b82, #176bc0);
+    outline: none;
+    background: linear-gradient(135deg, #063b82, #1976c9);
     color: #ffffff;
     border: 2px solid #f2c94c;
-    outline: none;
     box-shadow: 0 5px 14px rgba(0, 35, 80, 0.22);
 }
 
+/* SELECTED ROLE BUTTON */
+#login #sid + button.role-active,
+#login #sid + button + button.role-active,
+#login #sid + button + button + button.role-active {
+    background: linear-gradient(135deg, #063b82, #1976c9) !important;
+    color: #ffffff !important;
+    border: 2px solid #f2c94c !important;
+    box-shadow: 0 5px 14px rgba(0, 35, 80, 0.25);
+    transform: translateY(-2px);
+}
+
+/* NORMAL ROLE BUTTONS */
+#login #sid + button:not(.role-active),
+#login #sid + button + button:not(.role-active),
+#login #sid + button + button + button:not(.role-active) {
+    background: linear-gradient(145deg, #ffffff, #edf4fc);
+    color: #123d70;
+}
 </style>
 
 </body>
