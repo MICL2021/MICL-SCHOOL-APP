@@ -10589,12 +10589,12 @@ function printOMRSheet() {
     background: linear-gradient(135deg, #063b82, #1976c9);
     box-shadow: 0 5px 14px rgba(0, 45, 100, 0.22);
 }
- 
-/* MICL PREMIUM ROLE SELECTION BUTTONS */
-#login #sid + button,
-#login #sid + button + button,
-#login #sid + button + button + button {
+/* MICL PREMIUM ROLE BUTTONS */
+#login button[onclick^="setRole("] {
+    width: 32%;
     min-height: 58px;
+    padding: 10px 5px;
+    margin: 5px 0;
     border: 1px solid #c5d5e8;
     border-radius: 14px;
     background: linear-gradient(145deg, #ffffff, #eaf2fc);
@@ -10605,22 +10605,19 @@ function printOMRSheet() {
     transition: all 0.25s ease;
 }
 
-/* SELECTED ROLE */
-#login #sid + button.role-active,
-#login #sid + button + button.role-active,
-#login #sid + button + button + button.role-active {
+/* ACTIVE ROLE BUTTON */
+
+/* PREMIUM SELECTED ROLE */
+#login button.role-active {
     background: linear-gradient(135deg, #063b82, #1976c9) !important;
     color: #ffffff !important;
     border: 2px solid #f2c94c !important;
-    box-shadow: 0 6px 16px rgba(0, 45, 100, 0.25);
+    box-shadow: 0 6px 16px rgba(0, 45, 100, 0.25) !important;
     transform: translateY(-2px);
 }
-
-/* MOBILE ROLE BUTTONS */
+/* MOBILE DESIGN */
 @media (max-width: 600px) {
-    #login #sid + button,
-    #login #sid + button + button,
-    #login #sid + button + button + button {
+    #login button[onclick^="setRole("] {
         min-height: 52px;
         font-size: 11px;
         padding: 8px 3px;
