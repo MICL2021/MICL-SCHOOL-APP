@@ -10547,6 +10547,86 @@ function printOMRSheet() {
     background: linear-gradient(145deg, #ffffff, #edf4fc);
     color: #123d70;
 }
+
+/* MICL PREMIUM LOGIN CARD */
+#login .loginbox {
+    background: linear-gradient(145deg, #ffffff, #f0f6ff);
+    border: 2px solid #d6b45c;
+    border-radius: 26px;
+    padding: 32px 28px;
+    box-shadow:
+        0 18px 45px rgba(0, 35, 80, 0.22),
+        0 4px 12px rgba(0, 35, 80, 0.10);
+    position: relative;
+    overflow: hidden;
+}
+
+#login .loginbox h2 {
+    color: #123d70;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+#login .loginbox input {
+    border: 1px solid #cbd9e9;
+    border-radius: 13px;
+    background: #ffffff;
+    min-height: 50px;
+    padding: 12px 15px;
+    font-size: 15px;
+}
+
+#login .loginbox input:focus {
+    border-color: #176bc0;
+    box-shadow: 0 0 0 3px rgba(23, 107, 192, 0.12);
+    outline: none;
+}
+
+#login .loginbox .btn {
+    border-radius: 13px;
+    min-height: 52px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #063b82, #1976c9);
+    box-shadow: 0 5px 14px rgba(0, 45, 100, 0.22);
+}
+ 
+/* MICL PREMIUM ROLE SELECTION BUTTONS */
+#login #sid + button,
+#login #sid + button + button,
+#login #sid + button + button + button {
+    min-height: 58px;
+    border: 1px solid #c5d5e8;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #ffffff, #eaf2fc);
+    color: #123d70;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0, 35, 80, 0.12);
+    transition: all 0.25s ease;
+}
+
+/* SELECTED ROLE */
+#login #sid + button.role-active,
+#login #sid + button + button.role-active,
+#login #sid + button + button + button.role-active {
+    background: linear-gradient(135deg, #063b82, #1976c9) !important;
+    color: #ffffff !important;
+    border: 2px solid #f2c94c !important;
+    box-shadow: 0 6px 16px rgba(0, 45, 100, 0.25);
+    transform: translateY(-2px);
+}
+
+/* MOBILE ROLE BUTTONS */
+@media (max-width: 600px) {
+    #login #sid + button,
+    #login #sid + button + button,
+    #login #sid + button + button + button {
+        min-height: 52px;
+        font-size: 11px;
+        padding: 8px 3px;
+    }
+}
+
 </style>
 
 </body>
