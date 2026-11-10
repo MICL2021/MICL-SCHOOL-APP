@@ -10564,61 +10564,74 @@ function printOMRSheet() {
 
 /* MICL PREMIUM LOGIN CARD */
 #login .loginbox {
-    background: linear-gradient(145deg, #ffffff, #f0f6ff);
-    border: 2px solid #d6b45c;
-    border-radius: 26px;
-    padding: 32px 28px;
-    box-shadow:
-        0 18px 45px rgba(0, 35, 80, 0.22),
-        0 4px 12px rgba(0, 35, 80, 0.10);
-    position: relative;
-    overflow: hidden;
+  background: linear-gradient(145deg,
+    rgba(255,255,255,0.98),
+    rgba(235,244,255,0.96));
+  border: 2px solid #e8bd51;
+  border-radius: 36px;
+  padding: 38px 30px;
+  box-shadow:
+    0 25px 65px rgba(0,20,55,0.38),
+    0 0 0 5px rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
 }
-
 #login .loginbox h2 {
-    color: #123d70;
-    font-weight: 800;
-    letter-spacing: 1px;
+  color: #073675;
+  font-family: Georgia, serif;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-align: center;
+  text-shadow: 0 3px 8px rgba(0,35,80,0.12);
+  margin-bottom: 12px;
 }
-
 #login .loginbox input {
-    border: 1px solid #cbd9e9;
-    border-radius: 13px;
-    background: #ffffff;
-    min-height: 50px;
-    padding: 12px 15px;
-    font-size: 15px;
+  width: 100%;
+  border: 1.5px solid #b8cbe2;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #ffffff, #f0f6ff);
+  min-height: 58px;
+  padding: 14px 18px;
+  font-size: 16px;
+  color: #123d70;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
 }
-
 #login .loginbox input:focus {
     border-color: #176bc0;
     box-shadow: 0 0 0 3px rgba(23, 107, 192, 0.12);
     outline: none;
 }
-
 #login .loginbox .btn {
-    border-radius: 13px;
-    min-height: 52px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #063b82, #1976c9);
-    box-shadow: 0 5px 14px rgba(0, 45, 100, 0.22);
+  width: 100%;
+  border-radius: 16px;
+  min-height: 58px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #062f70, #087bd0);
+  color: #ffffff;
+  border: 1px solid #e8bd51;
+  box-shadow: 0 8px 20px rgba(0,45,100,0.25);
+  transition: all 0.25s ease;
 }
 /* MICL PREMIUM ROLE BUTTONS */
 #login button[onclick^="setRole("] {
-    width: 32%;
-    min-height: 58px;
-    padding: 10px 5px;
-    margin: 5px 0;
-    border: 1px solid #c5d5e8;
-    border-radius: 14px;
-    background: linear-gradient(145deg, #ffffff, #eaf2fc);
-    color: #123d70;
-    font-size: 13px;
-    font-weight: 800;
-    box-shadow: 0 4px 12px rgba(0, 35, 80, 0.12);
-    transition: all 0.25s ease;
+  width: 32%;
+  min-height: 60px;
+  padding: 10px 5px;
+  margin: 5px 0;
+  border: 1.5px solid #c5d5e8;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #ffffff, #eaf2fc);
+  color: #123d70;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 5px 14px rgba(0,35,80,0.12);
+  transition: all 0.25s ease;
+  cursor: pointer;
 }
-
 /* ACTIVE ROLE BUTTON */
 
 /* PREMIUM SELECTED ROLE */
