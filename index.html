@@ -4641,16 +4641,28 @@ if (homeworkUploadButton) {
       ? 'block'
       : 'none';
 }
-  const allowed = [
-    'home',
-    'notices',
-    'attendance',
-    'profile',
-    
-    'logout',
-    'about school'
-  ];
+  const studentAllowed = [
+  'home',
+  'notices',
+  'attendance',
+  'profile',
+  'logout',
+  'about school'
+];
 
+const teacherAllowed = [
+  'home',
+  'notices',
+  'attendance',
+  'profile',
+  'homework upload',
+  'logout',
+  'about school'
+];
+
+const allowed = role === 'student'
+  ? studentAllowed
+  : teacherAllowed;
   buttons.forEach(button => {
    if (button.id === 'omrExamMenuButton') return;
     const label = button.textContent
