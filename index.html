@@ -10682,19 +10682,28 @@ function printOMRSheet() {
  /* MICL PORTAL LOGIN POPUP */
 #login .portal-open-btn {
   position: fixed;
-  right: 16px;
   top: 20px;
+  right: 16px;
   z-index: 1001;
-  padding: 16px 32px;
-  border: 2px solid #d9b56b;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #063b82, #1976c9);
-  color: #fff;
-  font-size: 18px;
+  padding: 15px 30px;
+  border: 2px solid #e8c76a;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #082f68, #0878c9);
+  color: #ffffff;
+  font-size: 16px;
   font-weight: 800;
-  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  letter-spacing: 0.6px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35),
+              inset 0 1px 2px rgba(255,255,255,0.3);
+  transition: all 0.3s ease;
 }
 
+#login .portal-open-btn:hover {
+  background: linear-gradient(135deg, #d5ad45, #f5df9b);
+  color: #082f68;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+}
 #login .loginbox {
   display: none !important;
   position: fixed;
